@@ -1,0 +1,133 @@
+// Prisma schema for Love Facts Sticker Portal
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+// Collections represent sticker folders/categories
+model Collection {
+  id            String    @id @default(cuid())
+  name          String
+  slug          String    @unique
+  description   String?
+  coverImage    String?
+  driveFolderId String?   @unique
+  sortOrder     Int       @default(0)
+  featured      Boolean   @default(false)
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+  stickers      Sticker[]
+}
+
+// Individual sticker assets
+model Sticker {
+  id            String     @id @default(cuid())
+  title         String
+  filename      String
+  sourceUrl     String     // S3 or GCS URL
+  thumbnailUrl  String     // Optimized thumbnail URL
+  driveId       String?    @unique
+  tags          String[]   // For search functionality
+  caption       String?    // Suggested caption for sharing
+  width         Int?
+  height        Int?
+  fileSize      Int?
+  collection    Collection @relation(fields: [collectionId], references: [id], onDelete: Cascade)
+  collectionId  String
+  createdAt     DateTime   @default(now())
+  updatedAt     DateTime   @updatedAt
+  downloads     Download[]
+
+  @@index([collectionId])
+  @@index([tags])
+}
+
+// Download tracking records
+model Download {
+  id          String   @id @default(cuid())
+  sticker     Sticker  @relation(fields: [stickerId], references: [id], onDelete: Cascade)
+  stickerId   String
+  userEmail   String?
+  userPhone   String?
+  userName    String?
+  ipAddress   String?
+  userAgent   String?
+  referrer    String?
+  isAnonymous Boolean  @default(false)
+  downloadType String  @default("single") // single, collection, pack
+  status      String   @default("completed") // pending, completed, failed
+  createdAt   DateTime @default(now())
+
+  @@index([stickerId])
+  @@index([userEmail])
+  @@index([userPhone])
+  @@index([createdAt])
+}
+
+// Page visit tracking
+model Visit {
+  id         String   @id @default(cuid())
+  page       String
+  ipAddress  String?
+  userAgent  String?
+  referrer   String?
+  sessionId  String?
+  createdAt  DateTime @default(now())
+
+  @@index([page])
+  @@index([createdAt])
+}
+
+// Admin users with secure authentication
+model Admin {
+  id            String    @id @default(cuid())
+  email         String    @unique
+  name          String?
+  passwordHash  String?   // For email/password auth
+  role          String    @default("admin") // admin, super_admin
+  lastLoginAt   DateTime?
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+  sessions      Session[]
+}
+
+// Admin sessions for auth
+model Session {
+  id           String   @id @default(cuid())
+  sessionToken String   @unique
+  adminId      String
+  admin        Admin    @relation(fields: [adminId], references: [id], onDelete: Cascade)
+  expires      DateTime
+  createdAt    DateTime @default(now())
+
+  @@index([adminId])
+}
+
+// Sync logs for Drive sync operations
+model SyncLog {
+  id            String   @id @default(cuid())
+  status        String   // started, completed, failed
+  syncType      String   // full, incremental
+  itemsSynced   Int      @default(0)
+  errors        String?
+  startedAt     DateTime @default(now())
+  completedAt   DateTime?
+}
+
+// Unsubscribe/deletion requests for privacy compliance
+model UnsubscribeRequest {
+  id          String   @id @default(cuid())
+  email       String?
+  phone       String?
+  requestType String   // unsubscribe, delete_data
+  status      String   @default("pending") // pending, completed
+  processedAt DateTime?
+  createdAt   DateTime @default(now())
+
+  @@index([email])
+  @@index([phone])
+}
