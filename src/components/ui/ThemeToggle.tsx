@@ -27,7 +27,6 @@ export function ThemeToggle() {
     { value: 'system', label: 'System', icon: Monitor },
   ]
 
-  const currentTheme = themes.find(t => t.value === theme) || themes[2]
   const CurrentIcon = resolvedTheme === 'dark' ? Moon : Sun
 
   return (

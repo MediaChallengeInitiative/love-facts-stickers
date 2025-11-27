@@ -18,7 +18,7 @@ const menuVariants = {
   closed: {
     x: '100%',
     transition: {
-      type: 'spring',
+      type: 'spring' as const,
       stiffness: 400,
       damping: 40,
     },
@@ -26,7 +26,7 @@ const menuVariants = {
   open: {
     x: 0,
     transition: {
-      type: 'spring',
+      type: 'spring' as const,
       stiffness: 400,
       damping: 40,
     },
@@ -58,7 +58,7 @@ const linkVariants = {
     opacity: 1,
     transition: {
       delay: 0.1 + i * 0.1,
-      type: 'spring',
+      type: 'spring' as const,
       stiffness: 300,
       damping: 24,
     },
@@ -75,7 +75,7 @@ const logoVariants = {
     opacity: 1,
     transition: {
       delay: 0.05,
-      type: 'spring',
+      type: 'spring' as const,
       stiffness: 300,
       damping: 24,
     },

@@ -2,7 +2,7 @@
 
 import { useState } from 'react'
 import { motion } from 'framer-motion'
-import { Download, Share2, Copy, MessageCircle, FolderDown, QrCode, X } from 'lucide-react'
+import { Download, Share2, Copy, MessageCircle, FolderDown, QrCode } from 'lucide-react'
 import { QRCodeSVG } from 'qrcode.react'
 import { Modal } from '@/components/ui/Modal'
 import { Button } from '@/components/ui/Button'

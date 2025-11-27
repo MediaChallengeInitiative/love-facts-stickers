@@ -172,7 +172,7 @@ export default function HomePage() {
                 id={collection.id}
                 name={collection.name}
                 slug={collection.slug}
-                description={collection.description}
+                description={collection.description || undefined}
                 coverImage={collection.coverImage || undefined}
                 stickerCount={collection._count?.stickers || 0}
                 previewStickers={collection.previewStickers}

@@ -1,4 +1,4 @@
-import { NextRequest, NextResponse } from 'next/server'
+import { NextResponse } from 'next/server'
 import prisma from '@/lib/db'
 import {
   fetchDriveFiles,
@@ -21,7 +21,7 @@ import {
  *
  * POST /api/sync/drive - Start a sync operation
  */
-export async function POST(request: NextRequest) {
+export async function POST() {
   try {
     // Check for API key or admin auth
     const apiKey = process.env.GOOGLE_API_KEY

@@ -33,7 +33,7 @@ export async function GET(
     // Check cache
     const cached = imageCache.get(cacheKey)
     if (cached && Date.now() - cached.timestamp < CACHE_DURATION) {
-      return new NextResponse(cached.data, {
+      return new NextResponse(new Uint8Array(cached.data), {
         headers: {
           'Content-Type': cached.contentType,
           'Cache-Control': 'public, max-age=3600, immutable',
@@ -115,14 +115,14 @@ export async function GET(
     // Clean old cache entries
     if (imageCache.size > 500) {
       const now = Date.now()
-      for (const [key, value] of imageCache.entries()) {
+      Array.from(imageCache.entries()).forEach(([key, value]) => {
         if (now - value.timestamp > CACHE_DURATION) {
           imageCache.delete(key)
         }
-      }
+      })
     }
 
-    return new NextResponse(imageBuffer, {
+    return new NextResponse(new Uint8Array(imageBuffer), {
       headers: {
         'Content-Type': contentType,
         'Cache-Control': 'public, max-age=3600, immutable',
