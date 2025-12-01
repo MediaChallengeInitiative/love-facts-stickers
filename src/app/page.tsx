@@ -4,7 +4,7 @@ import { useState, useEffect, useRef, useMemo, useCallback } from 'react'
 import { Hero } from '@/components/layout/Hero'
 import { StickerGrid } from '@/components/stickers/StickerGrid'
 import { FilterBar } from '@/components/stickers/FilterBar'
-import { CollectionCard } from '@/components/stickers/CollectionCard'
+import { StackedGallery } from '@/components/StickerCollections/StackedGallery'
 import { StickerPreviewModal } from '@/components/modals/StickerPreviewModal'
 import { DownloadGatingModal } from '@/components/modals/DownloadGatingModal'
 import { DownloadSuccessModal } from '@/components/modals/DownloadSuccessModal'
@@ -142,55 +142,52 @@ export default function HomePage() {
     }
   }
 
-  const handleCollectionClick = (collectionId: string) => {
-    setSelectedCollection(collectionId)
-    galleryRef.current?.scrollIntoView({ behavior: 'smooth' })
-  }
-
   return (
     <div className="min-h-screen">
       {/* Hero Section */}
       <Hero onBrowseClick={handleBrowseClick} />
 
-      {/* Collections Section */}
-      <section id="collections" className="py-10 xs:py-12 sm:py-16 px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto">
+      {/* Collections Section - 3D Stacked Gallery */}
+      <section id="collections" className="py-10 xs:py-12 sm:py-16 px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto" aria-labelledby="stickers-heading">
         <div className="text-center mb-8 xs:mb-10 sm:mb-12">
-          <h2 className="text-2xl xs:text-3xl font-bold text-slate-900 dark:text-white mb-3 xs:mb-4">Sticker Collections</h2>
+          <h2 id="stickers-heading" className="text-2xl xs:text-3xl font-bold text-slate-900 dark:text-white mb-3 xs:mb-4">Sticker Collections</h2>
           <p className="text-sm xs:text-base text-slate-500 dark:text-slate-400 max-w-2xl mx-auto px-2">
             Browse our curated collections of media literacy stickers. Each collection has a unique theme
             to help you fight misinformation in different ways.
           </p>
         </div>
 
-        <div className="grid grid-cols-1 xs:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5 gap-4 xs:gap-6">
-          {isLoading ? (
-            // Loading skeletons
-            Array.from({ length: 5 }).map((_, i) => (
-              <div key={i} className="bg-slate-200 dark:bg-slate-800/50 rounded-2xl p-6 animate-pulse">
-                <div className="h-8 bg-slate-300 dark:bg-slate-700 rounded mb-4" />
-                <div className="h-4 bg-slate-300 dark:bg-slate-700 rounded w-3/4" />
-              </div>
-            ))
-          ) : collections.length === 0 ? (
-            <div className="col-span-full text-center py-8 text-slate-500 dark:text-slate-400">
-              No collections found. Try syncing from Google Drive.
-            </div>
-          ) : (
-            collections.map((collection) => (
-              <CollectionCard
-                key={collection.id}
-                id={collection.id}
-                name={collection.name}
-                slug={collection.slug}
-                description={collection.description || undefined}
-                coverImage={collection.coverImage || undefined}
-                stickerCount={collection._count?.stickers || 0}
-                previewStickers={collection.previewStickers}
-                onClick={() => handleCollectionClick(collection.id)}
-              />
-            ))
-          )}
-        </div>
+        {isLoading ? (
+          // Loading skeleton for 3D gallery
+          <div className="flex items-center justify-center py-16">
+            <div className="w-[280px] h-[380px] bg-slate-200 dark:bg-slate-800/50 rounded-2xl animate-pulse" />
+          </div>
+        ) : (
+          <StackedGallery
+            stickers={stickers.slice(0, 20).map((s) => ({
+              id: s.id,
+              title: s.title,
+              imageUrl: s.thumbnailUrl,
+              collectionId: s.collectionId,
+              collectionName: s.collection?.name,
+            }))}
+            onView={(id) => {
+              const sticker = stickers.find((s) => s.id === id)
+              if (sticker) {
+                setSelectedSticker(sticker)
+                setShowPreviewModal(true)
+              }
+            }}
+            onDownload={(id) => {
+              fetch('/api/download-request', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ stickerId: id, isAnonymous: true, downloadType: 'single' }),
+              }).catch(console.error)
+            }}
+            maxVisible={5}
+          />
+        )}
       </section>
 
       {/* Gallery Section */}
