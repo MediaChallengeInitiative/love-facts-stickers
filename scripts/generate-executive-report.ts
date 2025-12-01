@@ -583,14 +583,14 @@ const createExecutiveReport = () => {
 
           // Domain & Hosting
           new Paragraph({
-            text: 'Website Address (Domain) Recommendations',
+            text: 'Website Domain & Live Deployment',
             heading: HeadingLevel.HEADING_1,
             spacing: { before: 400, after: 200 },
           }),
           new Paragraph({
             children: [
               new TextRun({
-                text: 'For the Love Facts Sticker Portal, we recommend using a subdomain under the main MCI website. This approach:',
+                text: 'The Love Facts Sticker Portal is now live and accessible to the public. A dedicated domain has been purchased to establish the Love Facts brand independently:',
                 size: 24,
               }),
             ],
@@ -598,49 +598,27 @@ const createExecutiveReport = () => {
           }),
           new Paragraph({
             children: [
-              new TextRun({ text: '• ', size: 24 }),
-              new TextRun({ text: 'Maintains brand consistency with MCI', size: 24 }),
-            ],
-            indent: { left: 360 },
-          }),
-          new Paragraph({
-            children: [
-              new TextRun({ text: '• ', size: 24 }),
-              new TextRun({ text: 'Costs nothing extra (uses existing mciug.org domain)', size: 24 }),
-            ],
-            indent: { left: 360 },
-          }),
-          new Paragraph({
-            children: [
-              new TextRun({ text: '• ', size: 24 }),
-              new TextRun({ text: 'Easy to remember and share', size: 24 }),
-            ],
-            indent: { left: 360 },
-            spacing: { after: 200 },
-          }),
-          new Paragraph({
-            children: [
               new TextRun({
-                text: 'Recommended Domain Options:',
+                text: 'Domain Configuration:',
                 bold: true,
                 size: 26,
               }),
             ],
             spacing: { after: 100 },
           }),
-          // Domain options table
+          // Domain configuration table
           new Table({
             width: { size: 100, type: WidthType.PERCENTAGE },
             rows: [
               new TableRow({
                 children: [
                   new TableCell({
-                    children: [new Paragraph({ text: 'Option', alignment: AlignmentType.CENTER })],
+                    children: [new Paragraph({ text: 'Domain', alignment: AlignmentType.CENTER })],
                     shading: { fill: 'E91E63', type: ShadingType.CLEAR, color: 'auto' },
                     width: { size: 40, type: WidthType.PERCENTAGE },
                   }),
                   new TableCell({
-                    children: [new Paragraph({ text: 'Notes', alignment: AlignmentType.CENTER })],
+                    children: [new Paragraph({ text: 'Purpose', alignment: AlignmentType.CENTER })],
                     shading: { fill: 'E91E63', type: ShadingType.CLEAR, color: 'auto' },
                     width: { size: 60, type: WidthType.PERCENTAGE },
                   }),
@@ -649,30 +627,20 @@ const createExecutiveReport = () => {
               new TableRow({
                 children: [
                   new TableCell({
-                    children: [new Paragraph({ children: [new TextRun({ text: 'lovefacts.mciug.org', bold: true })] })],
+                    children: [new Paragraph({ children: [new TextRun({ text: 'lovefacts.africa', bold: true })] })],
                   }),
                   new TableCell({
-                    children: [new Paragraph('Recommended - Clear branding, memorable')],
-                  }),
-                ],
-              }),
-              new TableRow({
-                children: [
-                  new TableCell({
-                    children: [new Paragraph({ children: [new TextRun({ text: 'stickers.mciug.org', bold: true })] })],
-                  }),
-                  new TableCell({
-                    children: [new Paragraph('Alternative - Describes the content type')],
+                    children: [new Paragraph('Main Love Facts website (future expansion)')],
                   }),
                 ],
               }),
               new TableRow({
                 children: [
                   new TableCell({
-                    children: [new Paragraph({ children: [new TextRun({ text: 'lf.mciug.org', bold: true })] })],
+                    children: [new Paragraph({ children: [new TextRun({ text: 'stickers.lovefacts.africa', bold: true })] })],
                   }),
                   new TableCell({
-                    children: [new Paragraph('Short version - Good for QR codes and SMS')],
+                    children: [new Paragraph('LIVE - Sticker Portal (currently deployed and active)')],
                   }),
                 ],
               }),
@@ -685,7 +653,42 @@ const createExecutiveReport = () => {
           new Paragraph({
             children: [
               new TextRun({
-                text: 'Alternative: Dedicated Domain',
+                text: 'Domain Investment:',
+                bold: true,
+                size: 26,
+              }),
+            ],
+            spacing: { after: 100 },
+          }),
+          new Paragraph({
+            children: [
+              new TextRun({ text: '• ', size: 24 }),
+              new TextRun({ text: 'Domain: ', bold: true, size: 24 }),
+              new TextRun({ text: 'lovefacts.africa', size: 24 }),
+            ],
+            indent: { left: 360 },
+          }),
+          new Paragraph({
+            children: [
+              new TextRun({ text: '• ', size: 24 }),
+              new TextRun({ text: 'Cost: ', bold: true, size: 24 }),
+              new TextRun({ text: '$17 (one-time purchase)', size: 24 }),
+            ],
+            indent: { left: 360 },
+          }),
+          new Paragraph({
+            children: [
+              new TextRun({ text: '• ', size: 24 }),
+              new TextRun({ text: 'Benefits: ', bold: true, size: 24 }),
+              new TextRun({ text: 'Establishes Love Facts as an independent brand, memorable African domain extension, room for future expansion', size: 24 }),
+            ],
+            indent: { left: 360 },
+            spacing: { after: 200 },
+          }),
+          new Paragraph({
+            children: [
+              new TextRun({
+                text: 'QR Code for Easy Access:',
                 bold: true,
                 size: 26,
               }),
@@ -695,35 +698,10 @@ const createExecutiveReport = () => {
           new Paragraph({
             children: [
               new TextRun({
-                text: 'If MCI prefers a standalone domain, options include:',
+                text: 'A QR code has been generated for https://stickers.lovefacts.africa/ to facilitate easy sharing at events, workshops, and printed materials. Simply scan the QR code to access the sticker portal directly from any mobile device.',
                 size: 24,
               }),
             ],
-            spacing: { after: 100 },
-          }),
-          new Paragraph({
-            children: [
-              new TextRun({ text: '• ', size: 24 }),
-              new TextRun({ text: 'lovefacts.org ', bold: true, size: 24 }),
-              new TextRun({ text: '(approximately $15-20/year)', size: 24 }),
-            ],
-            indent: { left: 360 },
-          }),
-          new Paragraph({
-            children: [
-              new TextRun({ text: '• ', size: 24 }),
-              new TextRun({ text: 'lovefactsug.org ', bold: true, size: 24 }),
-              new TextRun({ text: '(approximately $15-20/year)', size: 24 }),
-            ],
-            indent: { left: 360 },
-          }),
-          new Paragraph({
-            children: [
-              new TextRun({ text: '• ', size: 24 }),
-              new TextRun({ text: 'lovefacts.africa ', bold: true, size: 24 }),
-              new TextRun({ text: '(approximately $20-30/year)', size: 24 }),
-            ],
-            indent: { left: 360 },
             spacing: { after: 400 },
           }),
 
@@ -786,7 +764,7 @@ const createExecutiveReport = () => {
           new Paragraph({
             children: [
               new TextRun({
-                text: 'Hosting Recommendation:',
+                text: 'Current Hosting (Vercel):',
                 bold: true,
                 size: 26,
               }),
@@ -796,7 +774,7 @@ const createExecutiveReport = () => {
           new Paragraph({
             children: [
               new TextRun({
-                text: 'We recommend hosting on Vercel, which offers:',
+                text: 'The portal is hosted on Vercel (FREE), which provides:',
                 size: 24,
               }),
             ],
@@ -853,7 +831,7 @@ const createExecutiveReport = () => {
                     width: { size: 50, type: WidthType.PERCENTAGE },
                   }),
                   new TableCell({
-                    children: [new Paragraph({ text: 'Estimated Annual Cost', alignment: AlignmentType.CENTER })],
+                    children: [new Paragraph({ text: 'Cost', alignment: AlignmentType.CENTER })],
                     shading: { fill: 'E91E63', type: ShadingType.CLEAR, color: 'auto' },
                     width: { size: 50, type: WidthType.PERCENTAGE },
                   }),
@@ -861,19 +839,25 @@ const createExecutiveReport = () => {
               }),
               new TableRow({
                 children: [
-                  new TableCell({ children: [new Paragraph('Domain (subdomain of mciug.org)')] }),
+                  new TableCell({ children: [new Paragraph('Domain (lovefacts.africa)')] }),
+                  new TableCell({ children: [new Paragraph({ text: '$17 (paid)', alignment: AlignmentType.CENTER })] }),
+                ],
+              }),
+              new TableRow({
+                children: [
+                  new TableCell({ children: [new Paragraph('Subdomain (stickers.lovefacts.africa)')] }),
                   new TableCell({ children: [new Paragraph({ text: 'FREE', alignment: AlignmentType.CENTER })] }),
                 ],
               }),
               new TableRow({
                 children: [
-                  new TableCell({ children: [new Paragraph('Hosting (Vercel Free Tier)')] }),
+                  new TableCell({ children: [new Paragraph('Hosting (Vercel)')] }),
                   new TableCell({ children: [new Paragraph({ text: 'FREE', alignment: AlignmentType.CENTER })] }),
                 ],
               }),
               new TableRow({
                 children: [
-                  new TableCell({ children: [new Paragraph('Database (Vercel Postgres Free)')] }),
+                  new TableCell({ children: [new Paragraph('Database (Prisma Postgres)')] }),
                   new TableCell({ children: [new Paragraph({ text: 'FREE', alignment: AlignmentType.CENTER })] }),
                 ],
               }),
@@ -885,18 +869,18 @@ const createExecutiveReport = () => {
               }),
               new TableRow({
                 children: [
-                  new TableCell({ children: [new Paragraph('File Storage (AWS S3 - if needed)')] }),
-                  new TableCell({ children: [new Paragraph({ text: '$5-20/month (usage-based)', alignment: AlignmentType.CENTER })] }),
+                  new TableCell({ children: [new Paragraph('File Storage (Google Drive)')] }),
+                  new TableCell({ children: [new Paragraph({ text: 'FREE', alignment: AlignmentType.CENTER })] }),
                 ],
               }),
               new TableRow({
                 children: [
                   new TableCell({
-                    children: [new Paragraph({ children: [new TextRun({ text: 'TOTAL (Basic Setup)', bold: true })] })],
+                    children: [new Paragraph({ children: [new TextRun({ text: 'TOTAL INVESTED', bold: true })] })],
                     shading: { fill: 'EEEEEE', type: ShadingType.CLEAR, color: 'auto' },
                   }),
                   new TableCell({
-                    children: [new Paragraph({ children: [new TextRun({ text: 'FREE - $240/year', bold: true })], alignment: AlignmentType.CENTER })],
+                    children: [new Paragraph({ children: [new TextRun({ text: '$17', bold: true })], alignment: AlignmentType.CENTER })],
                     shading: { fill: 'EEEEEE', type: ShadingType.CLEAR, color: 'auto' },
                   }),
                 ],
@@ -906,7 +890,7 @@ const createExecutiveReport = () => {
           new Paragraph({
             children: [
               new TextRun({
-                text: '*Costs depend on traffic volume and storage needs. The free tier should be sufficient for initial launch.',
+                text: '*The portal is now live and operational. Domain renewal will be approximately $17/year.',
                 size: 20,
                 italics: true,
                 color: '666666',
@@ -915,73 +899,119 @@ const createExecutiveReport = () => {
             spacing: { before: 100, after: 400 },
           }),
 
-          // Next Steps
+          // Current Status & Next Steps
           new Paragraph({
-            text: 'Recommended Next Steps',
+            text: 'Current Status & Recommended Next Steps',
             heading: HeadingLevel.HEADING_1,
             spacing: { before: 400, after: 200 },
           }),
           new Paragraph({
             children: [
+              new TextRun({
+                text: 'COMPLETED:',
+                bold: true,
+                size: 26,
+                color: '4CAF50',
+              }),
+            ],
+            spacing: { after: 100 },
+          }),
+          new Paragraph({
+            children: [
+              new TextRun({ text: '✓ ', size: 24, color: '4CAF50' }),
+              new TextRun({ text: 'Domain purchased: ', bold: true, size: 24 }),
+              new TextRun({ text: 'lovefacts.africa ($17)', size: 24 }),
+            ],
+            indent: { left: 360 },
+          }),
+          new Paragraph({
+            children: [
+              new TextRun({ text: '✓ ', size: 24, color: '4CAF50' }),
+              new TextRun({ text: 'Subdomain configured: ', bold: true, size: 24 }),
+              new TextRun({ text: 'stickers.lovefacts.africa', size: 24 }),
+            ],
+            indent: { left: 360 },
+          }),
+          new Paragraph({
+            children: [
+              new TextRun({ text: '✓ ', size: 24, color: '4CAF50' }),
+              new TextRun({ text: 'Portal deployed: ', bold: true, size: 24 }),
+              new TextRun({ text: 'Live and accessible at https://stickers.lovefacts.africa', size: 24 }),
+            ],
+            indent: { left: 360 },
+          }),
+          new Paragraph({
+            children: [
+              new TextRun({ text: '✓ ', size: 24, color: '4CAF50' }),
+              new TextRun({ text: 'QR code generated: ', bold: true, size: 24 }),
+              new TextRun({ text: 'Ready for printing and sharing', size: 24 }),
+            ],
+            indent: { left: 360 },
+          }),
+          new Paragraph({
+            children: [
+              new TextRun({ text: '✓ ', size: 24, color: '4CAF50' }),
+              new TextRun({ text: 'Database configured: ', bold: true, size: 24 }),
+              new TextRun({ text: 'Prisma Postgres with user tracking', size: 24 }),
+            ],
+            indent: { left: 360 },
+          }),
+          new Paragraph({
+            children: [
+              new TextRun({ text: '✓ ', size: 24, color: '4CAF50' }),
+              new TextRun({ text: 'Google Drive sync: ', bold: true, size: 24 }),
+              new TextRun({ text: 'Stickers synced from Google Drive', size: 24 }),
+            ],
+            indent: { left: 360 },
+            spacing: { after: 200 },
+          }),
+          new Paragraph({
+            children: [
+              new TextRun({
+                text: 'RECOMMENDED NEXT STEPS:',
+                bold: true,
+                size: 26,
+              }),
+            ],
+            spacing: { after: 100 },
+          }),
+          new Paragraph({
+            children: [
               new TextRun({ text: '1. ', bold: true, size: 24 }),
-              new TextRun({ text: 'Approve the subdomain: ', bold: true, size: 24 }),
-              new TextRun({ text: 'Confirm which domain/subdomain to use (recommended: lovefacts.mciug.org)', size: 24 }),
+              new TextRun({ text: 'Public announcement: ', bold: true, size: 24 }),
+              new TextRun({ text: 'Share the portal through MCI social media channels and partners', size: 24 }),
             ],
             spacing: { after: 100 },
           }),
           new Paragraph({
             children: [
               new TextRun({ text: '2. ', bold: true, size: 24 }),
-              new TextRun({ text: 'Prepare sticker files: ', bold: true, size: 24 }),
-              new TextRun({ text: 'Organize all sticker images in Google Drive with clear folder structure', size: 24 }),
+              new TextRun({ text: 'Print QR codes: ', bold: true, size: 24 }),
+              new TextRun({ text: 'Include QR code on printed materials, banners, and event displays', size: 24 }),
             ],
             spacing: { after: 100 },
           }),
           new Paragraph({
             children: [
               new TextRun({ text: '3. ', bold: true, size: 24 }),
-              new TextRun({ text: 'Define collection names: ', bold: true, size: 24 }),
-              new TextRun({ text: 'Decide on collection categories and descriptions', size: 24 }),
+              new TextRun({ text: 'Add more stickers: ', bold: true, size: 24 }),
+              new TextRun({ text: 'Upload new sticker collections to Google Drive and sync', size: 24 }),
             ],
             spacing: { after: 100 },
           }),
           new Paragraph({
             children: [
               new TextRun({ text: '4. ', bold: true, size: 24 }),
-              new TextRun({ text: 'Set up hosting account: ', bold: true, size: 24 }),
-              new TextRun({ text: 'Create Vercel account and link to MCI GitHub', size: 24 }),
+              new TextRun({ text: 'Monitor analytics: ', bold: true, size: 24 }),
+              new TextRun({ text: 'Track downloads and user engagement via the admin dashboard', size: 24 }),
             ],
             spacing: { after: 100 },
           }),
           new Paragraph({
             children: [
               new TextRun({ text: '5. ', bold: true, size: 24 }),
-              new TextRun({ text: 'Configure DNS: ', bold: true, size: 24 }),
-              new TextRun({ text: 'Point subdomain to Vercel hosting', size: 24 }),
-            ],
-            spacing: { after: 100 },
-          }),
-          new Paragraph({
-            children: [
-              new TextRun({ text: '6. ', bold: true, size: 24 }),
-              new TextRun({ text: 'Deploy and test: ', bold: true, size: 24 }),
-              new TextRun({ text: 'Launch the portal and conduct thorough testing', size: 24 }),
-            ],
-            spacing: { after: 100 },
-          }),
-          new Paragraph({
-            children: [
-              new TextRun({ text: '7. ', bold: true, size: 24 }),
-              new TextRun({ text: 'Soft launch: ', bold: true, size: 24 }),
-              new TextRun({ text: 'Share with internal team for feedback before public announcement', size: 24 }),
-            ],
-            spacing: { after: 100 },
-          }),
-          new Paragraph({
-            children: [
-              new TextRun({ text: '8. ', bold: true, size: 24 }),
-              new TextRun({ text: 'Public launch: ', bold: true, size: 24 }),
-              new TextRun({ text: 'Announce through MCI social media channels and partners', size: 24 }),
+              new TextRun({ text: 'Gather feedback: ', bold: true, size: 24 }),
+              new TextRun({ text: 'Collect user feedback for future improvements', size: 24 }),
             ],
             spacing: { after: 400 },
           }),
@@ -995,11 +1025,32 @@ const createExecutiveReport = () => {
           new Paragraph({
             children: [
               new TextRun({
-                text: 'The Love Facts Sticker Portal represents a significant step forward in MCI\'s digital outreach capabilities. By providing an easy-to-use platform for distributing media literacy stickers, MCI can:',
+                text: 'The Love Facts Sticker Portal is now LIVE and represents a significant step forward in MCI\'s digital outreach capabilities. The platform is fully operational at:',
                 size: 24,
               }),
             ],
+            spacing: { after: 100 },
+          }),
+          new Paragraph({
+            alignment: AlignmentType.CENTER,
+            children: [
+              new TextRun({
+                text: 'https://stickers.lovefacts.africa',
+                bold: true,
+                size: 28,
+                color: 'E91E63',
+              }),
+            ],
             spacing: { after: 200 },
+          }),
+          new Paragraph({
+            children: [
+              new TextRun({
+                text: 'With this platform, MCI can now:',
+                size: 24,
+              }),
+            ],
+            spacing: { after: 100 },
           }),
           new Paragraph({
             children: [
@@ -1035,13 +1086,21 @@ const createExecutiveReport = () => {
               new TextRun({ text: 'Maintain full control over branding and content', size: 24 }),
             ],
             indent: { left: 360 },
+          }),
+          new Paragraph({
+            children: [
+              new TextRun({ text: '• ', size: 24 }),
+              new TextRun({ text: 'Share the portal easily via QR code at events and workshops', size: 24 }),
+            ],
+            indent: { left: 360 },
             spacing: { after: 200 },
           }),
           new Paragraph({
             children: [
               new TextRun({
-                text: 'The platform is ready for deployment and can be launched as soon as the domain configuration and sticker content are finalized.',
+                text: 'Total investment: $17 for the lovefacts.africa domain. All other services (hosting, database, SSL) are free.',
                 size: 24,
+                bold: true,
               }),
             ],
             spacing: { after: 400 },
