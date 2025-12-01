@@ -53,25 +53,43 @@ function CollectionCardStack({
 
   if (visibleStickers.length === 0) {
     return (
-      <div className="flex flex-col items-center">
-        <div className="relative w-full h-[200px] sm:h-[240px] flex items-center justify-center mb-4">
+      <div className="flex flex-col items-center h-full">
+        {/* Collection Name - Top */}
+        <h3 className="text-sm font-semibold text-slate-900 dark:text-white mb-1 text-center line-clamp-1">
+          {collection.name}
+        </h3>
+        <p className="text-xs text-slate-500 dark:text-slate-400 mb-4">
+          {collection.count} stickers
+        </p>
+
+        {/* Empty State - Middle */}
+        <div className="relative w-full h-[180px] sm:h-[200px] flex items-center justify-center mb-4">
           <div className="w-[120px] h-[160px] sm:w-[140px] sm:h-[180px] rounded-xl bg-slate-200 dark:bg-slate-700/50 flex items-center justify-center">
             <Sparkles className="w-8 h-8 text-slate-400" />
           </div>
         </div>
-        <h3 className="text-sm font-semibold text-slate-900 dark:text-white mb-1 text-center">
-          {collection.name}
-        </h3>
-        <p className="text-xs text-slate-500 dark:text-slate-400">No stickers</p>
+
+        {/* Buttons - Bottom */}
+        <div className="flex items-center justify-center gap-2 mt-auto">
+          <span className="text-xs text-slate-400">No stickers available</span>
+        </div>
       </div>
     )
   }
 
   return (
-    <div className="flex flex-col items-center">
-      {/* Fanned Card Stack */}
+    <div className="flex flex-col items-center h-full">
+      {/* Collection Name - Top */}
+      <h3 className="text-sm font-semibold text-slate-900 dark:text-white mb-1 text-center line-clamp-1">
+        {collection.name}
+      </h3>
+      <p className="text-xs text-slate-500 dark:text-slate-400 mb-4">
+        {collection.count} stickers
+      </p>
+
+      {/* Fanned Card Stack - Middle */}
       <div
-        className="relative w-full h-[200px] sm:h-[240px] mb-4"
+        className="relative w-full h-[180px] sm:h-[200px] mb-4"
         style={{ perspective: '800px' }}
       >
         <div
@@ -149,16 +167,8 @@ function CollectionCardStack({
         </div>
       </div>
 
-      {/* Collection Name */}
-      <h3 className="text-sm font-semibold text-slate-900 dark:text-white mb-1 text-center line-clamp-1">
-        {collection.name}
-      </h3>
-      <p className="text-xs text-slate-500 dark:text-slate-400 mb-3">
-        {collection.count} stickers
-      </p>
-
-      {/* CTA Buttons */}
-      <div className="flex items-center justify-center gap-2">
+      {/* CTA Buttons - Bottom */}
+      <div className="flex items-center justify-center gap-2 mt-auto">
         <button
           onClick={() => topSticker && onView(topSticker)}
           className="flex items-center justify-center gap-1.5 px-3 py-1.5 bg-white dark:bg-slate-800 border border-slate-300 dark:border-slate-600 rounded-full text-slate-700 dark:text-slate-200 text-xs font-medium hover:bg-slate-50 dark:hover:bg-slate-700 transition-all shadow-sm hover:shadow-md"
