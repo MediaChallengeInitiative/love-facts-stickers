@@ -2,7 +2,7 @@
 
 import { useState } from 'react'
 import { motion } from 'framer-motion'
-import { Download, Eye } from 'lucide-react'
+import { Download, Eye, Sparkles } from 'lucide-react'
 import { cn } from '@/lib/utils'
 
 interface StickerCardProps {
@@ -28,13 +28,15 @@ export function StickerCard({
   return (
     <motion.div
       className={cn(
-        'group relative bg-white dark:bg-slate-800/50 rounded-xl xs:rounded-2xl overflow-hidden border border-slate-200 dark:border-slate-700/50',
-        'cursor-pointer transition-all duration-300 flex flex-col',
-        'hover:border-pink-500/50 hover:shadow-lg hover:shadow-pink-500/10',
+        'group relative bg-white dark:bg-slate-800 rounded-2xl overflow-hidden',
+        'border border-slate-200 dark:border-slate-700',
+        'cursor-pointer transition-all duration-300',
+        'hover:border-pink-400 dark:hover:border-pink-500',
+        'hover:shadow-xl hover:shadow-pink-500/10',
+        'active:scale-[0.98]',
         className
       )}
-      whileHover={{ y: -4 }}
-      whileTap={{ scale: 0.98 }}
+      whileHover={{ y: -6 }}
       onHoverStart={() => setIsHovered(true)}
       onHoverEnd={() => setIsHovered(false)}
       onClick={onClick}
@@ -48,70 +50,108 @@ export function StickerCard({
       }}
       aria-label={`View sticker: ${title}`}
     >
-      {/* Image Container */}
-      <div className="relative aspect-square p-3 xs:p-4 flex-shrink-0">
+      {/* Image Container with gradient background */}
+      <div className="relative aspect-square bg-gradient-to-br from-slate-50 to-slate-100 dark:from-slate-900 dark:to-slate-800">
+        {/* Decorative pattern */}
+        <div className="absolute inset-0 opacity-30 dark:opacity-20">
+          <div className="absolute inset-0" style={{
+            backgroundImage: 'radial-gradient(circle at 2px 2px, currentColor 1px, transparent 0)',
+            backgroundSize: '16px 16px',
+          }} />
+        </div>
+
         {/* Loading skeleton */}
         {!isLoaded && !hasError && (
-          <div className="absolute inset-3 xs:inset-4 bg-slate-200 dark:bg-slate-700 animate-pulse rounded-lg xs:rounded-xl" />
+          <div className="absolute inset-4 bg-slate-200 dark:bg-slate-700 animate-pulse rounded-xl" />
         )}
 
         {/* Error placeholder */}
         {hasError && (
-          <div className="absolute inset-3 xs:inset-4 bg-slate-200 dark:bg-slate-700 rounded-lg xs:rounded-xl flex items-center justify-center">
-            <span className="text-slate-400 dark:text-slate-500 text-[10px] xs:text-xs text-center px-2">Image unavailable</span>
+          <div className="absolute inset-4 bg-slate-200 dark:bg-slate-700 rounded-xl flex flex-col items-center justify-center gap-2">
+            <Sparkles className="w-6 h-6 text-slate-400" />
+            <span className="text-slate-400 dark:text-slate-500 text-xs text-center px-2">
+              Image unavailable
+            </span>
           </div>
         )}
 
+        {/* Sticker Image */}
         {/* eslint-disable-next-line @next/next/no-img-element */}
         <img
           src={thumbnailUrl}
           alt={title}
           className={cn(
-            'absolute inset-3 xs:inset-4 w-[calc(100%-1.5rem)] xs:w-[calc(100%-2rem)] h-[calc(100%-1.5rem)] xs:h-[calc(100%-2rem)] object-contain transition-all duration-300',
+            'absolute inset-4 w-[calc(100%-2rem)] h-[calc(100%-2rem)] object-contain',
+            'transition-all duration-500 ease-out',
             isLoaded ? 'opacity-100' : 'opacity-0',
-            isHovered && 'scale-105'
+            isHovered && 'scale-110'
           )}
           onLoad={() => setIsLoaded(true)}
           onError={() => setHasError(true)}
           loading="lazy"
         />
 
-        {/* Hover Overlay - Desktop only */}
+        {/* Hover Overlay */}
         <motion.div
           initial={{ opacity: 0 }}
           animate={{ opacity: isHovered ? 1 : 0 }}
-          className="absolute inset-0 bg-gradient-to-t from-slate-900/90 via-slate-900/40 to-transparent hidden md:flex items-end justify-center pb-4"
+          transition={{ duration: 0.2 }}
+          className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent flex items-end justify-center p-4"
         >
-          <div className="flex items-center gap-2">
-            <span className="inline-flex items-center gap-1.5 px-3 py-1.5 bg-white/20 backdrop-blur-sm rounded-full text-white text-sm font-medium">
-              <Eye size={14} />
+          <motion.div
+            initial={{ y: 20, opacity: 0 }}
+            animate={{ y: isHovered ? 0 : 20, opacity: isHovered ? 1 : 0 }}
+            transition={{ duration: 0.3, delay: 0.1 }}
+            className="flex items-center gap-2"
+          >
+            <span className="inline-flex items-center gap-1.5 px-4 py-2 bg-white/20 backdrop-blur-md rounded-full text-white text-sm font-medium border border-white/20">
+              <Eye size={16} />
               Preview
             </span>
-            <span className="inline-flex items-center gap-1.5 px-3 py-1.5 bg-pink-500 rounded-full text-white text-sm font-medium">
-              <Download size={14} />
+            <span className="inline-flex items-center gap-1.5 px-4 py-2 bg-pink-500 rounded-full text-white text-sm font-medium shadow-lg shadow-pink-500/30">
+              <Download size={16} />
               Download
             </span>
-          </div>
+          </motion.div>
         </motion.div>
+
+        {/* Collection badge */}
+        <div className="absolute top-3 left-3">
+          <span className="inline-flex items-center px-2.5 py-1 bg-white/90 dark:bg-slate-800/90 backdrop-blur-sm rounded-full text-[10px] font-medium text-slate-600 dark:text-slate-300 shadow-sm">
+            {collectionName}
+          </span>
+        </div>
       </div>
 
-      {/* Card Footer - Always visible */}
-      <div className="px-3 pb-3 xs:px-4 xs:pb-4 flex-grow flex flex-col justify-between">
-        <div>
-          <h3 className="text-xs xs:text-sm font-medium text-slate-900 dark:text-white line-clamp-2 mb-1">{title}</h3>
-          <p className="text-[10px] xs:text-xs text-slate-500 dark:text-slate-400 truncate">{collectionName}</p>
-        </div>
+      {/* Card Footer */}
+      <div className="p-4">
+        {/* Title */}
+        <h3 className="text-sm font-semibold text-slate-900 dark:text-white line-clamp-2 mb-3 leading-tight">
+          {title}
+        </h3>
 
-        {/* Mobile action buttons - Always visible on small screens */}
-        <div className="flex items-center gap-2 mt-2 md:hidden">
-          <span className="flex-1 inline-flex items-center justify-center gap-1 px-2 py-1.5 bg-slate-100 dark:bg-slate-700/50 rounded-lg text-slate-600 dark:text-slate-300 text-[10px] xs:text-xs font-medium">
-            <Eye size={12} />
-            Preview
-          </span>
-          <span className="flex-1 inline-flex items-center justify-center gap-1 px-2 py-1.5 bg-pink-500 rounded-lg text-white text-[10px] xs:text-xs font-medium">
-            <Download size={12} />
-            Download
-          </span>
+        {/* Action Buttons - Always visible */}
+        <div className="flex items-center gap-2">
+          <button
+            className="flex-1 inline-flex items-center justify-center gap-1.5 px-3 py-2 bg-slate-100 dark:bg-slate-700 hover:bg-slate-200 dark:hover:bg-slate-600 rounded-xl text-slate-700 dark:text-slate-200 text-xs font-medium transition-colors"
+            onClick={(e) => {
+              e.stopPropagation()
+              onClick()
+            }}
+          >
+            <Eye size={14} />
+            <span>Preview</span>
+          </button>
+          <button
+            className="flex-1 inline-flex items-center justify-center gap-1.5 px-3 py-2 bg-gradient-to-r from-pink-500 to-rose-500 hover:from-pink-600 hover:to-rose-600 rounded-xl text-white text-xs font-medium transition-all shadow-md shadow-pink-500/20 hover:shadow-lg hover:shadow-pink-500/30"
+            onClick={(e) => {
+              e.stopPropagation()
+              onClick()
+            }}
+          >
+            <Download size={14} />
+            <span>Download</span>
+          </button>
         </div>
       </div>
     </motion.div>

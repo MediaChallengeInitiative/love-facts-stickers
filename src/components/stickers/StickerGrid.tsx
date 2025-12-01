@@ -17,12 +17,17 @@ interface StickerGridExtendedProps extends StickerGridProps {
 export function StickerGrid({ stickers, onStickerClick, isLoading, selectedCollection }: StickerGridExtendedProps) {
   if (isLoading) {
     return (
-      <div className="grid grid-cols-2 xs:grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-3 xs:gap-4">
-        {Array.from({ length: 12 }).map((_, i) => (
-          <div key={i} className="bg-white dark:bg-slate-800/50 rounded-xl xs:rounded-2xl p-3 xs:p-4 animate-pulse border border-slate-200 dark:border-transparent">
-            <div className="aspect-square bg-slate-200 dark:bg-slate-700 rounded-lg xs:rounded-xl mb-2 xs:mb-3" />
-            <div className="h-3 xs:h-4 bg-slate-200 dark:bg-slate-700 rounded w-3/4 mb-1.5 xs:mb-2" />
-            <div className="h-2.5 xs:h-3 bg-slate-200 dark:bg-slate-700 rounded w-1/2" />
+      <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4 md:gap-6">
+        {Array.from({ length: 10 }).map((_, i) => (
+          <div key={i} className="bg-white dark:bg-slate-800 rounded-2xl overflow-hidden animate-pulse border border-slate-200 dark:border-slate-700">
+            <div className="aspect-square bg-slate-100 dark:bg-slate-900" />
+            <div className="p-4">
+              <div className="h-4 bg-slate-200 dark:bg-slate-700 rounded w-3/4 mb-3" />
+              <div className="flex gap-2">
+                <div className="flex-1 h-9 bg-slate-200 dark:bg-slate-700 rounded-xl" />
+                <div className="flex-1 h-9 bg-slate-200 dark:bg-slate-700 rounded-xl" />
+              </div>
+            </div>
           </div>
         ))}
       </div>
