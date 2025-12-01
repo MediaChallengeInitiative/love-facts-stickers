@@ -124,33 +124,33 @@ export function StickerCard({
       </div>
 
       {/* Card Footer */}
-      <div className="p-4">
+      <div className="p-2 xs:p-3 sm:p-4">
         {/* Title */}
-        <h3 className="text-sm font-semibold text-slate-900 dark:text-white line-clamp-2 mb-3 leading-tight">
+        <h3 className="text-xs xs:text-sm font-semibold text-slate-900 dark:text-white line-clamp-1 mb-2 xs:mb-3 leading-tight">
           {title}
         </h3>
 
-        {/* Action Buttons - Always visible */}
-        <div className="flex items-center gap-2">
+        {/* Action Buttons - Always visible, responsive sizing */}
+        <div className="flex items-center gap-1 xs:gap-2 w-full">
           <button
-            className="flex-1 inline-flex items-center justify-center gap-1.5 px-3 py-2 bg-slate-100 dark:bg-slate-700 hover:bg-slate-200 dark:hover:bg-slate-600 rounded-xl text-slate-700 dark:text-slate-200 text-xs font-medium transition-colors"
+            className="flex-1 min-w-0 inline-flex items-center justify-center gap-1 px-1.5 xs:px-2 sm:px-3 py-1.5 xs:py-2 bg-slate-100 dark:bg-slate-700 hover:bg-slate-200 dark:hover:bg-slate-600 rounded-lg xs:rounded-xl text-slate-700 dark:text-slate-200 text-[10px] xs:text-xs font-medium transition-colors"
             onClick={(e) => {
               e.stopPropagation()
               onClick()
             }}
           >
-            <Eye size={14} />
-            <span>Preview</span>
+            <Eye size={12} className="flex-shrink-0" />
+            <span className="truncate">Preview</span>
           </button>
           <button
-            className="flex-1 inline-flex items-center justify-center gap-1.5 px-3 py-2 bg-gradient-to-r from-pink-500 to-rose-500 hover:from-pink-600 hover:to-rose-600 rounded-xl text-white text-xs font-medium transition-all shadow-md shadow-pink-500/20 hover:shadow-lg hover:shadow-pink-500/30"
+            className="flex-1 min-w-0 inline-flex items-center justify-center gap-1 px-1.5 xs:px-2 sm:px-3 py-1.5 xs:py-2 bg-gradient-to-r from-pink-500 to-rose-500 hover:from-pink-600 hover:to-rose-600 rounded-lg xs:rounded-xl text-white text-[10px] xs:text-xs font-medium transition-all shadow-sm shadow-pink-500/20 hover:shadow-md hover:shadow-pink-500/30"
             onClick={(e) => {
               e.stopPropagation()
               onClick()
             }}
           >
-            <Download size={14} />
-            <span>Download</span>
+            <Download size={12} className="flex-shrink-0" />
+            <span className="truncate">Download</span>
           </button>
         </div>
       </div>
