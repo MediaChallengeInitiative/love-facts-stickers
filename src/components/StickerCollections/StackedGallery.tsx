@@ -53,43 +53,69 @@ function CollectionCardStack({
 
   if (visibleStickers.length === 0) {
     return (
-      <div className="flex flex-col items-center h-full">
+      <div className="flex flex-col items-center p-3 sm:p-4 bg-white dark:bg-slate-800/50 rounded-2xl border border-slate-200 dark:border-slate-700">
         {/* Collection Name - Top */}
-        <h3 className="text-sm font-semibold text-slate-900 dark:text-white mb-1 text-center line-clamp-1">
+        <h3 className="text-sm sm:text-base font-semibold text-slate-900 dark:text-white mb-1 text-center line-clamp-1 px-2">
           {collection.name}
         </h3>
-        <p className="text-xs text-slate-500 dark:text-slate-400 mb-4">
+        <p className="text-xs text-slate-500 dark:text-slate-400 mb-3">
           {collection.count} stickers
         </p>
 
-        {/* Empty State - Middle */}
-        <div className="relative w-full h-[180px] sm:h-[200px] flex items-center justify-center mb-4">
-          <div className="w-[120px] h-[160px] sm:w-[140px] sm:h-[180px] rounded-xl bg-slate-200 dark:bg-slate-700/50 flex items-center justify-center">
-            <Sparkles className="w-8 h-8 text-slate-400" />
-          </div>
+        {/* CTA Buttons - Below text */}
+        <div className="flex items-center justify-center gap-2 mb-4 relative z-10">
+          <span className="text-xs text-slate-400 px-3 py-1.5">No stickers yet</span>
         </div>
 
-        {/* Buttons - Bottom */}
-        <div className="flex items-center justify-center gap-2 mt-auto">
-          <span className="text-xs text-slate-400">No stickers available</span>
+        {/* Empty State - Bottom */}
+        <div className="relative w-full h-[140px] xs:h-[160px] sm:h-[180px] flex items-center justify-center">
+          <div className="w-[100px] h-[130px] xs:w-[110px] xs:h-[140px] sm:w-[120px] sm:h-[150px] rounded-xl bg-slate-100 dark:bg-slate-700/50 flex items-center justify-center">
+            <Sparkles className="w-6 h-6 sm:w-8 sm:h-8 text-slate-400" />
+          </div>
         </div>
       </div>
     )
   }
 
   return (
-    <div className="flex flex-col items-center h-full">
+    <div className="flex flex-col items-center p-3 sm:p-4 bg-white dark:bg-slate-800/50 rounded-2xl border border-slate-200 dark:border-slate-700 hover:shadow-lg hover:shadow-slate-200/50 dark:hover:shadow-slate-900/50 transition-shadow">
       {/* Collection Name - Top */}
-      <h3 className="text-sm font-semibold text-slate-900 dark:text-white mb-1 text-center line-clamp-1">
+      <h3 className="text-sm sm:text-base font-semibold text-slate-900 dark:text-white mb-1 text-center line-clamp-1 px-2">
         {collection.name}
       </h3>
-      <p className="text-xs text-slate-500 dark:text-slate-400 mb-4">
+      <p className="text-xs text-slate-500 dark:text-slate-400 mb-2">
         {collection.count} stickers
       </p>
 
-      {/* Fanned Card Stack - Middle */}
+      {/* CTA Buttons - Below text, above cards */}
+      <div className="flex items-center justify-center gap-2 mb-3 relative z-10">
+        <button
+          onClick={(e) => {
+            e.stopPropagation()
+            if (topSticker) onView(topSticker)
+          }}
+          className="flex items-center justify-center gap-1 px-2.5 py-1.5 sm:px-3 sm:py-1.5 bg-slate-100 dark:bg-slate-700 border border-slate-200 dark:border-slate-600 rounded-full text-slate-700 dark:text-slate-200 text-[10px] sm:text-xs font-medium hover:bg-slate-200 dark:hover:bg-slate-600 transition-all"
+          aria-label={`View ${collection.name} sticker`}
+        >
+          <Eye size={12} className="sm:w-3.5 sm:h-3.5" />
+          <span>View</span>
+        </button>
+        <button
+          onClick={(e) => {
+            e.stopPropagation()
+            if (topSticker) onDownload(topSticker)
+          }}
+          className="flex items-center justify-center gap-1 px-2.5 py-1.5 sm:px-3 sm:py-1.5 bg-slate-100 dark:bg-slate-700 border border-slate-200 dark:border-slate-600 rounded-full text-slate-700 dark:text-slate-200 text-[10px] sm:text-xs font-medium hover:bg-slate-200 dark:hover:bg-slate-600 transition-all"
+          aria-label={`Download ${collection.name} sticker`}
+        >
+          <Download size={12} className="sm:w-3.5 sm:h-3.5" />
+          <span>Download</span>
+        </button>
+      </div>
+
+      {/* Fanned Card Stack - Bottom */}
       <div
-        className="relative w-full h-[180px] sm:h-[200px] mb-4"
+        className="relative w-full h-[140px] xs:h-[160px] sm:h-[180px]"
         style={{ perspective: '800px' }}
       >
         <div
@@ -101,10 +127,10 @@ function CollectionCardStack({
             const isHovered = hoveredIndex === index
             const hasError = imageErrors.has(sticker.id)
 
-            // Fan layout with rotation from bottom center
-            const baseRotation = index * 6
-            const xOffset = index * 20
-            const yOffset = Math.abs(index) * 3
+            // Fan layout with rotation from bottom center - smaller values for mobile
+            const baseRotation = index * 5
+            const xOffset = index * 15
+            const yOffset = Math.abs(index) * 2
             const zOffset = -index * 2
 
             return (
@@ -113,11 +139,11 @@ function CollectionCardStack({
                 initial={{ opacity: 0, scale: 0.8 }}
                 animate={{
                   opacity: 1,
-                  scale: isHovered ? 1.08 : 1,
+                  scale: isHovered ? 1.05 : 1,
                   rotateZ: isHovered ? baseRotation * 0.5 : baseRotation,
                   x: xOffset,
-                  y: yOffset + (isHovered ? -10 : 0),
-                  z: zOffset + (isHovered ? 20 : 0),
+                  y: yOffset + (isHovered ? -8 : 0),
+                  z: zOffset + (isHovered ? 15 : 0),
                 }}
                 transition={{
                   type: 'spring',
@@ -125,11 +151,11 @@ function CollectionCardStack({
                   damping: 25,
                 }}
                 className={cn(
-                  'absolute w-[120px] h-[160px] sm:w-[140px] sm:h-[180px]',
-                  'rounded-xl overflow-hidden bg-white dark:bg-slate-800 cursor-pointer',
+                  'absolute w-[100px] h-[130px] xs:w-[110px] xs:h-[140px] sm:w-[120px] sm:h-[150px]',
+                  'rounded-lg sm:rounded-xl overflow-hidden bg-white dark:bg-slate-800 cursor-pointer',
                   'border border-slate-200 dark:border-slate-700',
-                  'shadow-lg',
-                  isHovered && 'shadow-xl shadow-slate-400/30 dark:shadow-black/50'
+                  'shadow-md',
+                  isHovered && 'shadow-lg shadow-slate-400/30 dark:shadow-black/50'
                 )}
                 style={{
                   transformStyle: 'preserve-3d',
@@ -144,11 +170,11 @@ function CollectionCardStack({
                 role="button"
                 aria-label={`View ${sticker.title} sticker`}
               >
-                <div className="relative w-full h-full bg-gradient-to-br from-slate-50 to-slate-100 dark:from-slate-900 dark:to-slate-800 flex items-center justify-center p-3">
+                <div className="relative w-full h-full bg-gradient-to-br from-slate-50 to-slate-100 dark:from-slate-900 dark:to-slate-800 flex items-center justify-center p-2 sm:p-3">
                   {hasError ? (
                     <div className="flex flex-col items-center justify-center gap-1 text-slate-400">
-                      <Sparkles className="w-6 h-6" />
-                      <span className="text-[10px]">Unavailable</span>
+                      <Sparkles className="w-5 h-5 sm:w-6 sm:h-6" />
+                      <span className="text-[8px] sm:text-[10px]">Unavailable</span>
                     </div>
                   ) : (
                     /* eslint-disable-next-line @next/next/no-img-element */
@@ -167,31 +193,11 @@ function CollectionCardStack({
         </div>
       </div>
 
-      {/* CTA Buttons - Bottom */}
-      <div className="flex items-center justify-center gap-2 mt-auto">
-        <button
-          onClick={() => topSticker && onView(topSticker)}
-          className="flex items-center justify-center gap-1.5 px-3 py-1.5 bg-white dark:bg-slate-800 border border-slate-300 dark:border-slate-600 rounded-full text-slate-700 dark:text-slate-200 text-xs font-medium hover:bg-slate-50 dark:hover:bg-slate-700 transition-all shadow-sm hover:shadow-md"
-          aria-label={`View ${collection.name} sticker`}
-        >
-          <Eye size={14} />
-          <span>View</span>
-        </button>
-        <button
-          onClick={() => topSticker && onDownload(topSticker)}
-          className="flex items-center justify-center gap-1.5 px-3 py-1.5 bg-white dark:bg-slate-800 border border-slate-300 dark:border-slate-600 rounded-full text-slate-700 dark:text-slate-200 text-xs font-medium hover:bg-slate-50 dark:hover:bg-slate-700 transition-all shadow-sm hover:shadow-md"
-          aria-label={`Download ${collection.name} sticker`}
-        >
-          <Download size={14} />
-          <span>Download</span>
-        </button>
-      </div>
-
-      {/* Browse Collection Link */}
+      {/* Browse Collection Link - Very Bottom */}
       {onCollectionClick && (
         <button
           onClick={() => onCollectionClick(collection.id)}
-          className="mt-2 text-xs text-pink-500 hover:text-pink-600 dark:text-pink-400 dark:hover:text-pink-300 font-medium transition-colors"
+          className="mt-3 text-xs text-pink-500 hover:text-pink-600 dark:text-pink-400 dark:hover:text-pink-300 font-medium transition-colors relative z-10"
         >
           Browse all →
         </button>
@@ -302,8 +308,8 @@ export function StackedGallery({
 
   return (
     <div className={cn('w-full', className)}>
-      {/* Collections Grid */}
-      <div className="grid grid-cols-1 xs:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-6 md:gap-8">
+      {/* Collections Grid - Responsive for all devices */}
+      <div className="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-3 sm:gap-4 md:gap-6">
         {collections.map((collection) => (
           <CollectionCardStack
             key={collection.id}

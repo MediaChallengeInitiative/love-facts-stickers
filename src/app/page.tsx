@@ -159,12 +159,16 @@ export default function HomePage() {
 
         {isLoading ? (
           // Loading skeleton for collections grid
-          <div className="grid grid-cols-1 xs:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-6 md:gap-8">
+          <div className="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-3 sm:gap-4 md:gap-6">
             {Array.from({ length: 5 }).map((_, i) => (
-              <div key={i} className="flex flex-col items-center">
-                <div className="w-[140px] h-[180px] bg-slate-200 dark:bg-slate-800/50 rounded-xl animate-pulse mb-4" />
-                <div className="h-4 w-24 bg-slate-200 dark:bg-slate-700 rounded mb-2" />
-                <div className="h-3 w-16 bg-slate-200 dark:bg-slate-700 rounded" />
+              <div key={i} className="flex flex-col items-center p-3 sm:p-4 bg-white dark:bg-slate-800/50 rounded-2xl border border-slate-200 dark:border-slate-700">
+                <div className="h-4 w-20 sm:w-24 bg-slate-200 dark:bg-slate-700 rounded mb-1 animate-pulse" />
+                <div className="h-3 w-14 sm:w-16 bg-slate-200 dark:bg-slate-700 rounded mb-3 animate-pulse" />
+                <div className="flex gap-2 mb-3">
+                  <div className="w-14 sm:w-16 h-6 sm:h-7 bg-slate-200 dark:bg-slate-700 rounded-full animate-pulse" />
+                  <div className="w-14 sm:w-16 h-6 sm:h-7 bg-slate-200 dark:bg-slate-700 rounded-full animate-pulse" />
+                </div>
+                <div className="w-[100px] h-[130px] sm:w-[120px] sm:h-[150px] bg-slate-200 dark:bg-slate-700/50 rounded-xl animate-pulse" />
               </div>
             ))}
           </div>
