@@ -158,13 +158,19 @@ export default function HomePage() {
         </div>
 
         {isLoading ? (
-          // Loading skeleton for 3D gallery
-          <div className="flex items-center justify-center py-16">
-            <div className="w-[220px] h-[300px] bg-slate-200 dark:bg-slate-800/50 rounded-2xl animate-pulse" />
+          // Loading skeleton for collections grid
+          <div className="grid grid-cols-1 xs:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-6 md:gap-8">
+            {Array.from({ length: 5 }).map((_, i) => (
+              <div key={i} className="flex flex-col items-center">
+                <div className="w-[140px] h-[180px] bg-slate-200 dark:bg-slate-800/50 rounded-xl animate-pulse mb-4" />
+                <div className="h-4 w-24 bg-slate-200 dark:bg-slate-700 rounded mb-2" />
+                <div className="h-3 w-16 bg-slate-200 dark:bg-slate-700 rounded" />
+              </div>
+            ))}
           </div>
         ) : (
           <StackedGallery
-            stickers={stickers.slice(0, 20).map((s) => ({
+            stickers={stickers.map((s) => ({
               id: s.id,
               title: s.title,
               imageUrl: s.thumbnailUrl,
@@ -194,7 +200,6 @@ export default function HomePage() {
               setSelectedCollection(collectionId)
               galleryRef.current?.scrollIntoView({ behavior: 'smooth' })
             }}
-            maxVisible={7}
           />
         )}
       </section>
