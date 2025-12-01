@@ -2,7 +2,7 @@
 
 import { useState, useCallback, useMemo } from 'react'
 import { motion } from 'framer-motion'
-import { Eye, Download, Sparkles } from 'lucide-react'
+import { Eye, Download, Sparkles, ArrowRight } from 'lucide-react'
 import { StickerModal } from './StickerModal'
 import { cn } from '@/lib/utils'
 
@@ -20,7 +20,7 @@ export interface CollectionInfo {
   count: number
 }
 
-interface CollectionCardStackProps {
+interface CollectionCardProps {
   collection: CollectionInfo
   stickers: GallerySticker[]
   onView: (sticker: GallerySticker) => void
@@ -30,7 +30,7 @@ interface CollectionCardStackProps {
   onImageError: (id: string) => void
 }
 
-function CollectionCardStack({
+function CollectionCard({
   collection,
   stickers,
   onView,
@@ -38,9 +38,9 @@ function CollectionCardStack({
   onCollectionClick,
   imageErrors,
   onImageError,
-}: CollectionCardStackProps) {
-  const [hoveredIndex, setHoveredIndex] = useState<number | null>(null)
-  const maxVisible = 5
+}: CollectionCardProps) {
+  const [isHovered, setIsHovered] = useState(false)
+  const maxVisible = 4
   const visibleStickers = stickers.slice(0, maxVisible)
   const topSticker = visibleStickers[0]
 
@@ -51,158 +51,164 @@ function CollectionCardStack({
     }
   }
 
-  if (visibleStickers.length === 0) {
-    return (
-      <div className="flex flex-col items-center p-3 sm:p-4 bg-white dark:bg-slate-800/50 rounded-2xl border border-slate-200 dark:border-slate-700">
-        {/* Collection Name - Top */}
-        <h3 className="text-sm sm:text-base font-semibold text-slate-900 dark:text-white mb-1 text-center line-clamp-1 px-2">
-          {collection.name}
-        </h3>
-        <p className="text-xs text-slate-500 dark:text-slate-400 mb-3">
-          {collection.count} stickers
-        </p>
-
-        {/* CTA Buttons - Below text */}
-        <div className="flex items-center justify-center gap-2 mb-4 relative z-10">
-          <span className="text-xs text-slate-400 px-3 py-1.5">No stickers yet</span>
+  return (
+    <motion.div
+      className="group relative bg-white dark:bg-slate-800 rounded-2xl border border-slate-200 dark:border-slate-700 overflow-hidden hover:border-pink-300 dark:hover:border-pink-600 transition-all duration-300"
+      whileHover={{ y: -4 }}
+      onMouseEnter={() => setIsHovered(true)}
+      onMouseLeave={() => setIsHovered(false)}
+      style={{ boxShadow: isHovered ? '0 20px 40px -12px rgba(0,0,0,0.15)' : '0 4px 12px -2px rgba(0,0,0,0.08)' }}
+    >
+      {/* Card Image Area - Stacked cards effect */}
+      <div
+        className="relative w-full aspect-[4/3] bg-gradient-to-br from-slate-100 via-slate-50 to-pink-50 dark:from-slate-900 dark:via-slate-800 dark:to-pink-950/20 overflow-hidden cursor-pointer"
+        onClick={() => topSticker && onView(topSticker)}
+        onKeyDown={handleKeyDown}
+        tabIndex={0}
+        role="button"
+        aria-label={`View ${collection.name} collection`}
+      >
+        {/* Decorative background pattern */}
+        <div className="absolute inset-0 opacity-[0.03] dark:opacity-[0.05]">
+          <div
+            className="absolute inset-0"
+            style={{
+              backgroundImage: 'radial-gradient(circle at 1px 1px, currentColor 1px, transparent 0)',
+              backgroundSize: '24px 24px',
+            }}
+          />
         </div>
 
-        {/* Empty State - Bottom */}
-        <div className="relative w-full h-[140px] xs:h-[160px] sm:h-[180px] flex items-center justify-center">
-          <div className="w-[100px] h-[130px] xs:w-[110px] xs:h-[140px] sm:w-[120px] sm:h-[150px] rounded-xl bg-slate-100 dark:bg-slate-700/50 flex items-center justify-center">
-            <Sparkles className="w-6 h-6 sm:w-8 sm:h-8 text-slate-400" />
+        {/* Stacked cards */}
+        {visibleStickers.length > 0 ? (
+          <div className="absolute inset-0 flex items-center justify-center p-4">
+            {visibleStickers.map((sticker, index) => {
+              const hasError = imageErrors.has(sticker.id)
+              const rotation = (index - 1) * 6
+              const offsetX = (index - 1) * 8
+              const offsetY = index * 2
+              const scale = 1 - index * 0.05
+
+              return (
+                <motion.div
+                  key={sticker.id}
+                  className="absolute"
+                  initial={{ opacity: 0, scale: 0.8 }}
+                  animate={{
+                    opacity: 1,
+                    scale: isHovered && index === 0 ? 1.05 : scale,
+                    rotate: isHovered && index === 0 ? 0 : rotation,
+                    x: offsetX,
+                    y: offsetY,
+                  }}
+                  transition={{ type: 'spring', stiffness: 300, damping: 25 }}
+                  style={{ zIndex: visibleStickers.length - index }}
+                >
+                  <div
+                    className={cn(
+                      "w-20 h-20 xs:w-24 xs:h-24 sm:w-28 sm:h-28 rounded-xl bg-white dark:bg-slate-700 shadow-lg border border-slate-200/50 dark:border-slate-600/50 flex items-center justify-center p-2 overflow-hidden",
+                      index === 0 && isHovered && "shadow-xl ring-2 ring-pink-400/30"
+                    )}
+                  >
+                    {hasError ? (
+                      <Sparkles className="w-6 h-6 text-slate-300 dark:text-slate-500" />
+                    ) : (
+                      /* eslint-disable-next-line @next/next/no-img-element */
+                      <img
+                        src={sticker.imageUrl}
+                        alt={sticker.title}
+                        className="w-full h-full object-contain"
+                        loading={index === 0 ? 'eager' : 'lazy'}
+                        onError={() => onImageError(sticker.id)}
+                      />
+                    )}
+                  </div>
+                </motion.div>
+              )
+            })}
+          </div>
+        ) : (
+          <div className="absolute inset-0 flex items-center justify-center">
+            <div className="w-20 h-20 rounded-xl bg-slate-200/50 dark:bg-slate-700/50 flex items-center justify-center">
+              <Sparkles className="w-8 h-8 text-slate-300 dark:text-slate-600" />
+            </div>
+          </div>
+        )}
+
+        {/* Hover overlay with quick actions */}
+        <motion.div
+          className="absolute inset-0 bg-gradient-to-t from-black/60 via-black/20 to-transparent flex items-end justify-center pb-3 opacity-0 group-hover:opacity-100 transition-opacity duration-200"
+          initial={false}
+        >
+          <div className="flex items-center gap-2">
+            <button
+              onClick={(e) => {
+                e.stopPropagation()
+                if (topSticker) onView(topSticker)
+              }}
+              className="flex items-center gap-1.5 px-3 py-1.5 bg-white/95 backdrop-blur-sm rounded-full text-slate-800 text-xs font-medium hover:bg-white transition-colors shadow-lg"
+            >
+              <Eye size={14} />
+              <span>View</span>
+            </button>
+            <button
+              onClick={(e) => {
+                e.stopPropagation()
+                if (topSticker) onDownload(topSticker)
+              }}
+              className="flex items-center gap-1.5 px-3 py-1.5 bg-pink-500 rounded-full text-white text-xs font-medium hover:bg-pink-600 transition-colors shadow-lg"
+            >
+              <Download size={14} />
+              <span>Download</span>
+            </button>
+          </div>
+        </motion.div>
+      </div>
+
+      {/* Card Content */}
+      <div className="p-3 sm:p-4">
+        {/* Collection info */}
+        <div className="flex items-start justify-between gap-2 mb-2">
+          <div className="min-w-0 flex-1">
+            <h3 className="text-sm sm:text-base font-semibold text-slate-900 dark:text-white truncate">
+              {collection.name}
+            </h3>
+            <p className="text-xs text-slate-500 dark:text-slate-400">
+              {collection.count} sticker{collection.count !== 1 ? 's' : ''}
+            </p>
           </div>
         </div>
-      </div>
-    )
-  }
 
-  return (
-    <div className="flex flex-col items-center p-3 sm:p-4 bg-white dark:bg-slate-800/50 rounded-2xl border border-slate-200 dark:border-slate-700 hover:shadow-lg hover:shadow-slate-200/50 dark:hover:shadow-slate-900/50 transition-shadow">
-      {/* Collection Name - Top */}
-      <h3 className="text-sm sm:text-base font-semibold text-slate-900 dark:text-white mb-1 text-center line-clamp-1 px-2">
-        {collection.name}
-      </h3>
-      <p className="text-xs text-slate-500 dark:text-slate-400 mb-2">
-        {collection.count} stickers
-      </p>
-
-      {/* CTA Buttons - Below text, above cards */}
-      <div className="flex items-center justify-center gap-2 mb-3 relative z-10">
-        <button
-          onClick={(e) => {
-            e.stopPropagation()
-            if (topSticker) onView(topSticker)
-          }}
-          className="flex items-center justify-center gap-1 px-2.5 py-1.5 sm:px-3 sm:py-1.5 bg-slate-100 dark:bg-slate-700 border border-slate-200 dark:border-slate-600 rounded-full text-slate-700 dark:text-slate-200 text-[10px] sm:text-xs font-medium hover:bg-slate-200 dark:hover:bg-slate-600 transition-all"
-          aria-label={`View ${collection.name} sticker`}
-        >
-          <Eye size={12} className="sm:w-3.5 sm:h-3.5" />
-          <span>View</span>
-        </button>
-        <button
-          onClick={(e) => {
-            e.stopPropagation()
-            if (topSticker) onDownload(topSticker)
-          }}
-          className="flex items-center justify-center gap-1 px-2.5 py-1.5 sm:px-3 sm:py-1.5 bg-slate-100 dark:bg-slate-700 border border-slate-200 dark:border-slate-600 rounded-full text-slate-700 dark:text-slate-200 text-[10px] sm:text-xs font-medium hover:bg-slate-200 dark:hover:bg-slate-600 transition-all"
-          aria-label={`Download ${collection.name} sticker`}
-        >
-          <Download size={12} className="sm:w-3.5 sm:h-3.5" />
-          <span>Download</span>
-        </button>
-      </div>
-
-      {/* Fanned Card Stack - Bottom */}
-      <div
-        className="relative w-full h-[140px] xs:h-[160px] sm:h-[180px]"
-        style={{ perspective: '800px' }}
-      >
-        <div
-          className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2"
-          style={{ transformStyle: 'preserve-3d' }}
-        >
-          {visibleStickers.map((sticker, index) => {
-            const totalCards = visibleStickers.length
-            const isHovered = hoveredIndex === index
-            const hasError = imageErrors.has(sticker.id)
-
-            // Fan layout with rotation from bottom center - smaller values for mobile
-            const baseRotation = index * 5
-            const xOffset = index * 15
-            const yOffset = Math.abs(index) * 2
-            const zOffset = -index * 2
-
-            return (
-              <motion.div
-                key={sticker.id}
-                initial={{ opacity: 0, scale: 0.8 }}
-                animate={{
-                  opacity: 1,
-                  scale: isHovered ? 1.05 : 1,
-                  rotateZ: isHovered ? baseRotation * 0.5 : baseRotation,
-                  x: xOffset,
-                  y: yOffset + (isHovered ? -8 : 0),
-                  z: zOffset + (isHovered ? 15 : 0),
-                }}
-                transition={{
-                  type: 'spring',
-                  stiffness: 300,
-                  damping: 25,
-                }}
-                className={cn(
-                  'absolute w-[100px] h-[130px] xs:w-[110px] xs:h-[140px] sm:w-[120px] sm:h-[150px]',
-                  'rounded-lg sm:rounded-xl overflow-hidden bg-white dark:bg-slate-800 cursor-pointer',
-                  'border border-slate-200 dark:border-slate-700',
-                  'shadow-md',
-                  isHovered && 'shadow-lg shadow-slate-400/30 dark:shadow-black/50'
-                )}
-                style={{
-                  transformStyle: 'preserve-3d',
-                  transformOrigin: 'center bottom',
-                  zIndex: totalCards - index,
-                }}
-                onMouseEnter={() => setHoveredIndex(index)}
-                onMouseLeave={() => setHoveredIndex(null)}
-                onClick={() => onView(sticker)}
-                onKeyDown={handleKeyDown}
-                tabIndex={index === 0 ? 0 : -1}
-                role="button"
-                aria-label={`View ${sticker.title} sticker`}
-              >
-                <div className="relative w-full h-full bg-gradient-to-br from-slate-50 to-slate-100 dark:from-slate-900 dark:to-slate-800 flex items-center justify-center p-2 sm:p-3">
-                  {hasError ? (
-                    <div className="flex flex-col items-center justify-center gap-1 text-slate-400">
-                      <Sparkles className="w-5 h-5 sm:w-6 sm:h-6" />
-                      <span className="text-[8px] sm:text-[10px]">Unavailable</span>
-                    </div>
-                  ) : (
-                    /* eslint-disable-next-line @next/next/no-img-element */
-                    <img
-                      src={sticker.imageUrl}
-                      alt={sticker.title}
-                      className="max-w-full max-h-full object-contain drop-shadow-md"
-                      loading={index < 2 ? 'eager' : 'lazy'}
-                      onError={() => onImageError(sticker.id)}
-                    />
-                  )}
-                </div>
-              </motion.div>
-            )
-          })}
+        {/* Action buttons - always visible on mobile */}
+        <div className="flex items-center gap-2">
+          <button
+            onClick={() => topSticker && onView(topSticker)}
+            className="flex-1 flex items-center justify-center gap-1.5 py-2 bg-slate-100 dark:bg-slate-700 hover:bg-slate-200 dark:hover:bg-slate-600 rounded-lg text-slate-700 dark:text-slate-200 text-xs font-medium transition-colors"
+          >
+            <Eye size={14} />
+            <span>Preview</span>
+          </button>
+          <button
+            onClick={() => topSticker && onDownload(topSticker)}
+            className="flex-1 flex items-center justify-center gap-1.5 py-2 bg-gradient-to-r from-pink-500 to-rose-500 hover:from-pink-600 hover:to-rose-600 rounded-lg text-white text-xs font-medium transition-colors shadow-sm"
+          >
+            <Download size={14} />
+            <span>Get</span>
+          </button>
         </div>
-      </div>
 
-      {/* Browse Collection Link - Very Bottom */}
-      {onCollectionClick && (
-        <button
-          onClick={() => onCollectionClick(collection.id)}
-          className="mt-3 text-xs text-pink-500 hover:text-pink-600 dark:text-pink-400 dark:hover:text-pink-300 font-medium transition-colors relative z-10"
-        >
-          Browse all →
-        </button>
-      )}
-    </div>
+        {/* Browse all link */}
+        {onCollectionClick && (
+          <button
+            onClick={() => onCollectionClick(collection.id)}
+            className="w-full mt-2 flex items-center justify-center gap-1 py-1.5 text-xs text-pink-500 hover:text-pink-600 dark:text-pink-400 dark:hover:text-pink-300 font-medium transition-colors group/link"
+          >
+            <span>Browse all</span>
+            <ArrowRight size={12} className="group-hover/link:translate-x-0.5 transition-transform" />
+          </button>
+        )}
+      </div>
+    </motion.div>
   )
 }
 
@@ -297,21 +303,21 @@ export function StackedGallery({
   if (stickers.length === 0 && collections.length === 0) {
     return (
       <div className="flex flex-col items-center justify-center py-16 text-center">
-        <div className="w-24 h-24 mb-4 rounded-full bg-slate-200 dark:bg-slate-700/50 flex items-center justify-center">
-          <Sparkles className="w-12 h-12 text-slate-400" />
+        <div className="w-20 h-20 mb-4 rounded-full bg-gradient-to-br from-pink-100 to-rose-100 dark:from-pink-900/30 dark:to-rose-900/30 flex items-center justify-center">
+          <Sparkles className="w-10 h-10 text-pink-400 dark:text-pink-500" />
         </div>
         <h3 className="text-lg font-semibold text-slate-900 dark:text-white mb-2">No stickers found</h3>
-        <p className="text-slate-500 dark:text-slate-400">Check back later for new stickers!</p>
+        <p className="text-slate-500 dark:text-slate-400 text-sm">Check back later for new stickers!</p>
       </div>
     )
   }
 
   return (
     <div className={cn('w-full', className)}>
-      {/* Collections Grid - Responsive for all devices */}
-      <div className="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-3 sm:gap-4 md:gap-6">
+      {/* Collections Grid - Fully responsive */}
+      <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-3 sm:gap-4 lg:gap-5">
         {collections.map((collection) => (
-          <CollectionCardStack
+          <CollectionCard
             key={collection.id}
             collection={collection}
             stickers={stickersByCollection.get(collection.id) || []}
