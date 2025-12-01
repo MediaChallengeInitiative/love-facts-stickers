@@ -1,8 +1,8 @@
 'use client'
 
 import { useState, useCallback, useMemo } from 'react'
-import { motion, AnimatePresence } from 'framer-motion'
-import { Eye, Download, ChevronLeft, ChevronRight, Sparkles } from 'lucide-react'
+import { motion } from 'framer-motion'
+import { Eye, Download, Sparkles } from 'lucide-react'
 import { StickerModal } from './StickerModal'
 import { cn } from '@/lib/utils'
 
@@ -14,75 +14,84 @@ export interface GallerySticker {
   collectionName?: string
 }
 
+export interface CollectionInfo {
+  id: string
+  name: string
+  count: number
+}
+
 interface StackedGalleryProps {
   stickers: GallerySticker[]
+  collections?: CollectionInfo[]
   onView?: (id: string) => void
   onDownload?: (id: string) => void
+  onCollectionClick?: (collectionId: string) => void
   maxVisible?: number
   className?: string
 }
 
 export function StackedGallery({
   stickers,
+  collections = [],
   onView,
   onDownload,
-  maxVisible = 5,
+  onCollectionClick,
+  maxVisible = 7,
   className,
 }: StackedGalleryProps) {
-  const [activeIndex, setActiveIndex] = useState(0)
   const [hoveredIndex, setHoveredIndex] = useState<number | null>(null)
-  const [focusedIndex, setFocusedIndex] = useState<number | null>(null)
   const [modalOpen, setModalOpen] = useState(false)
   const [selectedSticker, setSelectedSticker] = useState<GallerySticker | null>(null)
   const [imageErrors, setImageErrors] = useState<Set<string>>(new Set())
 
-  // Get visible stickers based on active index
+  // Get visible stickers for the fan
   const visibleStickers = useMemo(() => {
-    if (stickers.length === 0) return []
-    const visible: Array<{ sticker: GallerySticker; originalIndex: number }> = []
-    for (let i = 0; i < Math.min(maxVisible, stickers.length); i++) {
-      const index = (activeIndex + i) % stickers.length
-      visible.push({ sticker: stickers[index], originalIndex: index })
-    }
-    return visible
-  }, [stickers, activeIndex, maxVisible])
+    return stickers.slice(0, maxVisible)
+  }, [stickers, maxVisible])
+
+  // Get the top (front) sticker
+  const topSticker = visibleStickers[0]
 
   const handleView = useCallback(
-    async (sticker: GallerySticker) => {
-      setSelectedSticker(sticker)
+    async (sticker?: GallerySticker) => {
+      const stickerToView = sticker || topSticker
+      if (!stickerToView) return
+
+      setSelectedSticker(stickerToView)
       setModalOpen(true)
 
       // Track view
       if (onView) {
-        onView(sticker.id)
+        onView(stickerToView.id)
       } else {
         try {
           await fetch('/api/stickers/view', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ id: sticker.id }),
+            body: JSON.stringify({ id: stickerToView.id }),
           })
         } catch (error) {
           console.error('Failed to track view:', error)
         }
       }
     },
-    [onView]
+    [onView, topSticker]
   )
 
   const handleDownload = useCallback(
-    async (sticker: GallerySticker, e?: React.MouseEvent) => {
-      e?.stopPropagation()
+    async (sticker?: GallerySticker) => {
+      const stickerToDownload = sticker || topSticker
+      if (!stickerToDownload) return
 
       // Track download
       if (onDownload) {
-        onDownload(sticker.id)
+        onDownload(stickerToDownload.id)
       } else {
         try {
           await fetch('/api/stickers/download', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ id: sticker.id }),
+            body: JSON.stringify({ id: stickerToDownload.id }),
           })
         } catch (error) {
           console.error('Failed to track download:', error)
@@ -91,32 +100,24 @@ export function StackedGallery({
 
       // Trigger download
       const link = document.createElement('a')
-      link.href = sticker.imageUrl
-      link.download = `${sticker.title.replace(/\s+/g, '-').toLowerCase()}.png`
+      link.href = stickerToDownload.imageUrl
+      link.download = `${stickerToDownload.title.replace(/\s+/g, '-').toLowerCase()}.png`
       document.body.appendChild(link)
       link.click()
       document.body.removeChild(link)
     },
-    [onDownload]
+    [onDownload, topSticker]
   )
 
   const handleKeyDown = useCallback(
-    (e: React.KeyboardEvent, sticker: GallerySticker) => {
+    (e: React.KeyboardEvent) => {
       if (e.key === 'Enter' || e.key === ' ') {
         e.preventDefault()
-        handleView(sticker)
+        handleView()
       }
     },
     [handleView]
   )
-
-  const handlePrev = () => {
-    setActiveIndex((prev) => (prev - 1 + stickers.length) % stickers.length)
-  }
-
-  const handleNext = () => {
-    setActiveIndex((prev) => (prev + 1) % stickers.length)
-  }
 
   const handleImageError = (id: string) => {
     setImageErrors((prev) => new Set(prev).add(id))
@@ -136,229 +137,74 @@ export function StackedGallery({
 
   return (
     <div className={cn('w-full', className)}>
-      {/* Desktop 3D Stacked View */}
-      <div className="hidden md:block">
+      {/* Fanned Card Stack */}
+      <div className="flex flex-col items-center">
+        {/* Card Stack Container */}
         <div
-          className="relative mx-auto flex items-center justify-center"
-          style={{
-            perspective: '1000px',
-            perspectiveOrigin: 'center center',
-            height: '480px',
-          }}
+          className="relative w-full max-w-[500px] h-[320px] sm:h-[380px] md:h-[420px] mx-auto mb-8"
+          style={{ perspective: '1200px' }}
         >
-          {/* Navigation buttons */}
-          <button
-            onClick={handlePrev}
-            className="absolute left-0 z-30 p-3 bg-white dark:bg-slate-800 rounded-full shadow-lg hover:shadow-xl transition-all text-slate-700 dark:text-slate-200 hover:scale-110"
-            aria-label="Previous sticker"
+          <div
+            className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2"
+            style={{ transformStyle: 'preserve-3d' }}
           >
-            <ChevronLeft size={24} />
-          </button>
+            {visibleStickers.map((sticker, index) => {
+              const totalCards = visibleStickers.length
+              const isHovered = hoveredIndex === index
+              const hasError = imageErrors.has(sticker.id)
 
-          <div className="relative w-[280px] h-[380px]">
-            <AnimatePresence mode="popLayout">
-              {visibleStickers.map(({ sticker }, stackIndex) => {
-                const isHovered = hoveredIndex === stackIndex
-                const isFocused = focusedIndex === stackIndex
-                const isActive = isHovered || isFocused
-                const hasError = imageErrors.has(sticker.id)
+              // Fan layout: cards spread from left to right with rotation
+              // Center card (index 0) is at the front, others fan out behind
+              const centerIndex = 0
+              const offset = index - centerIndex
 
-                // Calculate 3D transforms for stacking effect
-                const zOffset = -stackIndex * 30
-                const yOffset = stackIndex * 8
-                const rotation = stackIndex * 2
-                const scale = 1 - stackIndex * 0.05
+              // Calculate rotation and position for fan effect
+              // Cards on the left rotate counter-clockwise, cards on the right rotate clockwise
+              const baseRotation = offset * 8 // degrees per card
+              const xOffset = offset * 35 // horizontal spread
+              const yOffset = Math.abs(offset) * 5 // slight vertical offset for depth
+              const zOffset = -index * 2 // z-depth (cards behind are further back)
 
-                return (
-                  <motion.div
-                    key={sticker.id}
-                    layout
-                    initial={{ opacity: 0, scale: 0.8 }}
-                    animate={{
-                      opacity: 1 - stackIndex * 0.15,
-                      scale: isActive && stackIndex === 0 ? 1.05 : scale,
-                      rotateY: rotation,
-                      z: isActive && stackIndex === 0 ? 60 : zOffset,
-                      y: yOffset,
-                    }}
-                    exit={{ opacity: 0, scale: 0.8 }}
-                    transition={{
-                      type: 'spring',
-                      stiffness: 300,
-                      damping: 25,
-                    }}
-                    className={cn(
-                      'absolute inset-0 w-[280px] h-[380px] rounded-2xl overflow-hidden bg-white dark:bg-slate-800 cursor-pointer',
-                      'border border-slate-200 dark:border-slate-700',
-                      isActive && stackIndex === 0 && 'shadow-2xl shadow-pink-500/20',
-                      !isActive && 'shadow-xl'
-                    )}
-                    style={{
-                      transformStyle: 'preserve-3d',
-                      zIndex: maxVisible - stackIndex,
-                    }}
-                    onMouseEnter={() => setHoveredIndex(stackIndex)}
-                    onMouseLeave={() => setHoveredIndex(null)}
-                    onFocus={() => setFocusedIndex(stackIndex)}
-                    onBlur={() => setFocusedIndex(null)}
-                    onClick={() => stackIndex === 0 && handleView(sticker)}
-                    onKeyDown={(e) => stackIndex === 0 && handleKeyDown(e, sticker)}
-                    tabIndex={stackIndex === 0 ? 0 : -1}
-                    role="button"
-                    aria-label={`View ${sticker.title} sticker`}
-                  >
-                    {/* Collection tag */}
-                    {sticker.collectionName && (
-                      <div className="absolute top-3 left-3 z-10">
-                        <span className="inline-flex items-center px-2.5 py-1 bg-white/90 dark:bg-slate-800/90 backdrop-blur-sm rounded-full text-[10px] font-medium text-slate-600 dark:text-slate-300 shadow-sm">
-                          {sticker.collectionName}
-                        </span>
-                      </div>
-                    )}
-
-                    {/* Image container */}
-                    <div className="relative h-[260px] bg-gradient-to-br from-slate-50 to-slate-100 dark:from-slate-900 dark:to-slate-800 flex items-center justify-center p-6">
-                      {/* Decorative pattern */}
-                      <div className="absolute inset-0 opacity-30 dark:opacity-20">
-                        <div
-                          className="absolute inset-0"
-                          style={{
-                            backgroundImage: 'radial-gradient(circle at 2px 2px, currentColor 1px, transparent 0)',
-                            backgroundSize: '16px 16px',
-                          }}
-                        />
-                      </div>
-
-                      {hasError ? (
-                        <div className="flex flex-col items-center justify-center gap-2 text-slate-400">
-                          <Sparkles className="w-8 h-8" />
-                          <span className="text-xs">Image unavailable</span>
-                        </div>
-                      ) : (
-                        /* eslint-disable-next-line @next/next/no-img-element */
-                        <img
-                          src={sticker.imageUrl}
-                          alt={sticker.title}
-                          className={cn(
-                            'relative max-w-full max-h-full object-contain transition-transform duration-300',
-                            isActive && stackIndex === 0 && 'scale-110'
-                          )}
-                          loading={stackIndex === 0 ? 'eager' : 'lazy'}
-                          onError={() => handleImageError(sticker.id)}
-                        />
-                      )}
-                    </div>
-
-                    {/* Card footer */}
-                    <div className="p-4">
-                      <h3 className="text-sm font-semibold text-slate-900 dark:text-white line-clamp-1 mb-3">
-                        {sticker.title}
-                      </h3>
-
-                      {/* CTA Buttons */}
-                      <div className="flex items-center gap-2">
-                        <button
-                          onClick={(e) => {
-                            e.stopPropagation()
-                            handleView(sticker)
-                          }}
-                          className="flex-1 flex items-center justify-center gap-2 px-3 py-2 border border-slate-300 dark:border-slate-600 rounded-lg text-slate-700 dark:text-slate-200 text-xs font-medium hover:bg-slate-50 dark:hover:bg-slate-700 transition-colors"
-                          aria-label={`View ${sticker.title} sticker`}
-                        >
-                          <Eye size={14} />
-                          <span>View</span>
-                        </button>
-                        <button
-                          onClick={(e) => handleDownload(sticker, e)}
-                          className="flex-1 flex items-center justify-center gap-2 px-3 py-2 bg-slate-800 dark:bg-slate-700 hover:bg-slate-900 dark:hover:bg-slate-600 rounded-lg text-white text-xs font-medium transition-colors"
-                          aria-label={`Download ${sticker.title} sticker`}
-                        >
-                          <Download size={14} />
-                          <span>Download</span>
-                        </button>
-                      </div>
-                    </div>
-                  </motion.div>
-                )
-              })}
-            </AnimatePresence>
-          </div>
-
-          <button
-            onClick={handleNext}
-            className="absolute right-0 z-30 p-3 bg-white dark:bg-slate-800 rounded-full shadow-lg hover:shadow-xl transition-all text-slate-700 dark:text-slate-200 hover:scale-110"
-            aria-label="Next sticker"
-          >
-            <ChevronRight size={24} />
-          </button>
-        </div>
-
-        {/* Stack indicator */}
-        <div className="flex items-center justify-center gap-2 mt-6">
-          {stickers.slice(0, Math.min(10, stickers.length)).map((_, index) => (
-            <button
-              key={index}
-              onClick={() => setActiveIndex(index)}
-              className={cn(
-                'w-2 h-2 rounded-full transition-all',
-                activeIndex === index
-                  ? 'bg-pink-500 w-6'
-                  : 'bg-slate-300 dark:bg-slate-600 hover:bg-slate-400'
-              )}
-              aria-label={`Go to sticker ${index + 1}`}
-            />
-          ))}
-          {stickers.length > 10 && (
-            <span className="text-xs text-slate-500 dark:text-slate-400 ml-2">
-              +{stickers.length - 10} more
-            </span>
-          )}
-        </div>
-      </div>
-
-      {/* Mobile Single Card View with Swipe */}
-      <div className="md:hidden">
-        <div className="relative px-4">
-          <AnimatePresence mode="wait">
-            {stickers[activeIndex] && (
-              <motion.div
-                key={stickers[activeIndex].id}
-                initial={{ opacity: 0, x: 50 }}
-                animate={{ opacity: 1, x: 0 }}
-                exit={{ opacity: 0, x: -50 }}
-                transition={{ duration: 0.2 }}
-                className="w-full max-w-[320px] mx-auto"
-              >
-                <div
-                  className="rounded-2xl overflow-hidden bg-white dark:bg-slate-800 shadow-xl border border-slate-200 dark:border-slate-700"
-                  onClick={() => handleView(stickers[activeIndex])}
-                  onKeyDown={(e) => handleKeyDown(e, stickers[activeIndex])}
-                  tabIndex={0}
-                  role="button"
-                  aria-label={`View ${stickers[activeIndex].title} sticker`}
-                >
-                  {/* Collection tag */}
-                  {stickers[activeIndex].collectionName && (
-                    <div className="absolute top-3 left-3 z-10">
-                      <span className="inline-flex items-center px-2.5 py-1 bg-white/90 dark:bg-slate-800/90 backdrop-blur-sm rounded-full text-[10px] font-medium text-slate-600 dark:text-slate-300 shadow-sm">
-                        {stickers[activeIndex].collectionName}
-                      </span>
-                    </div>
+              return (
+                <motion.div
+                  key={sticker.id}
+                  initial={{ opacity: 0, scale: 0.8, rotateZ: baseRotation }}
+                  animate={{
+                    opacity: 1,
+                    scale: isHovered ? 1.05 : 1,
+                    rotateZ: isHovered ? baseRotation * 0.5 : baseRotation,
+                    x: xOffset,
+                    y: yOffset + (isHovered ? -15 : 0),
+                    z: zOffset + (isHovered ? 30 : 0),
+                  }}
+                  transition={{
+                    type: 'spring',
+                    stiffness: 300,
+                    damping: 25,
+                  }}
+                  className={cn(
+                    'absolute w-[180px] h-[240px] sm:w-[200px] sm:h-[280px] md:w-[220px] md:h-[300px]',
+                    'rounded-2xl overflow-hidden bg-white dark:bg-slate-800 cursor-pointer',
+                    'border border-slate-200 dark:border-slate-700',
+                    'shadow-xl',
+                    isHovered && 'shadow-2xl shadow-slate-400/30 dark:shadow-black/50'
                   )}
-
-                  {/* Image */}
-                  <div className="relative aspect-square bg-gradient-to-br from-slate-50 to-slate-100 dark:from-slate-900 dark:to-slate-800 flex items-center justify-center p-6">
-                    <div className="absolute inset-0 opacity-30 dark:opacity-20">
-                      <div
-                        className="absolute inset-0"
-                        style={{
-                          backgroundImage: 'radial-gradient(circle at 2px 2px, currentColor 1px, transparent 0)',
-                          backgroundSize: '16px 16px',
-                        }}
-                      />
-                    </div>
-
-                    {imageErrors.has(stickers[activeIndex].id) ? (
+                  style={{
+                    transformStyle: 'preserve-3d',
+                    transformOrigin: 'center bottom',
+                    zIndex: totalCards - index,
+                  }}
+                  onMouseEnter={() => setHoveredIndex(index)}
+                  onMouseLeave={() => setHoveredIndex(null)}
+                  onClick={() => handleView(sticker)}
+                  onKeyDown={handleKeyDown}
+                  tabIndex={index === 0 ? 0 : -1}
+                  role="button"
+                  aria-label={`View ${sticker.title} sticker`}
+                >
+                  {/* Card content */}
+                  <div className="relative w-full h-full bg-gradient-to-br from-slate-50 to-slate-100 dark:from-slate-900 dark:to-slate-800 flex items-center justify-center p-4 sm:p-6">
+                    {hasError ? (
                       <div className="flex flex-col items-center justify-center gap-2 text-slate-400">
                         <Sparkles className="w-8 h-8" />
                         <span className="text-xs">Image unavailable</span>
@@ -366,71 +212,64 @@ export function StackedGallery({
                     ) : (
                       /* eslint-disable-next-line @next/next/no-img-element */
                       <img
-                        src={stickers[activeIndex].imageUrl}
-                        alt={stickers[activeIndex].title}
-                        className="relative max-w-full max-h-full object-contain"
-                        loading="lazy"
-                        onError={() => handleImageError(stickers[activeIndex].id)}
+                        src={sticker.imageUrl}
+                        alt={sticker.title}
+                        className="max-w-full max-h-full object-contain drop-shadow-lg"
+                        loading={index < 3 ? 'eager' : 'lazy'}
+                        onError={() => handleImageError(sticker.id)}
                       />
                     )}
                   </div>
-
-                  {/* Footer */}
-                  <div className="p-4">
-                    <h3 className="text-sm font-semibold text-slate-900 dark:text-white line-clamp-1 mb-3">
-                      {stickers[activeIndex].title}
-                    </h3>
-
-                    <div className="flex items-center gap-2">
-                      <button
-                        onClick={(e) => {
-                          e.stopPropagation()
-                          handleView(stickers[activeIndex])
-                        }}
-                        className="flex-1 flex items-center justify-center gap-2 px-3 py-2.5 border border-slate-300 dark:border-slate-600 rounded-xl text-slate-700 dark:text-slate-200 text-sm font-medium hover:bg-slate-50 dark:hover:bg-slate-700 transition-colors"
-                        aria-label={`View ${stickers[activeIndex].title} sticker`}
-                      >
-                        <Eye size={16} />
-                        <span>View</span>
-                      </button>
-                      <button
-                        onClick={(e) => handleDownload(stickers[activeIndex], e)}
-                        className="flex-1 flex items-center justify-center gap-2 px-3 py-2.5 bg-slate-800 dark:bg-slate-700 hover:bg-slate-900 dark:hover:bg-slate-600 rounded-xl text-white text-sm font-medium transition-colors"
-                        aria-label={`Download ${stickers[activeIndex].title} sticker`}
-                      >
-                        <Download size={16} />
-                        <span>Download</span>
-                      </button>
-                    </div>
-                  </div>
-                </div>
-              </motion.div>
-            )}
-          </AnimatePresence>
-
-          {/* Mobile navigation */}
-          <div className="flex items-center justify-center gap-4 mt-6">
-            <button
-              onClick={handlePrev}
-              className="p-2 bg-white dark:bg-slate-800 rounded-full shadow-lg text-slate-700 dark:text-slate-200"
-              aria-label="Previous sticker"
-            >
-              <ChevronLeft size={20} />
-            </button>
-
-            <span className="text-sm text-slate-600 dark:text-slate-400">
-              {activeIndex + 1} / {stickers.length}
-            </span>
-
-            <button
-              onClick={handleNext}
-              className="p-2 bg-white dark:bg-slate-800 rounded-full shadow-lg text-slate-700 dark:text-slate-200"
-              aria-label="Next sticker"
-            >
-              <ChevronRight size={20} />
-            </button>
+                </motion.div>
+              )
+            })}
           </div>
         </div>
+
+        {/* CTA Buttons - Below the card stack */}
+        <div className="flex items-center justify-center gap-4 mb-12">
+          <button
+            onClick={() => handleView()}
+            className="flex items-center justify-center gap-2 px-6 py-3 bg-white dark:bg-slate-800 border border-slate-300 dark:border-slate-600 rounded-full text-slate-700 dark:text-slate-200 text-sm font-medium hover:bg-slate-50 dark:hover:bg-slate-700 transition-all shadow-lg hover:shadow-xl"
+            aria-label="View sticker"
+          >
+            <Eye size={18} />
+            <span>View</span>
+          </button>
+          <button
+            onClick={() => handleDownload()}
+            className="flex items-center justify-center gap-2 px-6 py-3 bg-white dark:bg-slate-800 border border-slate-300 dark:border-slate-600 rounded-full text-slate-700 dark:text-slate-200 text-sm font-medium hover:bg-slate-50 dark:hover:bg-slate-700 transition-all shadow-lg hover:shadow-xl"
+            aria-label="Download sticker"
+          >
+            <Download size={18} />
+            <span>Download</span>
+          </button>
+        </div>
+
+        {/* Collections List */}
+        {collections.length > 0 && (
+          <div className="w-full max-w-4xl mx-auto">
+            <h3 className="text-lg font-semibold text-slate-900 dark:text-white mb-4 text-center">
+              Browse by Collection
+            </h3>
+            <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-3">
+              {collections.map((collection) => (
+                <button
+                  key={collection.id}
+                  onClick={() => onCollectionClick?.(collection.id)}
+                  className="group flex flex-col items-center justify-center p-4 bg-white dark:bg-slate-800 rounded-xl border border-slate-200 dark:border-slate-700 hover:border-pink-400 dark:hover:border-pink-500 hover:shadow-lg hover:shadow-pink-500/10 transition-all"
+                >
+                  <span className="text-sm font-medium text-slate-900 dark:text-white group-hover:text-pink-600 dark:group-hover:text-pink-400 transition-colors text-center line-clamp-2">
+                    {collection.name}
+                  </span>
+                  <span className="text-xs text-slate-500 dark:text-slate-400 mt-1">
+                    {collection.count} stickers
+                  </span>
+                </button>
+              ))}
+            </div>
+          </div>
+        )}
       </div>
 
       {/* Preview Modal */}

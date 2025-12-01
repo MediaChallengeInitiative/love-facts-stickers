@@ -160,7 +160,7 @@ export default function HomePage() {
         {isLoading ? (
           // Loading skeleton for 3D gallery
           <div className="flex items-center justify-center py-16">
-            <div className="w-[280px] h-[380px] bg-slate-200 dark:bg-slate-800/50 rounded-2xl animate-pulse" />
+            <div className="w-[220px] h-[300px] bg-slate-200 dark:bg-slate-800/50 rounded-2xl animate-pulse" />
           </div>
         ) : (
           <StackedGallery
@@ -170,6 +170,11 @@ export default function HomePage() {
               imageUrl: s.thumbnailUrl,
               collectionId: s.collectionId,
               collectionName: s.collection?.name,
+            }))}
+            collections={collections.map((c) => ({
+              id: c.id,
+              name: c.name,
+              count: c._count?.stickers || 0,
             }))}
             onView={(id) => {
               const sticker = stickers.find((s) => s.id === id)
@@ -185,7 +190,11 @@ export default function HomePage() {
                 body: JSON.stringify({ stickerId: id, isAnonymous: true, downloadType: 'single' }),
               }).catch(console.error)
             }}
-            maxVisible={5}
+            onCollectionClick={(collectionId) => {
+              setSelectedCollection(collectionId)
+              galleryRef.current?.scrollIntoView({ behavior: 'smooth' })
+            }}
+            maxVisible={7}
           />
         )}
       </section>
