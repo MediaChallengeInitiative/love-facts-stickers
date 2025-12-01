@@ -1,15 +1,14 @@
 import { NextResponse } from 'next/server'
 import prisma from '@/lib/db'
 
+// Disable caching for this route
+export const dynamic = 'force-dynamic'
+export const revalidate = 0
+
 export async function GET() {
   try {
+    // First, get all collections
     const collections = await prisma.collection.findMany({
-      where: {
-        // Only return collections that have stickers (from Google Drive sync)
-        stickers: {
-          some: {},
-        },
-      },
       orderBy: { sortOrder: 'asc' },
       include: {
         _count: {
@@ -28,9 +27,12 @@ export async function GET() {
       },
     })
 
+    // Filter to only collections with stickers
+    const collectionsWithStickers = collections.filter(c => (c._count?.stickers || 0) > 0)
+
     // Deduplicate collections by name - keep the one with most stickers
     const collectionsByName = new Map<string, typeof collections[0]>()
-    for (const collection of collections) {
+    for (const collection of collectionsWithStickers) {
       const existing = collectionsByName.get(collection.name)
       if (!existing || (collection._count?.stickers || 0) > (existing._count?.stickers || 0)) {
         collectionsByName.set(collection.name, collection)
@@ -49,7 +51,7 @@ export async function GET() {
   } catch (error) {
     console.error('Error fetching collections:', error)
     return NextResponse.json(
-      { error: 'Failed to fetch collections' },
+      { error: 'Failed to fetch collections', details: String(error) },
       { status: 500 }
     )
   }
