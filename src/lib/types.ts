@@ -24,9 +24,11 @@ export interface Sticker {
   sourceUrl: string
   caption?: string | null
   tags: string[]
+  collectionId: string
   collection: {
     id: string
     name: string
+    slug?: string
   }
 }
 

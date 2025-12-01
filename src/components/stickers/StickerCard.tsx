@@ -29,7 +29,7 @@ export function StickerCard({
     <motion.div
       className={cn(
         'group relative bg-white dark:bg-slate-800/50 rounded-xl xs:rounded-2xl overflow-hidden border border-slate-200 dark:border-slate-700/50',
-        'cursor-pointer transition-all duration-300',
+        'cursor-pointer transition-all duration-300 flex flex-col',
         'hover:border-pink-500/50 hover:shadow-lg hover:shadow-pink-500/10',
         className
       )}
@@ -49,7 +49,7 @@ export function StickerCard({
       aria-label={`View sticker: ${title}`}
     >
       {/* Image Container */}
-      <div className="relative aspect-square p-3 xs:p-4">
+      <div className="relative aspect-square p-3 xs:p-4 flex-shrink-0">
         {/* Loading skeleton */}
         {!isLoaded && !hasError && (
           <div className="absolute inset-3 xs:inset-4 bg-slate-200 dark:bg-slate-700 animate-pulse rounded-lg xs:rounded-xl" />
@@ -76,29 +76,43 @@ export function StickerCard({
           loading="lazy"
         />
 
-        {/* Hover Overlay - Hidden on touch devices, shown on hover for desktop */}
+        {/* Hover Overlay - Desktop only */}
         <motion.div
           initial={{ opacity: 0 }}
           animate={{ opacity: isHovered ? 1 : 0 }}
-          className="absolute inset-0 bg-gradient-to-t from-slate-900/90 via-slate-900/50 to-transparent hidden xs:flex items-end justify-center pb-3 xs:pb-4"
+          className="absolute inset-0 bg-gradient-to-t from-slate-900/90 via-slate-900/40 to-transparent hidden md:flex items-end justify-center pb-4"
         >
-          <div className="flex gap-1.5 xs:gap-2">
-            <span className="inline-flex items-center gap-1 xs:gap-1.5 px-2 xs:px-3 py-1 xs:py-1.5 bg-white/10 backdrop-blur-sm rounded-full text-white text-xs xs:text-sm font-medium">
-              <Eye size={14} className="xs:w-4 xs:h-4" />
+          <div className="flex items-center gap-2">
+            <span className="inline-flex items-center gap-1.5 px-3 py-1.5 bg-white/20 backdrop-blur-sm rounded-full text-white text-sm font-medium">
+              <Eye size={14} />
               Preview
             </span>
-            <span className="inline-flex items-center gap-1 xs:gap-1.5 px-2 xs:px-3 py-1 xs:py-1.5 bg-pink-500/80 backdrop-blur-sm rounded-full text-white text-xs xs:text-sm font-medium">
-              <Download size={14} className="xs:w-4 xs:h-4" />
+            <span className="inline-flex items-center gap-1.5 px-3 py-1.5 bg-pink-500 rounded-full text-white text-sm font-medium">
+              <Download size={14} />
               Download
             </span>
           </div>
         </motion.div>
       </div>
 
-      {/* Card Footer */}
-      <div className="px-3 pb-3 xs:px-4 xs:pb-4">
-        <h3 className="text-xs xs:text-sm font-medium text-slate-900 dark:text-white truncate mb-0.5 xs:mb-1">{title}</h3>
-        <p className="text-[10px] xs:text-xs text-slate-500 dark:text-slate-400 truncate">{collectionName}</p>
+      {/* Card Footer - Always visible */}
+      <div className="px-3 pb-3 xs:px-4 xs:pb-4 flex-grow flex flex-col justify-between">
+        <div>
+          <h3 className="text-xs xs:text-sm font-medium text-slate-900 dark:text-white line-clamp-2 mb-1">{title}</h3>
+          <p className="text-[10px] xs:text-xs text-slate-500 dark:text-slate-400 truncate">{collectionName}</p>
+        </div>
+
+        {/* Mobile action buttons - Always visible on small screens */}
+        <div className="flex items-center gap-2 mt-2 md:hidden">
+          <span className="flex-1 inline-flex items-center justify-center gap-1 px-2 py-1.5 bg-slate-100 dark:bg-slate-700/50 rounded-lg text-slate-600 dark:text-slate-300 text-[10px] xs:text-xs font-medium">
+            <Eye size={12} />
+            Preview
+          </span>
+          <span className="flex-1 inline-flex items-center justify-center gap-1 px-2 py-1.5 bg-pink-500 rounded-lg text-white text-[10px] xs:text-xs font-medium">
+            <Download size={12} />
+            Download
+          </span>
+        </div>
       </div>
     </motion.div>
   )

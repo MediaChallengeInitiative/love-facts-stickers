@@ -32,17 +32,25 @@ export default function HomePage() {
     try {
       const [collectionsRes, stickersRes] = await Promise.all([
         fetch('/api/collections'),
-        fetch('/api/stickers'),
+        fetch('/api/stickers?limit=500'), // Fetch all stickers
       ])
 
       if (collectionsRes.ok) {
         const collectionsData = await collectionsRes.json()
-        setCollections(collectionsData.collections || collectionsData)
+        // Handle both array and object responses
+        const collectionsArray = Array.isArray(collectionsData)
+          ? collectionsData
+          : collectionsData.collections || []
+        setCollections(collectionsArray)
       }
 
       if (stickersRes.ok) {
         const stickersData = await stickersRes.json()
-        setStickers(stickersData.stickers || stickersData)
+        // Handle both array and object responses
+        const stickersArray = Array.isArray(stickersData)
+          ? stickersData
+          : stickersData.stickers || []
+        setStickers(stickersArray)
       }
     } catch (error) {
       console.error('Failed to fetch data:', error)
@@ -59,11 +67,13 @@ export default function HomePage() {
   // Filter stickers based on collection and search
   const filteredStickers = useMemo(() => {
     return stickers.filter((sticker) => {
-      const matchesCollection = !selectedCollection || sticker.collection.id === selectedCollection
+      // Check both collectionId and collection.id for compatibility
+      const stickerCollectionId = sticker.collectionId || sticker.collection?.id
+      const matchesCollection = !selectedCollection || stickerCollectionId === selectedCollection
       const matchesSearch =
         !searchQuery ||
         sticker.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
-        sticker.tags.some((tag) => tag.toLowerCase().includes(searchQuery.toLowerCase()))
+        (sticker.tags && sticker.tags.some((tag) => tag.toLowerCase().includes(searchQuery.toLowerCase())))
       return matchesCollection && matchesSearch
     })
   }, [stickers, selectedCollection, searchQuery])
