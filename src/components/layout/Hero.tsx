@@ -1,14 +1,84 @@
 'use client'
 
-import { motion } from 'framer-motion'
-import { Download, Sparkles, Share2 } from 'lucide-react'
+import { useState } from 'react'
+import { motion, AnimatePresence } from 'framer-motion'
+import { Download, Sparkles, Share2, MessageCircle, Copy, X, Check } from 'lucide-react'
 import { Button } from '@/components/ui/Button'
+import toast from 'react-hot-toast'
+
+// Social media icons
+const TwitterIcon = () => (
+  <svg viewBox="0 0 24 24" width="18" height="18" fill="currentColor">
+    <path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z" />
+  </svg>
+)
+
+const FacebookIcon = () => (
+  <svg viewBox="0 0 24 24" width="18" height="18" fill="currentColor">
+    <path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z" />
+  </svg>
+)
 
 interface HeroProps {
   onBrowseClick: () => void
 }
 
 export function Hero({ onBrowseClick }: HeroProps) {
+  const [showShareMenu, setShowShareMenu] = useState(false)
+  const [copied, setCopied] = useState(false)
+
+  const siteUrl = typeof window !== 'undefined' ? window.location.origin : 'https://stickers.lovefacts.africa'
+  const shareText = "Check out Love Facts Stickers! Free media literacy stickers to fight misinformation. Download and share to make the truth go viral! 🎯"
+
+  const handleShare = async () => {
+    // Try native share first (mobile)
+    if (navigator.share) {
+      try {
+        await navigator.share({
+          title: 'Love Facts Stickers',
+          text: shareText,
+          url: siteUrl,
+        })
+        return
+      } catch (err) {
+        // User cancelled or error, fall back to menu
+        if ((err as Error).name !== 'AbortError') {
+          setShowShareMenu(true)
+        }
+        return
+      }
+    }
+    // Show share menu on desktop
+    setShowShareMenu(true)
+  }
+
+  const handleCopyLink = async () => {
+    try {
+      await navigator.clipboard.writeText(siteUrl)
+      setCopied(true)
+      toast.success('Link copied to clipboard!')
+      setTimeout(() => setCopied(false), 2000)
+      setShowShareMenu(false)
+    } catch {
+      toast.error('Failed to copy link')
+    }
+  }
+
+  const handleShareWhatsApp = () => {
+    window.open(`https://wa.me/?text=${encodeURIComponent(`${shareText}\n${siteUrl}`)}`, '_blank')
+    setShowShareMenu(false)
+  }
+
+  const handleShareTwitter = () => {
+    window.open(`https://twitter.com/intent/tweet?text=${encodeURIComponent(shareText)}&url=${encodeURIComponent(siteUrl)}`, '_blank')
+    setShowShareMenu(false)
+  }
+
+  const handleShareFacebook = () => {
+    window.open(`https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(siteUrl)}&quote=${encodeURIComponent(shareText)}`, '_blank')
+    setShowShareMenu(false)
+  }
+
   return (
     <section className="relative min-h-[100svh] sm:min-h-[80vh] flex items-center justify-center overflow-hidden pt-16 pb-8 sm:pt-0 sm:pb-0">
       {/* Background Gradient */}
@@ -95,10 +165,82 @@ export function Hero({ onBrowseClick }: HeroProps) {
             <Download className="mr-2" size={18} />
             Browse Stickers
           </Button>
-          <Button variant="outline" size="lg" className="w-full xs:w-auto">
-            <Share2 className="mr-2" size={18} />
-            Share the Pack
-          </Button>
+          <div className="relative w-full xs:w-auto">
+            <Button variant="outline" size="lg" className="w-full xs:w-auto" onClick={handleShare}>
+              <Share2 className="mr-2" size={18} />
+              Share the Pack
+            </Button>
+
+            {/* Share Menu Dropdown */}
+            <AnimatePresence>
+              {showShareMenu && (
+                <>
+                  {/* Backdrop */}
+                  <motion.div
+                    initial={{ opacity: 0 }}
+                    animate={{ opacity: 1 }}
+                    exit={{ opacity: 0 }}
+                    className="fixed inset-0 z-40"
+                    onClick={() => setShowShareMenu(false)}
+                  />
+
+                  {/* Dropdown Menu */}
+                  <motion.div
+                    initial={{ opacity: 0, scale: 0.95, y: 10 }}
+                    animate={{ opacity: 1, scale: 1, y: 0 }}
+                    exit={{ opacity: 0, scale: 0.95, y: 10 }}
+                    transition={{ duration: 0.15 }}
+                    className="absolute left-1/2 -translate-x-1/2 top-full mt-2 w-64 z-50 bg-white dark:bg-slate-800 rounded-xl border border-slate-200 dark:border-slate-700 shadow-xl overflow-hidden"
+                  >
+                    <div className="p-2">
+                      <p className="px-3 py-2 text-xs font-medium text-slate-500 dark:text-slate-400 uppercase tracking-wide">
+                        Share via
+                      </p>
+                      <button
+                        onClick={handleShareWhatsApp}
+                        className="w-full flex items-center gap-3 px-3 py-2.5 text-left text-slate-700 dark:text-slate-200 hover:bg-slate-100 dark:hover:bg-slate-700 rounded-lg transition-colors"
+                      >
+                        <MessageCircle size={18} className="text-green-500" />
+                        <span className="font-medium">WhatsApp</span>
+                      </button>
+                      <button
+                        onClick={handleShareTwitter}
+                        className="w-full flex items-center gap-3 px-3 py-2.5 text-left text-slate-700 dark:text-slate-200 hover:bg-slate-100 dark:hover:bg-slate-700 rounded-lg transition-colors"
+                      >
+                        <span className="text-slate-900 dark:text-white"><TwitterIcon /></span>
+                        <span className="font-medium">X (Twitter)</span>
+                      </button>
+                      <button
+                        onClick={handleShareFacebook}
+                        className="w-full flex items-center gap-3 px-3 py-2.5 text-left text-slate-700 dark:text-slate-200 hover:bg-slate-100 dark:hover:bg-slate-700 rounded-lg transition-colors"
+                      >
+                        <span className="text-blue-600"><FacebookIcon /></span>
+                        <span className="font-medium">Facebook</span>
+                      </button>
+                      <div className="my-2 h-px bg-slate-200 dark:bg-slate-700" />
+                      <button
+                        onClick={handleCopyLink}
+                        className="w-full flex items-center gap-3 px-3 py-2.5 text-left text-slate-700 dark:text-slate-200 hover:bg-slate-100 dark:hover:bg-slate-700 rounded-lg transition-colors"
+                      >
+                        {copied ? (
+                          <Check size={18} className="text-green-500" />
+                        ) : (
+                          <Copy size={18} className="text-slate-400" />
+                        )}
+                        <span className="font-medium">{copied ? 'Copied!' : 'Copy Link'}</span>
+                      </button>
+                    </div>
+                    <button
+                      onClick={() => setShowShareMenu(false)}
+                      className="absolute top-2 right-2 p-1.5 text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 rounded-lg hover:bg-slate-100 dark:hover:bg-slate-700 transition-colors"
+                    >
+                      <X size={16} />
+                    </button>
+                  </motion.div>
+                </>
+              )}
+            </AnimatePresence>
+          </div>
         </motion.div>
 
         {/* Stats */}
