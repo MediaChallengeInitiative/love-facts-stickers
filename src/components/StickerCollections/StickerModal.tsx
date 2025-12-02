@@ -115,20 +115,20 @@ export function StickerModal({ isOpen, onClose, sticker, onDownload }: StickerMo
             animate={{ scale: 1, opacity: 1 }}
             exit={{ scale: 0.9, opacity: 0 }}
             transition={{ duration: 0.2 }}
-            className="relative w-full max-w-3xl bg-white dark:bg-slate-800 rounded-2xl shadow-2xl overflow-hidden"
+            className="relative w-full max-w-3xl bg-white dark:bg-lovefacts-teal rounded-2xl shadow-2xl overflow-hidden"
           >
             {/* Close button */}
             <button
               ref={closeButtonRef}
               onClick={onClose}
-              className="absolute top-4 right-4 z-10 p-2 bg-white/90 dark:bg-slate-700/90 backdrop-blur-sm rounded-full text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-600 transition-colors shadow-lg"
+              className="absolute top-4 right-4 z-10 p-2 bg-white/90 dark:bg-lovefacts-teal-light/90 backdrop-blur-sm rounded-full text-lovefacts-teal dark:text-lovefacts-turquoise-light hover:bg-lovefacts-turquoise/10 dark:hover:bg-lovefacts-turquoise/20 transition-colors shadow-lg"
               aria-label="Close preview"
             >
               <X size={20} />
             </button>
 
             {/* Image container */}
-            <div className="relative aspect-square sm:aspect-video bg-gradient-to-br from-slate-100 to-slate-200 dark:from-slate-900 dark:to-slate-800 flex items-center justify-center p-8">
+            <div className="relative aspect-square sm:aspect-video bg-gradient-to-br from-white to-lovefacts-turquoise/5 dark:from-lovefacts-teal-dark dark:to-lovefacts-teal flex items-center justify-center p-8">
               {/* Decorative pattern */}
               <div className="absolute inset-0 opacity-20">
                 <div
@@ -149,19 +149,19 @@ export function StickerModal({ isOpen, onClose, sticker, onDownload }: StickerMo
             </div>
 
             {/* Footer */}
-            <div className="p-6 border-t border-slate-200 dark:border-slate-700">
+            <div className="p-6 border-t border-lovefacts-turquoise/20 dark:border-lovefacts-turquoise/30">
               <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
                 <div>
-                  <h3 className="text-xl font-bold text-slate-900 dark:text-white">
+                  <h3 className="text-xl font-bold text-lovefacts-teal dark:text-white">
                     {sticker.title}
                   </h3>
-                  <p className="text-sm text-slate-500 dark:text-slate-400 mt-1">
+                  <p className="text-sm text-lovefacts-teal/70 dark:text-lovefacts-turquoise/70 mt-1">
                     Click download to save this sticker
                   </p>
                 </div>
                 <button
                   onClick={handleDownload}
-                  className="flex items-center justify-center gap-2 px-6 py-3 bg-gradient-to-r from-pink-500 to-rose-500 hover:from-pink-600 hover:to-rose-600 text-white font-medium rounded-xl shadow-lg shadow-pink-500/25 hover:shadow-xl hover:shadow-pink-500/30 transition-all"
+                  className="flex items-center justify-center gap-2 px-6 py-3 bg-gradient-to-r from-lovefacts-coral to-lovefacts-coral-dark hover:from-lovefacts-coral-dark hover:to-lovefacts-coral text-white font-medium rounded-xl shadow-lg shadow-lovefacts-coral/25 hover:shadow-xl hover:shadow-lovefacts-coral/30 transition-all"
                   aria-label={`Download ${sticker.title} sticker`}
                 >
                   <Download size={18} />

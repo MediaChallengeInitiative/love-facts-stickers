@@ -18,7 +18,7 @@ const Input = forwardRef<HTMLInputElement, InputProps>(
         {label && (
           <label
             htmlFor={inputId}
-            className="block text-sm font-medium text-slate-600 dark:text-slate-300 mb-1.5"
+            className="block text-sm font-medium text-lovefacts-teal dark:text-lovefacts-turquoise-light mb-1.5"
           >
             {label}
           </label>
@@ -28,10 +28,10 @@ const Input = forwardRef<HTMLInputElement, InputProps>(
           id={inputId}
           type={type}
           className={cn(
-            'w-full px-4 py-3 rounded-xl bg-slate-100 dark:bg-slate-700/50 border border-slate-300 dark:border-slate-600 text-slate-900 dark:text-white placeholder-slate-400',
-            'focus:outline-none focus:ring-2 focus:ring-pink-500 focus:border-transparent',
+            'w-full px-4 py-3 rounded-xl bg-lovefacts-turquoise/5 dark:bg-lovefacts-turquoise/10 border border-lovefacts-turquoise/20 dark:border-lovefacts-turquoise/30 text-lovefacts-teal dark:text-white placeholder-lovefacts-teal/40 dark:placeholder-lovefacts-turquoise/40',
+            'focus:outline-none focus:ring-2 focus:ring-lovefacts-turquoise focus:border-transparent',
             'transition-all duration-200',
-            error && 'border-red-500 focus:ring-red-500',
+            error && 'border-lovefacts-coral focus:ring-lovefacts-coral',
             className
           )}
           aria-invalid={error ? 'true' : 'false'}
@@ -39,12 +39,12 @@ const Input = forwardRef<HTMLInputElement, InputProps>(
           {...props}
         />
         {error && (
-          <p id={`${inputId}-error`} className="mt-1.5 text-sm text-red-400" role="alert">
+          <p id={`${inputId}-error`} className="mt-1.5 text-sm text-lovefacts-coral" role="alert">
             {error}
           </p>
         )}
         {helperText && !error && (
-          <p id={`${inputId}-helper`} className="mt-1.5 text-sm text-slate-400">
+          <p id={`${inputId}-helper`} className="mt-1.5 text-sm text-lovefacts-teal/50 dark:text-lovefacts-turquoise/50">
             {helperText}
           </p>
         )}

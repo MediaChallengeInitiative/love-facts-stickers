@@ -17,7 +17,7 @@ export function ThemeToggle() {
 
   if (!mounted) {
     return (
-      <div className="w-10 h-10 rounded-xl bg-slate-200 dark:bg-slate-800 animate-pulse" />
+      <div className="w-10 h-10 rounded-xl bg-lovefacts-turquoise/10 dark:bg-lovefacts-turquoise/20 animate-pulse" />
     )
   }
 
@@ -35,9 +35,9 @@ export function ThemeToggle() {
         onClick={() => setIsOpen(!isOpen)}
         className={cn(
           'flex items-center justify-center w-10 h-10 rounded-xl transition-all duration-200',
-          'bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700',
-          'border border-slate-200 dark:border-slate-700',
-          'text-slate-600 dark:text-slate-300'
+          'bg-lovefacts-turquoise/10 dark:bg-lovefacts-turquoise/20 hover:bg-lovefacts-turquoise/20 dark:hover:bg-lovefacts-turquoise/30',
+          'border border-lovefacts-turquoise/20 dark:border-lovefacts-turquoise/30',
+          'text-lovefacts-teal dark:text-lovefacts-turquoise'
         )}
         aria-label="Toggle theme"
       >
@@ -64,8 +64,8 @@ export function ThemeToggle() {
               transition={{ duration: 0.15 }}
               className={cn(
                 'absolute right-0 mt-2 w-40 z-50 rounded-xl overflow-hidden shadow-xl',
-                'bg-white dark:bg-slate-800',
-                'border border-slate-200 dark:border-slate-700'
+                'bg-white dark:bg-lovefacts-teal',
+                'border border-lovefacts-turquoise/20 dark:border-lovefacts-turquoise/30'
               )}
             >
               {themes.map((t) => {
@@ -81,8 +81,8 @@ export function ThemeToggle() {
                     className={cn(
                       'w-full flex items-center gap-3 px-4 py-3 text-sm transition-colors',
                       isActive
-                        ? 'bg-pink-50 dark:bg-pink-500/10 text-pink-600 dark:text-pink-400'
-                        : 'text-slate-600 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-700/50'
+                        ? 'bg-lovefacts-turquoise/10 dark:bg-lovefacts-turquoise/20 text-lovefacts-coral dark:text-lovefacts-coral'
+                        : 'text-lovefacts-teal dark:text-lovefacts-turquoise-light hover:bg-lovefacts-turquoise/5 dark:hover:bg-lovefacts-turquoise/10'
                     )}
                   >
                     <Icon size={18} />
@@ -90,7 +90,7 @@ export function ThemeToggle() {
                     {isActive && (
                       <motion.div
                         layoutId="activeTheme"
-                        className="ml-auto w-2 h-2 rounded-full bg-pink-500"
+                        className="ml-auto w-2 h-2 rounded-full bg-lovefacts-coral"
                       />
                     )}
                   </button>

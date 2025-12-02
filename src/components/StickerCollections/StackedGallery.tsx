@@ -53,7 +53,7 @@ function CollectionCard({
 
   return (
     <motion.div
-      className="group relative bg-white dark:bg-slate-800 rounded-2xl border border-slate-200 dark:border-slate-700 overflow-hidden hover:border-pink-300 dark:hover:border-pink-600 transition-all duration-300"
+      className="group relative bg-white dark:bg-lovefacts-teal rounded-2xl border border-lovefacts-turquoise/20 dark:border-lovefacts-turquoise/30 overflow-hidden hover:border-lovefacts-coral/50 dark:hover:border-lovefacts-coral/50 transition-all duration-300"
       whileHover={{ y: -4 }}
       onMouseEnter={() => setIsHovered(true)}
       onMouseLeave={() => setIsHovered(false)}
@@ -61,7 +61,7 @@ function CollectionCard({
     >
       {/* Card Image Area - Stacked cards effect */}
       <div
-        className="relative w-full aspect-[4/3] bg-gradient-to-br from-slate-100 via-slate-50 to-pink-50 dark:from-slate-900 dark:via-slate-800 dark:to-pink-950/20 overflow-hidden cursor-pointer"
+        className="relative w-full aspect-[4/3] bg-gradient-to-br from-white via-lovefacts-turquoise/5 to-lovefacts-coral/5 dark:from-lovefacts-teal-dark dark:via-lovefacts-teal dark:to-lovefacts-coral/10 overflow-hidden cursor-pointer"
         onClick={() => topSticker && onView(topSticker)}
         onKeyDown={handleKeyDown}
         tabIndex={0}
@@ -106,12 +106,12 @@ function CollectionCard({
                 >
                   <div
                     className={cn(
-                      "w-20 h-20 xs:w-24 xs:h-24 sm:w-28 sm:h-28 rounded-xl bg-white dark:bg-slate-700 shadow-lg border border-slate-200/50 dark:border-slate-600/50 flex items-center justify-center p-2 overflow-hidden",
-                      index === 0 && isHovered && "shadow-xl ring-2 ring-pink-400/30"
+                      "w-20 h-20 xs:w-24 xs:h-24 sm:w-28 sm:h-28 rounded-xl bg-white dark:bg-lovefacts-teal-light shadow-lg border border-lovefacts-turquoise/20 dark:border-lovefacts-turquoise/30 flex items-center justify-center p-2 overflow-hidden",
+                      index === 0 && isHovered && "shadow-xl ring-2 ring-lovefacts-coral/30"
                     )}
                   >
                     {hasError ? (
-                      <Sparkles className="w-6 h-6 text-slate-300 dark:text-slate-500" />
+                      <Sparkles className="w-6 h-6 text-lovefacts-turquoise/30 dark:text-lovefacts-turquoise/50" />
                     ) : (
                       /* eslint-disable-next-line @next/next/no-img-element */
                       <img
@@ -129,15 +129,15 @@ function CollectionCard({
           </div>
         ) : (
           <div className="absolute inset-0 flex items-center justify-center">
-            <div className="w-20 h-20 rounded-xl bg-slate-200/50 dark:bg-slate-700/50 flex items-center justify-center">
-              <Sparkles className="w-8 h-8 text-slate-300 dark:text-slate-600" />
+            <div className="w-20 h-20 rounded-xl bg-lovefacts-turquoise/10 dark:bg-lovefacts-turquoise/20 flex items-center justify-center">
+              <Sparkles className="w-8 h-8 text-lovefacts-turquoise/40 dark:text-lovefacts-turquoise/60" />
             </div>
           </div>
         )}
 
         {/* Hover overlay with quick actions */}
         <motion.div
-          className="absolute inset-0 bg-gradient-to-t from-black/60 via-black/20 to-transparent flex items-end justify-center pb-3 opacity-0 group-hover:opacity-100 transition-opacity duration-200"
+          className="absolute inset-0 bg-gradient-to-t from-lovefacts-teal/80 via-lovefacts-teal/30 to-transparent flex items-end justify-center pb-3 opacity-0 group-hover:opacity-100 transition-opacity duration-200"
           initial={false}
         >
           <div className="flex items-center gap-2">
@@ -146,7 +146,7 @@ function CollectionCard({
                 e.stopPropagation()
                 if (topSticker) onView(topSticker)
               }}
-              className="flex items-center gap-1.5 px-3 py-1.5 bg-white/95 backdrop-blur-sm rounded-full text-slate-800 text-xs font-medium hover:bg-white transition-colors shadow-lg"
+              className="flex items-center gap-1.5 px-3 py-1.5 bg-white/95 backdrop-blur-sm rounded-full text-lovefacts-teal text-xs font-medium hover:bg-white transition-colors shadow-lg"
             >
               <Eye size={14} />
               <span>View</span>
@@ -156,7 +156,7 @@ function CollectionCard({
                 e.stopPropagation()
                 if (topSticker) onDownload(topSticker)
               }}
-              className="flex items-center gap-1.5 px-3 py-1.5 bg-pink-500 rounded-full text-white text-xs font-medium hover:bg-pink-600 transition-colors shadow-lg"
+              className="flex items-center gap-1.5 px-3 py-1.5 bg-lovefacts-coral rounded-full text-white text-xs font-medium hover:bg-lovefacts-coral-dark transition-colors shadow-lg"
             >
               <Download size={14} />
               <span>Download</span>
@@ -170,10 +170,10 @@ function CollectionCard({
         {/* Collection info */}
         <div className="flex items-start justify-between gap-2 mb-2">
           <div className="min-w-0 flex-1">
-            <h3 className="text-sm sm:text-base font-semibold text-slate-900 dark:text-white truncate">
+            <h3 className="text-sm sm:text-base font-semibold text-lovefacts-teal dark:text-white truncate">
               {collection.name}
             </h3>
-            <p className="text-xs text-slate-500 dark:text-slate-400">
+            <p className="text-xs text-lovefacts-teal/60 dark:text-lovefacts-turquoise/60">
               {collection.count} sticker{collection.count !== 1 ? 's' : ''}
             </p>
           </div>
@@ -183,14 +183,14 @@ function CollectionCard({
         <div className="flex items-center gap-2">
           <button
             onClick={() => topSticker && onView(topSticker)}
-            className="flex-1 flex items-center justify-center gap-1.5 py-2 bg-slate-100 dark:bg-slate-700 hover:bg-slate-200 dark:hover:bg-slate-600 rounded-lg text-slate-700 dark:text-slate-200 text-xs font-medium transition-colors"
+            className="flex-1 flex items-center justify-center gap-1.5 py-2 bg-lovefacts-turquoise/10 dark:bg-lovefacts-turquoise/20 hover:bg-lovefacts-turquoise/20 dark:hover:bg-lovefacts-turquoise/30 rounded-lg text-lovefacts-teal dark:text-lovefacts-turquoise-light text-xs font-medium transition-colors"
           >
             <Eye size={14} />
             <span>Preview</span>
           </button>
           <button
             onClick={() => topSticker && onDownload(topSticker)}
-            className="flex-1 flex items-center justify-center gap-1.5 py-2 bg-gradient-to-r from-pink-500 to-rose-500 hover:from-pink-600 hover:to-rose-600 rounded-lg text-white text-xs font-medium transition-colors shadow-sm"
+            className="flex-1 flex items-center justify-center gap-1.5 py-2 bg-gradient-to-r from-lovefacts-coral to-lovefacts-coral-dark hover:from-lovefacts-coral-dark hover:to-lovefacts-coral rounded-lg text-white text-xs font-medium transition-colors shadow-sm"
           >
             <Download size={14} />
             <span>Get</span>
@@ -201,7 +201,7 @@ function CollectionCard({
         {onCollectionClick && (
           <button
             onClick={() => onCollectionClick(collection.id)}
-            className="w-full mt-2 flex items-center justify-center gap-1 py-1.5 text-xs text-pink-500 hover:text-pink-600 dark:text-pink-400 dark:hover:text-pink-300 font-medium transition-colors group/link"
+            className="w-full mt-2 flex items-center justify-center gap-1 py-1.5 text-xs text-lovefacts-coral hover:text-lovefacts-coral-dark dark:text-lovefacts-coral dark:hover:text-lovefacts-coral-light font-medium transition-colors group/link"
           >
             <span>Browse all</span>
             <ArrowRight size={12} className="group-hover/link:translate-x-0.5 transition-transform" />
@@ -303,11 +303,11 @@ export function StackedGallery({
   if (stickers.length === 0 && collections.length === 0) {
     return (
       <div className="flex flex-col items-center justify-center py-16 text-center">
-        <div className="w-20 h-20 mb-4 rounded-full bg-gradient-to-br from-pink-100 to-rose-100 dark:from-pink-900/30 dark:to-rose-900/30 flex items-center justify-center">
-          <Sparkles className="w-10 h-10 text-pink-400 dark:text-pink-500" />
+        <div className="w-20 h-20 mb-4 rounded-full bg-gradient-to-br from-lovefacts-turquoise/20 to-lovefacts-coral/20 dark:from-lovefacts-turquoise/30 dark:to-lovefacts-coral/30 flex items-center justify-center">
+          <Sparkles className="w-10 h-10 text-lovefacts-turquoise dark:text-lovefacts-turquoise" />
         </div>
-        <h3 className="text-lg font-semibold text-slate-900 dark:text-white mb-2">No stickers found</h3>
-        <p className="text-slate-500 dark:text-slate-400 text-sm">Check back later for new stickers!</p>
+        <h3 className="text-lg font-semibold text-lovefacts-teal dark:text-white mb-2">No stickers found</h3>
+        <p className="text-lovefacts-teal/60 dark:text-lovefacts-turquoise/60 text-sm">Check back later for new stickers!</p>
       </div>
     )
   }

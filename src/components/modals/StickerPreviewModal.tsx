@@ -109,7 +109,7 @@ export function StickerPreviewModal({
     <Modal isOpen={isOpen} onClose={onClose} size="lg">
       <div className="flex flex-col md:flex-row gap-4 xs:gap-6">
         {/* Image Preview */}
-        <div className="flex-shrink-0 md:flex-1 min-h-[200px] xs:min-h-[250px] md:min-h-[300px] relative bg-slate-100 dark:bg-slate-900/50 rounded-lg xs:rounded-xl overflow-hidden flex items-center justify-center">
+        <div className="flex-shrink-0 md:flex-1 min-h-[200px] xs:min-h-[250px] md:min-h-[300px] relative bg-lovefacts-turquoise/5 dark:bg-lovefacts-teal-dark/50 rounded-lg xs:rounded-xl overflow-hidden flex items-center justify-center">
           {/* eslint-disable-next-line @next/next/no-img-element */}
           <img
             src={sticker.sourceUrl}
@@ -120,7 +120,7 @@ export function StickerPreviewModal({
 
         {/* Details & Actions */}
         <div className="flex-1 flex flex-col min-w-0">
-          <h2 className="text-lg xs:text-xl md:text-2xl font-bold text-slate-900 dark:text-white mb-1 xs:mb-2 truncate">{sticker.title}</h2>
+          <h2 className="text-lg xs:text-xl md:text-2xl font-bold text-lovefacts-teal dark:text-white mb-1 xs:mb-2 truncate">{sticker.title}</h2>
 
           <div className="flex items-center gap-2 mb-3 xs:mb-4">
             <Badge variant="info">{sticker.collection.name}</Badge>
@@ -128,8 +128,8 @@ export function StickerPreviewModal({
 
           {sticker.caption && (
             <div className="mb-3 xs:mb-4">
-              <p className="text-xs xs:text-sm text-slate-500 dark:text-slate-400 mb-1">Suggested caption:</p>
-              <p className="text-slate-900 dark:text-white bg-slate-100 dark:bg-slate-700/50 rounded-lg p-2 xs:p-3 text-xs xs:text-sm italic line-clamp-3 xs:line-clamp-none">
+              <p className="text-xs xs:text-sm text-lovefacts-teal/70 dark:text-lovefacts-turquoise/70 mb-1">Suggested caption:</p>
+              <p className="text-lovefacts-teal dark:text-white bg-lovefacts-turquoise/5 dark:bg-lovefacts-turquoise/10 rounded-lg p-2 xs:p-3 text-xs xs:text-sm italic line-clamp-3 xs:line-clamp-none">
                 &ldquo;{sticker.caption}&rdquo;
               </p>
             </div>
@@ -137,12 +137,12 @@ export function StickerPreviewModal({
 
           {sticker.tags.length > 0 && (
             <div className="mb-4 xs:mb-6">
-              <p className="text-xs xs:text-sm text-slate-500 dark:text-slate-400 mb-1.5 xs:mb-2">Tags:</p>
+              <p className="text-xs xs:text-sm text-lovefacts-teal/70 dark:text-lovefacts-turquoise/70 mb-1.5 xs:mb-2">Tags:</p>
               <div className="flex flex-wrap gap-1.5 xs:gap-2">
                 {sticker.tags.map((tag) => (
                   <span
                     key={tag}
-                    className="px-1.5 xs:px-2 py-0.5 xs:py-1 text-[10px] xs:text-xs bg-slate-200 dark:bg-slate-700/50 text-slate-600 dark:text-slate-300 rounded-full"
+                    className="px-1.5 xs:px-2 py-0.5 xs:py-1 text-[10px] xs:text-xs bg-lovefacts-turquoise/10 dark:bg-lovefacts-turquoise/20 text-lovefacts-teal dark:text-lovefacts-turquoise-light rounded-full"
                   >
                     #{tag}
                   </span>
@@ -193,41 +193,41 @@ export function StickerPreviewModal({
                   <motion.div
                     initial={{ opacity: 0, y: 10 }}
                     animate={{ opacity: 1, y: 0 }}
-                    className="absolute bottom-full left-0 right-0 mb-2 bg-white dark:bg-slate-700 rounded-lg xs:rounded-xl border border-slate-200 dark:border-slate-600 overflow-hidden shadow-xl z-20"
+                    className="absolute bottom-full left-0 right-0 mb-2 bg-white dark:bg-lovefacts-teal rounded-lg xs:rounded-xl border border-lovefacts-turquoise/20 dark:border-lovefacts-turquoise/30 overflow-hidden shadow-xl z-20"
                   >
                     <button
                       onClick={handleShareWhatsApp}
-                      className="w-full px-3 xs:px-4 py-2.5 xs:py-3 text-left text-slate-900 dark:text-white hover:bg-slate-100 dark:hover:bg-slate-600 flex items-center gap-2.5 xs:gap-3 transition-colors text-sm"
+                      className="w-full px-3 xs:px-4 py-2.5 xs:py-3 text-left text-lovefacts-teal dark:text-white hover:bg-lovefacts-turquoise/10 dark:hover:bg-lovefacts-turquoise/20 flex items-center gap-2.5 xs:gap-3 transition-colors text-sm"
                     >
-                      <MessageCircle size={16} className="text-green-500" />
+                      <MessageCircle size={16} className="text-lovefacts-green" />
                       WhatsApp
                     </button>
                     <button
                       onClick={handleShareTwitter}
-                      className="w-full px-3 xs:px-4 py-2.5 xs:py-3 text-left text-slate-900 dark:text-white hover:bg-slate-100 dark:hover:bg-slate-600 flex items-center gap-2.5 xs:gap-3 transition-colors border-t border-slate-200 dark:border-slate-600 text-sm"
+                      className="w-full px-3 xs:px-4 py-2.5 xs:py-3 text-left text-lovefacts-teal dark:text-white hover:bg-lovefacts-turquoise/10 dark:hover:bg-lovefacts-turquoise/20 flex items-center gap-2.5 xs:gap-3 transition-colors border-t border-lovefacts-turquoise/20 dark:border-lovefacts-turquoise/30 text-sm"
                     >
-                      <span className="text-slate-900 dark:text-white"><TwitterIcon /></span>
+                      <span className="text-lovefacts-teal dark:text-white"><TwitterIcon /></span>
                       X (Twitter)
                     </button>
                     <button
                       onClick={handleShareFacebook}
-                      className="w-full px-3 xs:px-4 py-2.5 xs:py-3 text-left text-slate-900 dark:text-white hover:bg-slate-100 dark:hover:bg-slate-600 flex items-center gap-2.5 xs:gap-3 transition-colors border-t border-slate-200 dark:border-slate-600 text-sm"
+                      className="w-full px-3 xs:px-4 py-2.5 xs:py-3 text-left text-lovefacts-teal dark:text-white hover:bg-lovefacts-turquoise/10 dark:hover:bg-lovefacts-turquoise/20 flex items-center gap-2.5 xs:gap-3 transition-colors border-t border-lovefacts-turquoise/20 dark:border-lovefacts-turquoise/30 text-sm"
                     >
-                      <span className="text-blue-500"><FacebookIcon /></span>
+                      <span className="text-lovefacts-turquoise"><FacebookIcon /></span>
                       Facebook
                     </button>
                     <button
                       onClick={handleShareInstagram}
-                      className="w-full px-3 xs:px-4 py-2.5 xs:py-3 text-left text-slate-900 dark:text-white hover:bg-slate-100 dark:hover:bg-slate-600 flex items-center gap-2.5 xs:gap-3 transition-colors border-t border-slate-200 dark:border-slate-600 text-sm"
+                      className="w-full px-3 xs:px-4 py-2.5 xs:py-3 text-left text-lovefacts-teal dark:text-white hover:bg-lovefacts-turquoise/10 dark:hover:bg-lovefacts-turquoise/20 flex items-center gap-2.5 xs:gap-3 transition-colors border-t border-lovefacts-turquoise/20 dark:border-lovefacts-turquoise/30 text-sm"
                     >
-                      <span className="text-pink-500"><InstagramIcon /></span>
+                      <span className="text-lovefacts-coral"><InstagramIcon /></span>
                       Instagram
                     </button>
                     <button
                       onClick={handleCopyLink}
-                      className="w-full px-3 xs:px-4 py-2.5 xs:py-3 text-left text-slate-900 dark:text-white hover:bg-slate-100 dark:hover:bg-slate-600 flex items-center gap-2.5 xs:gap-3 transition-colors border-t border-slate-200 dark:border-slate-600 text-sm"
+                      className="w-full px-3 xs:px-4 py-2.5 xs:py-3 text-left text-lovefacts-teal dark:text-white hover:bg-lovefacts-turquoise/10 dark:hover:bg-lovefacts-turquoise/20 flex items-center gap-2.5 xs:gap-3 transition-colors border-t border-lovefacts-turquoise/20 dark:border-lovefacts-turquoise/30 text-sm"
                     >
-                      <Copy size={16} className="text-slate-400" />
+                      <Copy size={16} className="text-lovefacts-teal/50 dark:text-lovefacts-turquoise/50" />
                       Copy Link
                     </button>
                   </motion.div>
@@ -254,7 +254,7 @@ export function StickerPreviewModal({
                 exit={{ opacity: 0, height: 0 }}
                 className="bg-white rounded-lg xs:rounded-xl p-3 xs:p-4 flex flex-col items-center"
               >
-                <p className="text-slate-800 text-xs xs:text-sm font-medium mb-2 xs:mb-3">Scan to share this sticker</p>
+                <p className="text-lovefacts-teal text-xs xs:text-sm font-medium mb-2 xs:mb-3">Scan to share this sticker</p>
                 <QRCodeSVG
                   id="sticker-qr-code"
                   value={stickerUrl}
@@ -262,14 +262,14 @@ export function StickerPreviewModal({
                   level="H"
                   includeMargin
                   bgColor="#ffffff"
-                  fgColor="#1e293b"
+                  fgColor="#0A3D4C"
                 />
-                <p className="text-slate-500 text-[10px] xs:text-xs mt-2 text-center break-all max-w-[180px]">
+                <p className="text-lovefacts-teal/50 text-[10px] xs:text-xs mt-2 text-center break-all max-w-[180px]">
                   {stickerUrl}
                 </p>
                 <button
                   onClick={handleDownloadQR}
-                  className="mt-2 xs:mt-3 text-xs xs:text-sm text-pink-600 hover:text-pink-700 font-medium flex items-center gap-1"
+                  className="mt-2 xs:mt-3 text-xs xs:text-sm text-lovefacts-coral hover:text-lovefacts-coral-dark font-medium flex items-center gap-1"
                 >
                   <Download size={12} />
                   Download QR

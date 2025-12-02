@@ -4,38 +4,59 @@
 
 @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap');
 
+/* Love Facts Brand Colors (from Pantone PDF) */
+/* Dark Teal: #0A3D4C | Turquoise: #4FC9A0 | Coral: #D6534A | Olive Green: #66A833 */
+
 /* Light mode (default) */
 :root {
   --background: #ffffff;
-  --background-secondary: #f8fafc;
-  --foreground: #0f172a;
-  --foreground-secondary: #475569;
+  --background-secondary: #f0f7f7;
+  --foreground: #0A3D4C;
+  --foreground-secondary: #0D4D5F;
   --card: #ffffff;
-  --card-hover: #f1f5f9;
-  --border: #e2e8f0;
-  --border-hover: #cbd5e1;
-  --muted: #f1f5f9;
-  --muted-foreground: #64748b;
-  --scrollbar-track: #f1f5f9;
-  --scrollbar-thumb: #cbd5e1;
-  --scrollbar-thumb-hover: #94a3b8;
+  --card-hover: #e8f5f5;
+  --border: #c5e0dc;
+  --border-hover: #4FC9A0;
+  --muted: #e8f5f5;
+  --muted-foreground: #0D4D5F;
+  --scrollbar-track: #e8f5f5;
+  --scrollbar-thumb: #4FC9A0;
+  --scrollbar-thumb-hover: #3EB88D;
+  --accent: #D6534A;
+  --accent-light: #E06B63;
+  --accent-dark: #C44038;
+  --secondary: #4FC9A0;
+  --secondary-light: #6DD4B2;
+  --secondary-dark: #3EB88D;
+  --tertiary: #66A833;
+  --tertiary-light: #7AB84A;
+  --tertiary-dark: #559226;
 }
 
 /* Dark mode */
 .dark {
-  --background: #0f172a;
-  --background-secondary: #1e293b;
-  --foreground: #f1f5f9;
-  --foreground-secondary: #94a3b8;
-  --card: #1e293b;
-  --card-hover: #334155;
-  --border: #334155;
-  --border-hover: #475569;
-  --muted: #1e293b;
-  --muted-foreground: #94a3b8;
-  --scrollbar-track: #1e293b;
-  --scrollbar-thumb: #475569;
-  --scrollbar-thumb-hover: #64748b;
+  --background: #082F3B;
+  --background-secondary: #0A3D4C;
+  --foreground: #e8f5f5;
+  --foreground-secondary: #c5e0dc;
+  --card: #0A3D4C;
+  --card-hover: #0D4D5F;
+  --border: #0D4D5F;
+  --border-hover: #4FC9A0;
+  --muted: #0A3D4C;
+  --muted-foreground: #c5e0dc;
+  --scrollbar-track: #082F3B;
+  --scrollbar-thumb: #3EB88D;
+  --scrollbar-thumb-hover: #4FC9A0;
+  --accent: #D6534A;
+  --accent-light: #E06B63;
+  --accent-dark: #C44038;
+  --secondary: #4FC9A0;
+  --secondary-light: #6DD4B2;
+  --secondary-dark: #3EB88D;
+  --tertiary: #66A833;
+  --tertiary-light: #7AB84A;
+  --tertiary-dark: #559226;
 }
 
 * {
@@ -76,13 +97,13 @@ body {
 
 /* Focus styles for accessibility */
 *:focus-visible {
-  outline: 2px solid #E91E63;
+  outline: 2px solid #4FC9A0;
   outline-offset: 2px;
 }
 
 /* Selection */
 ::selection {
-  background: rgba(233, 30, 99, 0.3);
+  background: rgba(79, 201, 160, 0.3);
   color: inherit;
 }
 
@@ -123,19 +144,27 @@ body {
 
 @layer components {
   .glass {
-    @apply bg-white/50 dark:bg-slate-800/50 backdrop-blur-lg border border-slate-200 dark:border-slate-700/50;
+    @apply bg-white/50 dark:bg-lovefacts-teal/50 backdrop-blur-lg border border-lovefacts-turquoise/20 dark:border-lovefacts-turquoise/30;
   }
 
   .gradient-text {
-    @apply bg-gradient-to-r from-pink-500 via-rose-500 to-pink-600 bg-clip-text text-transparent;
+    @apply bg-gradient-to-r from-lovefacts-coral via-lovefacts-turquoise to-lovefacts-green bg-clip-text text-transparent;
   }
 
   .lovefacts-gradient {
-    @apply bg-gradient-to-r from-pink-500 via-rose-500 to-pink-600;
+    @apply bg-gradient-to-r from-lovefacts-coral to-lovefacts-coral-dark;
   }
 
   .lovefacts-gradient-text {
-    @apply bg-gradient-to-r from-pink-500 via-rose-500 to-pink-600 bg-clip-text text-transparent;
+    @apply bg-gradient-to-r from-lovefacts-coral via-lovefacts-turquoise to-lovefacts-green bg-clip-text text-transparent;
+  }
+
+  .lovefacts-gradient-teal {
+    @apply bg-gradient-to-r from-lovefacts-teal to-lovefacts-turquoise;
+  }
+
+  .lovefacts-gradient-green {
+    @apply bg-gradient-to-r from-lovefacts-turquoise to-lovefacts-green;
   }
 
   .gradient-border {
@@ -144,7 +173,7 @@ body {
 
   .gradient-border::before {
     content: '';
-    @apply absolute inset-0 rounded-xl bg-gradient-to-r from-pink-500 to-rose-600 -z-10;
+    @apply absolute inset-0 rounded-xl bg-gradient-to-r from-lovefacts-turquoise to-lovefacts-coral -z-10;
     padding: 1px;
     -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
     mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
@@ -154,23 +183,23 @@ body {
 
   /* Theme-aware card styles */
   .theme-card {
-    @apply bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700;
+    @apply bg-white dark:bg-lovefacts-teal border border-lovefacts-turquoise/20 dark:border-lovefacts-turquoise/30;
   }
 
   .theme-card-hover {
-    @apply hover:bg-slate-50 dark:hover:bg-slate-700/50;
+    @apply hover:bg-lovefacts-turquoise/5 dark:hover:bg-lovefacts-turquoise/10;
   }
 
   /* Theme-aware text */
   .theme-text {
-    @apply text-slate-900 dark:text-white;
+    @apply text-lovefacts-teal dark:text-white;
   }
 
   .theme-text-secondary {
-    @apply text-slate-600 dark:text-slate-300;
+    @apply text-lovefacts-teal-light dark:text-lovefacts-turquoise-light;
   }
 
   .theme-text-muted {
-    @apply text-slate-500 dark:text-slate-400;
+    @apply text-lovefacts-teal/70 dark:text-lovefacts-turquoise/70;
   }
 }

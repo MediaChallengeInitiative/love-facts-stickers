@@ -20,13 +20,24 @@ const config: Config = {
       colors: {
         background: "var(--background)",
         foreground: "var(--foreground)",
-        // Love Facts Branding Colors
+        // Love Facts Branding Colors (from Pantone PDF)
         lovefacts: {
-          pink: '#E91E63',
-          magenta: '#C2185B',
-          rose: '#F06292',
-          light: '#FCE4EC',
-          dark: '#880E4F',
+          // Dark Teal - CMYK(94, 61, 44, 41)
+          teal: '#0A3D4C',
+          'teal-light': '#0D4D5F',
+          'teal-dark': '#082F3B',
+          // Turquoise - CMYK(69, 0, 38, 0)
+          turquoise: '#4FC9A0',
+          'turquoise-light': '#6DD4B2',
+          'turquoise-dark': '#3EB88D',
+          // Coral - CMYK(16, 77, 70, 5)
+          coral: '#D6534A',
+          'coral-light': '#E06B63',
+          'coral-dark': '#C44038',
+          // Olive Green - CMYK(60, 21, 80, 0)
+          green: '#66A833',
+          'green-light': '#7AB84A',
+          'green-dark': '#559226',
         },
       },
       fontFamily: {

@@ -8,7 +8,7 @@ export function Footer() {
   const currentYear = new Date().getFullYear()
 
   return (
-    <footer className="bg-slate-100 dark:bg-slate-900 border-t border-slate-200 dark:border-slate-800 transition-colors duration-300">
+    <footer className="bg-lovefacts-turquoise/5 dark:bg-lovefacts-teal-dark border-t border-lovefacts-turquoise/20 dark:border-lovefacts-turquoise/30 transition-colors duration-300">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 xs:py-10 sm:py-12">
         <div className="grid grid-cols-2 xs:grid-cols-2 md:grid-cols-3 gap-6 xs:gap-8">
           {/* Brand */}
@@ -22,9 +22,9 @@ export function Footer() {
                   className="object-contain dark:brightness-0 dark:invert"
                 />
               </div>
-              <p className="text-[10px] xs:text-xs text-slate-500 dark:text-slate-400">Media Literacy Stickers</p>
+              <p className="text-[10px] xs:text-xs text-lovefacts-teal/70 dark:text-lovefacts-turquoise/70">Media Literacy Stickers</p>
             </div>
-            <p className="text-xs xs:text-sm text-slate-500 dark:text-slate-400 leading-relaxed">
+            <p className="text-xs xs:text-sm text-lovefacts-teal/70 dark:text-lovefacts-turquoise/70 leading-relaxed">
               Free stickers to fight misinformation and spread media literacy.
               Download, share, and make the truth go viral!
             </p>
@@ -32,12 +32,12 @@ export function Footer() {
 
           {/* Links */}
           <div>
-            <h4 className="text-xs xs:text-sm font-semibold text-slate-900 dark:text-white mb-3 xs:mb-4">Quick Links</h4>
+            <h4 className="text-xs xs:text-sm font-semibold text-lovefacts-teal dark:text-white mb-3 xs:mb-4">Quick Links</h4>
             <ul className="space-y-1.5 xs:space-y-2">
               <li>
                 <Link
                   href="/"
-                  className="text-xs xs:text-sm text-slate-500 dark:text-slate-400 hover:text-pink-500 dark:hover:text-white transition-colors"
+                  className="text-xs xs:text-sm text-lovefacts-teal/70 dark:text-lovefacts-turquoise/70 hover:text-lovefacts-coral dark:hover:text-lovefacts-coral transition-colors"
                 >
                   Browse Stickers
                 </Link>
@@ -45,7 +45,7 @@ export function Footer() {
               <li>
                 <Link
                   href="/#collections"
-                  className="text-xs xs:text-sm text-slate-500 dark:text-slate-400 hover:text-pink-500 dark:hover:text-white transition-colors"
+                  className="text-xs xs:text-sm text-lovefacts-teal/70 dark:text-lovefacts-turquoise/70 hover:text-lovefacts-coral dark:hover:text-lovefacts-coral transition-colors"
                 >
                   Collections
                 </Link>
@@ -53,7 +53,7 @@ export function Footer() {
               <li>
                 <Link
                   href="/privacy"
-                  className="text-xs xs:text-sm text-slate-500 dark:text-slate-400 hover:text-pink-500 dark:hover:text-white transition-colors"
+                  className="text-xs xs:text-sm text-lovefacts-teal/70 dark:text-lovefacts-turquoise/70 hover:text-lovefacts-coral dark:hover:text-lovefacts-coral transition-colors"
                 >
                   Privacy Policy
                 </Link>
@@ -61,7 +61,7 @@ export function Footer() {
               <li>
                 <Link
                   href="/unsubscribe"
-                  className="text-xs xs:text-sm text-slate-500 dark:text-slate-400 hover:text-pink-500 dark:hover:text-white transition-colors"
+                  className="text-xs xs:text-sm text-lovefacts-teal/70 dark:text-lovefacts-turquoise/70 hover:text-lovefacts-coral dark:hover:text-lovefacts-coral transition-colors"
                 >
                   Unsubscribe
                 </Link>
@@ -71,12 +71,12 @@ export function Footer() {
 
           {/* Contact */}
           <div>
-            <h4 className="text-xs xs:text-sm font-semibold text-slate-900 dark:text-white mb-3 xs:mb-4">Get in Touch</h4>
+            <h4 className="text-xs xs:text-sm font-semibold text-lovefacts-teal dark:text-white mb-3 xs:mb-4">Get in Touch</h4>
             <ul className="space-y-2 xs:space-y-3">
               <li>
                 <a
                   href="mailto:info@mciug.org"
-                  className="flex items-center gap-1.5 xs:gap-2 text-xs xs:text-sm text-slate-500 dark:text-slate-400 hover:text-pink-500 dark:hover:text-white transition-colors"
+                  className="flex items-center gap-1.5 xs:gap-2 text-xs xs:text-sm text-lovefacts-teal/70 dark:text-lovefacts-turquoise/70 hover:text-lovefacts-coral dark:hover:text-lovefacts-coral transition-colors"
                 >
                   <Mail size={14} className="xs:w-4 xs:h-4" />
                   info@mciug.org
@@ -87,7 +87,7 @@ export function Footer() {
                   href="https://mciug.org"
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="flex items-center gap-1.5 xs:gap-2 text-xs xs:text-sm text-slate-500 dark:text-slate-400 hover:text-pink-500 dark:hover:text-white transition-colors"
+                  className="flex items-center gap-1.5 xs:gap-2 text-xs xs:text-sm text-lovefacts-teal/70 dark:text-lovefacts-turquoise/70 hover:text-lovefacts-coral dark:hover:text-lovefacts-coral transition-colors"
                 >
                   <ExternalLink size={14} className="xs:w-4 xs:h-4" />
                   <span className="hidden xs:inline">Media Challenge Initiative</span>
@@ -99,12 +99,12 @@ export function Footer() {
         </div>
 
         {/* Bottom Bar */}
-        <div className="mt-8 xs:mt-10 sm:mt-12 pt-6 xs:pt-8 border-t border-slate-200 dark:border-slate-800 flex flex-col sm:flex-row items-center justify-between gap-3 xs:gap-4">
-          <p className="text-[10px] xs:text-xs sm:text-sm text-slate-500 text-center sm:text-left">
+        <div className="mt-8 xs:mt-10 sm:mt-12 pt-6 xs:pt-8 border-t border-lovefacts-turquoise/20 dark:border-lovefacts-turquoise/30 flex flex-col sm:flex-row items-center justify-between gap-3 xs:gap-4">
+          <p className="text-[10px] xs:text-xs sm:text-sm text-lovefacts-teal/70 dark:text-lovefacts-turquoise/70 text-center sm:text-left">
             &copy; {currentYear} Media Challenge Initiative. All rights reserved.
           </p>
-          <p className="text-[10px] xs:text-xs sm:text-sm text-slate-500">
-            Made with <Heart className="inline w-3 h-3 xs:w-4 xs:h-4 text-pink-500" fill="currentColor" /> for media literacy
+          <p className="text-[10px] xs:text-xs sm:text-sm text-lovefacts-teal/70 dark:text-lovefacts-turquoise/70">
+            Made with <Heart className="inline w-3 h-3 xs:w-4 xs:h-4 text-lovefacts-coral" fill="currentColor" /> for media literacy
           </p>
         </div>
       </div>

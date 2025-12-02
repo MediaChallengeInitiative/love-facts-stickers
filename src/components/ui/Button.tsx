@@ -14,11 +14,11 @@ const Button = forwardRef<HTMLButtonElement, ButtonProps>(
     const baseStyles = 'inline-flex items-center justify-center font-medium rounded-xl transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-offset-2 disabled:opacity-50 disabled:cursor-not-allowed'
 
     const variants = {
-      primary: 'bg-gradient-to-r from-pink-500 to-rose-600 text-white hover:from-pink-600 hover:to-rose-700 focus:ring-pink-500 shadow-lg hover:shadow-xl shadow-pink-500/25',
-      secondary: 'bg-slate-200 dark:bg-slate-700 text-slate-900 dark:text-white hover:bg-slate-300 dark:hover:bg-slate-600 focus:ring-slate-500',
-      outline: 'border-2 border-pink-500 text-pink-500 hover:bg-pink-500 hover:text-white focus:ring-pink-500',
-      ghost: 'text-slate-600 dark:text-slate-300 hover:text-slate-900 dark:hover:text-white hover:bg-slate-100 dark:hover:bg-slate-700/50 focus:ring-slate-500',
-      danger: 'bg-red-600 text-white hover:bg-red-700 focus:ring-red-500',
+      primary: 'bg-gradient-to-r from-lovefacts-coral to-lovefacts-coral-dark text-white hover:from-lovefacts-coral-dark hover:to-lovefacts-coral focus:ring-lovefacts-coral shadow-lg hover:shadow-xl shadow-lovefacts-coral/25',
+      secondary: 'bg-lovefacts-turquoise/10 dark:bg-lovefacts-turquoise/20 text-lovefacts-teal dark:text-white hover:bg-lovefacts-turquoise/20 dark:hover:bg-lovefacts-turquoise/30 focus:ring-lovefacts-turquoise',
+      outline: 'border-2 border-lovefacts-turquoise text-lovefacts-teal dark:text-lovefacts-turquoise hover:bg-lovefacts-turquoise hover:text-white focus:ring-lovefacts-turquoise',
+      ghost: 'text-lovefacts-teal dark:text-lovefacts-turquoise-light hover:text-lovefacts-teal-dark dark:hover:text-white hover:bg-lovefacts-turquoise/10 dark:hover:bg-lovefacts-turquoise/20 focus:ring-lovefacts-turquoise',
+      danger: 'bg-lovefacts-coral text-white hover:bg-lovefacts-coral-dark focus:ring-lovefacts-coral',
     }
 
     const sizes = {

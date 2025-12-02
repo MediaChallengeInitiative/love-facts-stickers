@@ -91,19 +91,19 @@ export function DownloadGatingModal({
     <Modal isOpen={isOpen} onClose={handleClose} title="Quick — get your sticker pack">
       <div className="space-y-4 xs:space-y-6">
         {/* Explanation */}
-        <div className="flex items-start gap-2.5 xs:gap-3 p-3 xs:p-4 bg-pink-500/10 border border-pink-500/20 rounded-lg xs:rounded-xl">
-          <Shield className="w-4 h-4 xs:w-5 xs:h-5 text-pink-500 dark:text-pink-400 flex-shrink-0 mt-0.5" />
-          <p className="text-xs xs:text-sm text-slate-600 dark:text-slate-300">
+        <div className="flex items-start gap-2.5 xs:gap-3 p-3 xs:p-4 bg-lovefacts-turquoise/10 border border-lovefacts-turquoise/20 rounded-lg xs:rounded-xl">
+          <Shield className="w-4 h-4 xs:w-5 xs:h-5 text-lovefacts-turquoise dark:text-lovefacts-turquoise-light flex-shrink-0 mt-0.5" />
+          <p className="text-xs xs:text-sm text-lovefacts-teal dark:text-lovefacts-turquoise-light">
             To help us measure impact and share future sticker packs, please enter an email or phone number.
             We&apos;ll not spam you.{' '}
-            <Link href="/privacy" className="text-pink-500 dark:text-pink-400 hover:underline inline-flex items-center gap-1">
+            <Link href="/privacy" className="text-lovefacts-coral dark:text-lovefacts-coral hover:underline inline-flex items-center gap-1">
               Privacy policy <ExternalLink size={10} className="xs:w-3 xs:h-3" />
             </Link>
           </p>
         </div>
 
         {/* Contact Method Toggle */}
-        <div className="flex gap-1.5 xs:gap-2 p-1 bg-slate-200 dark:bg-slate-700/50 rounded-lg xs:rounded-xl">
+        <div className="flex gap-1.5 xs:gap-2 p-1 bg-lovefacts-turquoise/10 dark:bg-lovefacts-turquoise/20 rounded-lg xs:rounded-xl">
           <button
             onClick={() => {
               setContactMethod('email')
@@ -111,8 +111,8 @@ export function DownloadGatingModal({
             }}
             className={`flex-1 flex items-center justify-center gap-1.5 xs:gap-2 py-2 xs:py-2.5 rounded-md xs:rounded-lg text-xs xs:text-sm font-medium transition-all ${
               contactMethod === 'email'
-                ? 'bg-pink-500 text-white'
-                : 'text-slate-500 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white'
+                ? 'bg-lovefacts-coral text-white'
+                : 'text-lovefacts-teal/70 dark:text-lovefacts-turquoise/70 hover:text-lovefacts-teal dark:hover:text-white'
             }`}
           >
             <Mail size={14} className="xs:w-4 xs:h-4" />
@@ -125,8 +125,8 @@ export function DownloadGatingModal({
             }}
             className={`flex-1 flex items-center justify-center gap-1.5 xs:gap-2 py-2 xs:py-2.5 rounded-md xs:rounded-lg text-xs xs:text-sm font-medium transition-all ${
               contactMethod === 'phone'
-                ? 'bg-pink-500 text-white'
-                : 'text-slate-500 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white'
+                ? 'bg-lovefacts-coral text-white'
+                : 'text-lovefacts-teal/70 dark:text-lovefacts-turquoise/70 hover:text-lovefacts-teal dark:hover:text-white'
             }`}
           >
             <Phone size={14} className="xs:w-4 xs:h-4" />
@@ -171,9 +171,9 @@ export function DownloadGatingModal({
             type="checkbox"
             checked={agreedToPrivacy}
             onChange={(e) => setAgreedToPrivacy(e.target.checked)}
-            className="mt-0.5 xs:mt-1 w-4 h-4 rounded border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-700 text-pink-500 focus:ring-pink-500 focus:ring-offset-white dark:focus:ring-offset-slate-800"
+            className="mt-0.5 xs:mt-1 w-4 h-4 rounded border-lovefacts-turquoise/30 dark:border-lovefacts-turquoise/40 bg-white dark:bg-lovefacts-teal text-lovefacts-coral focus:ring-lovefacts-turquoise focus:ring-offset-white dark:focus:ring-offset-lovefacts-teal"
           />
-          <span className="text-xs xs:text-sm text-slate-500 dark:text-slate-400 group-hover:text-slate-700 dark:group-hover:text-slate-300">
+          <span className="text-xs xs:text-sm text-lovefacts-teal/70 dark:text-lovefacts-turquoise/70 group-hover:text-lovefacts-teal dark:group-hover:text-lovefacts-turquoise-light">
             I agree to the collection of my contact information for impact measurement.
             I can request deletion at any time.
           </span>
@@ -195,17 +195,17 @@ export function DownloadGatingModal({
 
           <div className="relative">
             <div className="absolute inset-0 flex items-center">
-              <div className="w-full border-t border-slate-200 dark:border-slate-700" />
+              <div className="w-full border-t border-lovefacts-turquoise/20 dark:border-lovefacts-turquoise/30" />
             </div>
             <div className="relative flex justify-center text-xs">
-              <span className="px-2 bg-white dark:bg-slate-800 text-slate-500">or</span>
+              <span className="px-2 bg-white dark:bg-lovefacts-teal text-lovefacts-teal/50 dark:text-lovefacts-turquoise/50">or</span>
             </div>
           </div>
 
           <Button
             variant="ghost"
             size="md"
-            className="w-full text-slate-400 text-xs xs:text-sm"
+            className="w-full text-lovefacts-teal/50 dark:text-lovefacts-turquoise/50 text-xs xs:text-sm"
             onClick={handleAnonymousDownload}
             disabled={isLoading}
           >
@@ -214,8 +214,8 @@ export function DownloadGatingModal({
           </Button>
         </div>
 
-        <p className="text-[10px] xs:text-xs text-slate-500 text-center">
-          Downloading: <span className="text-slate-600 dark:text-slate-400">{itemName}</span>
+        <p className="text-[10px] xs:text-xs text-lovefacts-teal/50 dark:text-lovefacts-turquoise/50 text-center">
+          Downloading: <span className="text-lovefacts-teal/70 dark:text-lovefacts-turquoise/70">{itemName}</span>
         </p>
       </div>
     </Modal>

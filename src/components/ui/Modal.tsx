@@ -80,7 +80,7 @@ export function Modal({
             exit={{ opacity: 0, y: 100 }}
             transition={{ duration: 0.3, ease: [0.16, 1, 0.3, 1] }}
             className={cn(
-              'relative w-full bg-white dark:bg-slate-800 shadow-2xl border border-slate-200 dark:border-slate-700',
+              'relative w-full bg-white dark:bg-lovefacts-teal shadow-2xl border border-lovefacts-turquoise/20 dark:border-lovefacts-turquoise/30',
               'rounded-t-2xl xs:rounded-2xl max-h-[90vh] xs:max-h-[85vh] overflow-hidden flex flex-col',
               sizes[size],
               className
@@ -88,16 +88,16 @@ export function Modal({
           >
             {/* Header */}
             {(title || showCloseButton) && (
-              <div className="flex items-center justify-between px-4 xs:px-6 py-3 xs:py-4 border-b border-slate-200 dark:border-slate-700 flex-shrink-0">
+              <div className="flex items-center justify-between px-4 xs:px-6 py-3 xs:py-4 border-b border-lovefacts-turquoise/20 dark:border-lovefacts-turquoise/30 flex-shrink-0">
                 {title && (
-                  <h2 id="modal-title" className="text-lg xs:text-xl font-bold text-slate-900 dark:text-white pr-2">
+                  <h2 id="modal-title" className="text-lg xs:text-xl font-bold text-lovefacts-teal dark:text-white pr-2">
                     {title}
                   </h2>
                 )}
                 {showCloseButton && (
                   <button
                     onClick={onClose}
-                    className="p-1.5 xs:p-2 rounded-lg text-slate-400 hover:text-slate-900 dark:hover:text-white hover:bg-slate-100 dark:hover:bg-slate-700 transition-colors focus:outline-none focus:ring-2 focus:ring-pink-500 flex-shrink-0"
+                    className="p-1.5 xs:p-2 rounded-lg text-lovefacts-teal/50 hover:text-lovefacts-teal dark:text-lovefacts-turquoise/50 dark:hover:text-white hover:bg-lovefacts-turquoise/10 dark:hover:bg-lovefacts-turquoise/20 transition-colors focus:outline-none focus:ring-2 focus:ring-lovefacts-turquoise flex-shrink-0"
                     aria-label="Close modal"
                   >
                     <X size={20} />

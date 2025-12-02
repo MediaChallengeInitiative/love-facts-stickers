@@ -61,9 +61,9 @@ export function CollectionCard({
   return (
     <motion.div
       className={cn(
-        'group relative bg-gradient-to-br from-slate-100 to-slate-200 dark:from-slate-800 dark:to-slate-900 rounded-xl xs:rounded-2xl overflow-hidden',
-        'border border-slate-200 dark:border-slate-700/50 cursor-pointer transition-all duration-300',
-        'hover:border-pink-500/50 hover:shadow-xl hover:shadow-pink-500/20',
+        'group relative bg-gradient-to-br from-white to-lovefacts-turquoise/5 dark:from-lovefacts-teal dark:to-lovefacts-teal-dark rounded-xl xs:rounded-2xl overflow-hidden',
+        'border border-lovefacts-turquoise/20 dark:border-lovefacts-turquoise/30 cursor-pointer transition-all duration-300',
+        'hover:border-lovefacts-coral/50 hover:shadow-xl hover:shadow-lovefacts-coral/20',
         className
       )}
       whileHover={{ y: -6, scale: 1.02 }}
@@ -82,7 +82,7 @@ export function CollectionCard({
       aria-label={`Browse ${name} collection`}
     >
       {/* Flip Gallery Preview */}
-      <div className="relative h-32 xs:h-40 overflow-hidden bg-slate-200/50 dark:bg-slate-900/50">
+      <div className="relative h-32 xs:h-40 overflow-hidden bg-lovefacts-turquoise/5 dark:bg-lovefacts-teal-dark/50">
         {previewStickers.length > 0 ? (
           <>
             {/* Image Carousel */}
@@ -139,7 +139,7 @@ export function CollectionCard({
                     className={cn(
                       'w-2 h-2 rounded-full transition-all',
                       idx === currentIndex
-                        ? 'bg-pink-500 w-4'
+                        ? 'bg-lovefacts-coral w-4'
                         : 'bg-white/40 hover:bg-white/60'
                     )}
                     aria-label={`Go to sticker ${idx + 1}`}
@@ -150,35 +150,35 @@ export function CollectionCard({
           </>
         ) : (
           // Fallback gradient if no preview stickers
-          <div className="absolute inset-0 bg-gradient-to-br from-pink-600/30 via-rose-500/20 to-pink-500/30 flex items-center justify-center">
+          <div className="absolute inset-0 bg-gradient-to-br from-lovefacts-coral/30 via-lovefacts-turquoise/20 to-lovefacts-green/30 flex items-center justify-center">
             <FolderOpen size={48} className="text-white/20" />
           </div>
         )}
 
         {/* Top gradient overlay */}
-        <div className="absolute inset-x-0 top-0 h-12 bg-gradient-to-b from-slate-200/60 dark:from-slate-900/60 to-transparent" />
+        <div className="absolute inset-x-0 top-0 h-12 bg-gradient-to-b from-lovefacts-turquoise/10 dark:from-lovefacts-teal-dark/60 to-transparent" />
 
         {/* Sticker Count Badge */}
-        <div className="absolute top-2 right-2 xs:top-3 xs:right-3 flex items-center gap-1 xs:gap-1.5 px-2 xs:px-3 py-0.5 xs:py-1 bg-black/60 backdrop-blur-sm rounded-full">
-          <FolderOpen size={12} className="xs:w-[14px] xs:h-[14px] text-pink-400" />
+        <div className="absolute top-2 right-2 xs:top-3 xs:right-3 flex items-center gap-1 xs:gap-1.5 px-2 xs:px-3 py-0.5 xs:py-1 bg-lovefacts-teal/80 backdrop-blur-sm rounded-full">
+          <FolderOpen size={12} className="xs:w-[14px] xs:h-[14px] text-lovefacts-turquoise" />
           <span className="text-xs xs:text-sm font-medium text-white">{stickerCount}</span>
         </div>
       </div>
 
       {/* Card Content */}
       <div className="p-3 xs:p-4">
-        <h3 className="text-sm xs:text-base font-bold text-slate-900 dark:text-white mb-0.5 xs:mb-1 group-hover:text-pink-500 dark:group-hover:text-pink-400 transition-colors line-clamp-1">
+        <h3 className="text-sm xs:text-base font-bold text-lovefacts-teal dark:text-white mb-0.5 xs:mb-1 group-hover:text-lovefacts-coral dark:group-hover:text-lovefacts-coral transition-colors line-clamp-1">
           {name}
         </h3>
         {description && (
-          <p className="text-[10px] xs:text-xs text-slate-500 dark:text-slate-400 line-clamp-2 mb-2 xs:mb-3">{description}</p>
+          <p className="text-[10px] xs:text-xs text-lovefacts-teal/70 dark:text-lovefacts-turquoise/70 line-clamp-2 mb-2 xs:mb-3">{description}</p>
         )}
 
         <div className="flex items-center justify-between">
-          <span className="text-[10px] xs:text-xs text-slate-500">
+          <span className="text-[10px] xs:text-xs text-lovefacts-teal/60 dark:text-lovefacts-turquoise/60">
             {stickerCount} sticker{stickerCount !== 1 ? 's' : ''}
           </span>
-          <span className="inline-flex items-center gap-1 xs:gap-1.5 text-[10px] xs:text-xs text-pink-500 dark:text-pink-400 font-medium group-hover:text-pink-400 dark:group-hover:text-pink-300 transition-colors">
+          <span className="inline-flex items-center gap-1 xs:gap-1.5 text-[10px] xs:text-xs text-lovefacts-coral dark:text-lovefacts-coral font-medium group-hover:text-lovefacts-coral-dark dark:group-hover:text-lovefacts-coral-light transition-colors">
             <Download size={10} className="xs:w-3 xs:h-3" />
             Browse
           </span>
@@ -187,7 +187,7 @@ export function CollectionCard({
 
       {/* Hover glow effect */}
       <div className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-500 pointer-events-none">
-        <div className="absolute inset-0 bg-gradient-to-t from-pink-500/10 to-transparent" />
+        <div className="absolute inset-0 bg-gradient-to-t from-lovefacts-coral/10 to-transparent" />
       </div>
     </motion.div>
   )

@@ -102,7 +102,7 @@ export function Header() {
 
   return (
     <>
-      <header className="fixed top-0 left-0 right-0 z-40 bg-white/80 dark:bg-slate-900/80 backdrop-blur-lg border-b border-slate-200 dark:border-slate-800 transition-colors duration-300">
+      <header className="fixed top-0 left-0 right-0 z-40 bg-white/80 dark:bg-lovefacts-teal-dark/80 backdrop-blur-lg border-b border-lovefacts-turquoise/20 dark:border-lovefacts-turquoise/30 transition-colors duration-300">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex items-center justify-between h-16">
             {/* Logo */}
@@ -128,7 +128,7 @@ export function Header() {
                 <Link
                   key={link.href}
                   href={link.href}
-                  className="text-slate-600 dark:text-slate-300 hover:text-pink-500 dark:hover:text-pink-400 transition-colors text-sm font-medium"
+                  className="text-lovefacts-teal dark:text-lovefacts-turquoise-light hover:text-lovefacts-coral dark:hover:text-lovefacts-coral transition-colors text-sm font-medium"
                 >
                   {link.label}
                 </Link>
@@ -141,7 +141,7 @@ export function Header() {
               <ThemeToggle />
               <motion.button
                 onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
-                className="relative p-2 rounded-xl text-slate-500 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors z-50"
+                className="relative p-2 rounded-xl text-lovefacts-teal dark:text-lovefacts-turquoise hover:text-lovefacts-teal-dark dark:hover:text-white hover:bg-lovefacts-turquoise/10 dark:hover:bg-lovefacts-turquoise/20 transition-colors z-50"
                 aria-label={isMobileMenuOpen ? 'Close menu' : 'Open menu'}
                 whileTap={{ scale: 0.9 }}
               >
@@ -195,10 +195,10 @@ export function Header() {
               initial="closed"
               animate="open"
               exit="closed"
-              className="fixed top-0 right-0 bottom-0 z-50 w-full max-w-sm bg-white dark:bg-slate-900 shadow-2xl md:hidden flex flex-col"
+              className="fixed top-0 right-0 bottom-0 z-50 w-full max-w-sm bg-white dark:bg-lovefacts-teal-dark shadow-2xl md:hidden flex flex-col"
             >
               {/* Menu Header */}
-              <div className="flex items-center justify-between p-6 border-b border-slate-200 dark:border-slate-800">
+              <div className="flex items-center justify-between p-6 border-b border-lovefacts-turquoise/20 dark:border-lovefacts-turquoise/30">
                 <motion.div
                   variants={logoVariants}
                   initial="closed"
@@ -217,7 +217,7 @@ export function Header() {
 
                 <motion.button
                   onClick={closeMenu}
-                  className="p-2 rounded-xl text-slate-500 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors"
+                  className="p-2 rounded-xl text-lovefacts-teal dark:text-lovefacts-turquoise hover:text-lovefacts-teal-dark dark:hover:text-white hover:bg-lovefacts-turquoise/10 dark:hover:bg-lovefacts-turquoise/20 transition-colors"
                   whileTap={{ scale: 0.9 }}
                   aria-label="Close menu"
                 >
@@ -239,10 +239,10 @@ export function Header() {
                       <Link
                         href={link.href}
                         onClick={closeMenu}
-                        className="flex items-center gap-4 px-4 py-4 rounded-2xl text-slate-700 dark:text-slate-200 hover:text-pink-500 dark:hover:text-pink-400 hover:bg-pink-50 dark:hover:bg-pink-500/10 transition-all duration-200 group"
+                        className="flex items-center gap-4 px-4 py-4 rounded-2xl text-lovefacts-teal dark:text-lovefacts-turquoise-light hover:text-lovefacts-coral dark:hover:text-lovefacts-coral hover:bg-lovefacts-coral/10 dark:hover:bg-lovefacts-coral/20 transition-all duration-200 group"
                       >
-                        <span className="flex items-center justify-center w-12 h-12 rounded-xl bg-slate-100 dark:bg-slate-800 group-hover:bg-pink-100 dark:group-hover:bg-pink-500/20 transition-colors">
-                          <link.icon size={22} className="text-slate-500 dark:text-slate-400 group-hover:text-pink-500 dark:group-hover:text-pink-400 transition-colors" />
+                        <span className="flex items-center justify-center w-12 h-12 rounded-xl bg-lovefacts-turquoise/10 dark:bg-lovefacts-turquoise/20 group-hover:bg-lovefacts-coral/20 dark:group-hover:bg-lovefacts-coral/30 transition-colors">
+                          <link.icon size={22} className="text-lovefacts-teal dark:text-lovefacts-turquoise group-hover:text-lovefacts-coral dark:group-hover:text-lovefacts-coral transition-colors" />
                         </span>
                         <span className="text-lg font-medium">{link.label}</span>
                       </Link>
@@ -255,7 +255,7 @@ export function Header() {
                   initial={{ scaleX: 0 }}
                   animate={{ scaleX: 1 }}
                   transition={{ delay: 0.4, duration: 0.3 }}
-                  className="my-8 h-px bg-slate-200 dark:bg-slate-800"
+                  className="my-8 h-px bg-lovefacts-turquoise/20 dark:bg-lovefacts-turquoise/30"
                 />
 
                 {/* External Link */}
@@ -269,10 +269,10 @@ export function Header() {
                     href="https://mciug.org"
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="flex items-center gap-4 px-4 py-4 rounded-2xl text-slate-700 dark:text-slate-200 hover:text-pink-500 dark:hover:text-pink-400 hover:bg-pink-50 dark:hover:bg-pink-500/10 transition-all duration-200 group"
+                    className="flex items-center gap-4 px-4 py-4 rounded-2xl text-lovefacts-teal dark:text-lovefacts-turquoise-light hover:text-lovefacts-coral dark:hover:text-lovefacts-coral hover:bg-lovefacts-coral/10 dark:hover:bg-lovefacts-coral/20 transition-all duration-200 group"
                   >
-                    <span className="flex items-center justify-center w-12 h-12 rounded-xl bg-slate-100 dark:bg-slate-800 group-hover:bg-pink-100 dark:group-hover:bg-pink-500/20 transition-colors">
-                      <ExternalLink size={22} className="text-slate-500 dark:text-slate-400 group-hover:text-pink-500 dark:group-hover:text-pink-400 transition-colors" />
+                    <span className="flex items-center justify-center w-12 h-12 rounded-xl bg-lovefacts-turquoise/10 dark:bg-lovefacts-turquoise/20 group-hover:bg-lovefacts-coral/20 dark:group-hover:bg-lovefacts-coral/30 transition-colors">
+                      <ExternalLink size={22} className="text-lovefacts-teal dark:text-lovefacts-turquoise group-hover:text-lovefacts-coral dark:group-hover:text-lovefacts-coral transition-colors" />
                     </span>
                     <span className="text-lg font-medium">Visit MCI Website</span>
                   </a>
@@ -284,13 +284,13 @@ export function Header() {
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ delay: 0.5 }}
-                className="p-6 border-t border-slate-200 dark:border-slate-800"
+                className="p-6 border-t border-lovefacts-turquoise/20 dark:border-lovefacts-turquoise/30"
               >
                 <div className="text-center">
-                  <p className="text-sm text-slate-500 dark:text-slate-400">
+                  <p className="text-sm text-lovefacts-teal/70 dark:text-lovefacts-turquoise/70">
                     Fighting misinformation with
                   </p>
-                  <p className="text-sm font-semibold bg-gradient-to-r from-pink-500 to-rose-500 bg-clip-text text-transparent">
+                  <p className="text-sm font-semibold bg-gradient-to-r from-lovefacts-coral via-lovefacts-turquoise to-lovefacts-green bg-clip-text text-transparent">
                     Media Challenge Initiative
                   </p>
                 </div>
