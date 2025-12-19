@@ -114,8 +114,18 @@ model SyncLog {
   syncType      String   // full, incremental
   itemsSynced   Int      @default(0)
   errors        String?
+  webhookId     String?  // Google webhook channel ID
+  pageToken     String?  // Google Drive changes page token
   startedAt     DateTime @default(now())
   completedAt   DateTime?
+}
+
+// Key-value store for sync state
+model SyncState {
+  id        String   @id @default(cuid())
+  key       String   @unique
+  value     String
+  updatedAt DateTime @updatedAt
 }
 
 // Unsubscribe/deletion requests for privacy compliance

@@ -9,6 +9,7 @@ import { Button } from '@/components/ui/Button'
 import { Badge } from '@/components/ui/Badge'
 import toast from 'react-hot-toast'
 import type { Sticker } from '@/lib/types'
+import { getStickerShareUrl } from '@/lib/urls'
 
 // Social media icons as SVG components
 const TwitterIcon = () => (
@@ -47,7 +48,7 @@ export function StickerPreviewModal({
 
   if (!sticker) return null
 
-  const stickerUrl = `${typeof window !== 'undefined' ? window.location.origin : ''}/sticker/${sticker.id}`
+  const stickerUrl = getStickerShareUrl(sticker.id)
   const shareText = sticker.caption || `Check out this media literacy sticker: ${sticker.title} from Love Facts!`
 
   const handleCopyLink = () => {
