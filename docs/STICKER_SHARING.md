@@ -13,7 +13,7 @@ The sticker sharing feature has been completely rebuilt to provide:
 ### URL Structure
 
 ```
-https://lovefactsstickers.org/sticker/{sticker-id}
+https://stickers.lovefacts.africa/sticker/{sticker-id}
 ```
 
 - Each sticker has a unique CUID identifier
@@ -46,7 +46,7 @@ import { getStickerShareUrl } from '@/lib/urls'
 
 // Generate share URL
 const shareUrl = getStickerShareUrl(sticker.id)
-// Result: https://lovefactsstickers.org/sticker/cm3x7y9z0001
+// Result: https://stickers.lovefacts.africa/sticker/cm3x7y9z0001
 ```
 
 ### Social Media Sharing
@@ -77,7 +77,7 @@ QR codes are generated client-side using `qrcode.react`:
 
 ```env
 # Required for proper URL generation
-NEXT_PUBLIC_APP_URL="https://lovefactsstickers.org"
+NEXT_PUBLIC_APP_URL="https://stickers.lovefacts.africa"
 ```
 
 ### Middleware

@@ -5,7 +5,7 @@
 export function getBaseUrl(): string {
   // Server-side: Use environment variable
   if (typeof window === 'undefined') {
-    return process.env.NEXT_PUBLIC_APP_URL || 'https://lovefactsstickers.org'
+    return process.env.NEXT_PUBLIC_APP_URL || 'https://stickers.lovefacts.africa'
   }
   
   // Client-side: Use window.location

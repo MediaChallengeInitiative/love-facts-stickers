@@ -22,7 +22,7 @@ export default function StickerSharePage({ sticker }: StickerSharePageProps) {
 
   const shareUrl = typeof window !== 'undefined' 
     ? `${window.location.origin}/sticker/${sticker.id}`
-    : `https://lovefactsstickers.org/sticker/${sticker.id}`
+    : `https://stickers.lovefacts.africa/sticker/${sticker.id}`
 
   const shareText = sticker.caption || `Check out this media literacy sticker: ${sticker.title} from Love Facts!`
 

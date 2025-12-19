@@ -33,7 +33,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
 
   const ogImageUrl = sticker.sourceUrl.startsWith('http') 
     ? sticker.sourceUrl 
-    : `${process.env.NEXT_PUBLIC_APP_URL || 'https://lovefactsstickers.org'}${sticker.sourceUrl}`
+    : `${process.env.NEXT_PUBLIC_APP_URL || 'https://stickers.lovefacts.africa'}${sticker.sourceUrl}`
 
   return {
     title: `${sticker.title} - Love Facts Media Literacy Stickers`,

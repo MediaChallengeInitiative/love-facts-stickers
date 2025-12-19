@@ -27,11 +27,11 @@ describe('URL Generation', () => {
 1. **Share Page Rendering**
    ```bash
    # Test valid sticker
-   curl https://lovefactsstickers.org/sticker/{valid-id}
+   curl https://stickers.lovefacts.africa/sticker/{valid-id}
    # Should return 200 with proper HTML
 
    # Test invalid sticker
-   curl https://lovefactsstickers.org/sticker/invalid-id
+   curl https://stickers.lovefacts.africa/sticker/invalid-id
    # Should return 404
    ```
 
@@ -39,7 +39,7 @@ describe('URL Generation', () => {
    ```bash
    # Use Open Graph debugger
    https://developers.facebook.com/tools/debug/
-   # Enter: https://lovefactsstickers.org/sticker/{id}
+   # Enter: https://stickers.lovefacts.africa/sticker/{id}
    # Verify image, title, description
    ```
 

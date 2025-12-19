@@ -77,7 +77,7 @@ GOOGLE_API_KEY="your-api-key"
 GOOGLE_DRIVE_FOLDER_ID="1ejvH2Dgo41jYv7V247XLQSqbHkKFbNkq"
 
 # App URL (required for webhooks)
-NEXT_PUBLIC_APP_URL="https://lovefactsstickers.org"
+NEXT_PUBLIC_APP_URL="https://stickers.lovefacts.africa"
 ```
 
 ### 4. Database Migration
@@ -94,12 +94,12 @@ npx prisma migrate dev --name add_sync_state
 
 ```bash
 # Full sync
-curl -X POST https://lovefactsstickers.org/api/sync/drive-v2 \
+curl -X POST https://stickers.lovefacts.africa/api/sync/drive-v2 \
   -H "Content-Type: application/json" \
   -d '{"fullSync": true}'
 
 # Incremental sync with webhook setup
-curl -X POST https://lovefactsstickers.org/api/sync/drive-v2 \
+curl -X POST https://stickers.lovefacts.africa/api/sync/drive-v2 \
   -H "Content-Type: application/json" \
   -d '{"setupWebhook": true}'
 ```
