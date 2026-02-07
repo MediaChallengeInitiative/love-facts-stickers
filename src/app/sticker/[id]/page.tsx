@@ -4,7 +4,7 @@ import prisma from '@/lib/db'
 import StickerSharePage from './StickerSharePage'
 
 interface Props {
-  params: { id: string }
+  params: Promise<{ id: string }>
 }
 
 async function getSticker(id: string) {
@@ -23,17 +23,19 @@ async function getSticker(id: string) {
 }
 
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
-  const sticker = await getSticker(params.id)
-  
+  const { id } = await params
+  const sticker = await getSticker(id)
+
   if (!sticker) {
     return {
       title: 'Sticker Not Found - Love Facts',
     }
   }
 
-  const ogImageUrl = sticker.sourceUrl.startsWith('http') 
-    ? sticker.sourceUrl 
-    : `${process.env.NEXT_PUBLIC_APP_URL || 'https://stickers.lovefacts.africa'}${sticker.sourceUrl}`
+  const baseUrl = process.env.NEXT_PUBLIC_APP_URL || 'https://stickers.lovefacts.africa'
+  const ogImageUrl = sticker.sourceUrl.startsWith('http')
+    ? sticker.sourceUrl
+    : `${baseUrl}${sticker.sourceUrl}`
 
   return {
     title: `${sticker.title} - Love Facts Media Literacy Stickers`,
@@ -62,7 +64,8 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
 }
 
 export default async function StickerPage({ params }: Props) {
-  const sticker = await getSticker(params.id)
+  const { id } = await params
+  const sticker = await getSticker(id)
 
   if (!sticker) {
     notFound()

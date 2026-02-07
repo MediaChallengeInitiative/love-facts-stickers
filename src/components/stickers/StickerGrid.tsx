@@ -79,7 +79,7 @@ export function StickerGrid({ stickers, onStickerClick, isLoading, selectedColle
             id={sticker.id}
             title={sticker.title}
             thumbnailUrl={sticker.thumbnailUrl}
-            collectionName={sticker.collection.name}
+            collectionName={sticker.collection?.name || 'Uncategorized'}
             onClick={() => onStickerClick(sticker)}
           />
         </motion.div>

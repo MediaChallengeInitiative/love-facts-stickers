@@ -286,12 +286,20 @@ export function StackedGallery({
         }
       }
 
-      const link = document.createElement('a')
-      link.href = sticker.imageUrl
-      link.download = `${sticker.title.replace(/\s+/g, '-').toLowerCase()}.png`
-      document.body.appendChild(link)
-      link.click()
-      document.body.removeChild(link)
+      try {
+        const imageRes = await fetch(sticker.imageUrl)
+        const blob = await imageRes.blob()
+        const blobUrl = URL.createObjectURL(blob)
+        const link = document.createElement('a')
+        link.href = blobUrl
+        link.download = `${sticker.title.replace(/\s+/g, '-').toLowerCase()}.png`
+        document.body.appendChild(link)
+        link.click()
+        document.body.removeChild(link)
+        URL.revokeObjectURL(blobUrl)
+      } catch {
+        window.open(sticker.imageUrl, '_blank')
+      }
     },
     [onDownload]
   )

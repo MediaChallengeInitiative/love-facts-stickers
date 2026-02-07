@@ -119,16 +119,22 @@ export default function HomePage() {
         }),
       })
 
-      // For demo, simulate success
-      await new Promise((resolve) => setTimeout(resolve, 1000))
-
-      // Trigger download
-      const link = document.createElement('a')
-      link.href = selectedSticker.sourceUrl
-      link.download = `${selectedSticker.title.replace(/\s+/g, '-').toLowerCase()}.png`
-      document.body.appendChild(link)
-      link.click()
-      document.body.removeChild(link)
+      // Fetch the image as a blob for reliable download
+      try {
+        const imageRes = await fetch(selectedSticker.sourceUrl)
+        const blob = await imageRes.blob()
+        const blobUrl = URL.createObjectURL(blob)
+        const link = document.createElement('a')
+        link.href = blobUrl
+        link.download = `${selectedSticker.title.replace(/\s+/g, '-').toLowerCase()}.png`
+        document.body.appendChild(link)
+        link.click()
+        document.body.removeChild(link)
+        URL.revokeObjectURL(blobUrl)
+      } catch {
+        // Fallback: open the image URL directly
+        window.open(selectedSticker.sourceUrl, '_blank')
+      }
 
       setShowDownloadModal(false)
       setShowSuccessModal(true)
@@ -263,7 +269,7 @@ export default function HomePage() {
         itemName={
           downloadType === 'single'
             ? selectedSticker?.title || ''
-            : selectedSticker?.collection.name || ''
+            : selectedSticker?.collection?.name || ''
         }
       />
 
