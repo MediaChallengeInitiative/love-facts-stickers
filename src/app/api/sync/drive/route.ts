@@ -68,6 +68,7 @@ export async function POST() {
       for (const file of files) {
         try {
           const title = file.name.replace(/\.(png|jpg|jpeg|gif|webp)$/i, '').replace(/[-_]/g, ' ')
+          const tags = generateTags(title)
 
           await prisma.sticker.upsert({
             where: { driveId: file.id },
@@ -76,6 +77,8 @@ export async function POST() {
               filename: file.name,
               sourceUrl: getDriveProxyUrl(file.id),
               thumbnailUrl: getDriveProxyThumbnailUrl(file.id),
+              tags,
+              caption: `${title} - Share to spread media literacy!`,
             },
             create: {
               title,
@@ -84,7 +87,7 @@ export async function POST() {
               sourceUrl: getDriveProxyUrl(file.id),
               thumbnailUrl: getDriveProxyThumbnailUrl(file.id),
               collectionId: defaultCollection.id,
-              tags: generateTags(title),
+              tags,
               caption: `${title} - Share to spread media literacy!`,
             },
           })
@@ -99,21 +102,45 @@ export async function POST() {
         const folder = folders[i]
         const slug = folder.name.toLowerCase().replace(/\s+/g, '-').replace(/[^a-z0-9-]/g, '')
 
-        // Create or update collection
-        const collection = await prisma.collection.upsert({
-          where: { slug },
-          update: {
-            name: folder.name,
-            driveFolderId: folder.id,
-          },
-          create: {
-            name: folder.name,
-            slug,
-            description: `${folder.name} stickers`,
-            driveFolderId: folder.id,
-            sortOrder: i + 1,
-          },
+        // Check if collection already exists by driveFolderId (handles renames)
+        let collection = await prisma.collection.findUnique({
+          where: { driveFolderId: folder.id },
         })
+
+        if (collection) {
+          // Update existing collection (handles renamed folders)
+          const newSlug = collection.name !== folder.name ? slug : collection.slug
+          // Avoid slug conflicts
+          const slugConflict = newSlug !== collection.slug
+            ? await prisma.collection.findUnique({ where: { slug: newSlug } })
+            : null
+          const finalSlug = slugConflict ? `${newSlug}-${folder.id.substring(0, 6)}` : newSlug
+
+          collection = await prisma.collection.update({
+            where: { id: collection.id },
+            data: {
+              name: folder.name,
+              slug: finalSlug,
+              description: `${folder.name} stickers`,
+              sortOrder: i + 1,
+            },
+          })
+        } else {
+          // Create new collection
+          // Check for slug conflict
+          const slugConflict = await prisma.collection.findUnique({ where: { slug } })
+          const finalSlug = slugConflict ? `${slug}-${folder.id.substring(0, 6)}` : slug
+
+          collection = await prisma.collection.create({
+            data: {
+              name: folder.name,
+              slug: finalSlug,
+              description: `${folder.name} stickers`,
+              driveFolderId: folder.id,
+              sortOrder: i + 1,
+            },
+          })
+        }
 
         // Fetch files in this folder
         const files = await fetchDriveFiles(folder.id, apiKey)
@@ -121,6 +148,7 @@ export async function POST() {
         for (const file of files) {
           try {
             const title = file.name.replace(/\.(png|jpg|jpeg|gif|webp)$/i, '').replace(/[-_]/g, ' ')
+            const tags = generateTags(title)
 
             await prisma.sticker.upsert({
               where: { driveId: file.id },
@@ -130,6 +158,8 @@ export async function POST() {
                 sourceUrl: getDriveProxyUrl(file.id),
                 thumbnailUrl: getDriveProxyThumbnailUrl(file.id),
                 collectionId: collection.id,
+                tags,
+                caption: `${title} - Share to spread media literacy!`,
               },
               create: {
                 title,
@@ -138,7 +168,7 @@ export async function POST() {
                 sourceUrl: getDriveProxyUrl(file.id),
                 thumbnailUrl: getDriveProxyThumbnailUrl(file.id),
                 collectionId: collection.id,
-                tags: generateTags(title),
+                tags,
                 caption: `${title} - Share to spread media literacy!`,
               },
             })

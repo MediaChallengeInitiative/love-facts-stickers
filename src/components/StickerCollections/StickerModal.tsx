@@ -1,8 +1,8 @@
 'use client'
 
-import { useEffect, useRef, useCallback } from 'react'
+import { useState, useEffect, useRef, useCallback } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
-import { X, Download } from 'lucide-react'
+import { X, Download, RefreshCw, Sparkles } from 'lucide-react'
 
 interface StickerModalProps {
   isOpen: boolean
@@ -19,6 +19,43 @@ export function StickerModal({ isOpen, onClose, sticker, onDownload }: StickerMo
   const modalRef = useRef<HTMLDivElement>(null)
   const closeButtonRef = useRef<HTMLButtonElement>(null)
   const previousActiveElement = useRef<HTMLElement | null>(null)
+  const imgRef = useRef<HTMLImageElement>(null)
+  const [imageLoaded, setImageLoaded] = useState(false)
+  const [imageError, setImageError] = useState(false)
+  const retryCount = useRef(0)
+
+  // Reset image state when sticker changes
+  useEffect(() => {
+    setImageLoaded(false)
+    setImageError(false)
+    retryCount.current = 0
+  }, [sticker?.id])
+
+  const handleImageError = useCallback(() => {
+    if (retryCount.current < 3 && sticker) {
+      retryCount.current++
+      setTimeout(() => {
+        if (imgRef.current) {
+          const url = sticker.imageUrl
+          const separator = url.includes('?') ? '&' : '?'
+          imgRef.current.src = `${url}${separator}_t=${Date.now()}`
+        }
+      }, 1500 * retryCount.current)
+    } else {
+      setImageError(true)
+    }
+  }, [sticker])
+
+  const handleManualRetry = useCallback(() => {
+    if (!sticker) return
+    retryCount.current = 0
+    setImageError(false)
+    setImageLoaded(false)
+    if (imgRef.current) {
+      const separator = sticker.imageUrl.includes('?') ? '&' : '?'
+      imgRef.current.src = `${sticker.imageUrl}${separator}_t=${Date.now()}`
+    }
+  }, [sticker])
 
   // Focus trap and ESC key handling
   useEffect(() => {
@@ -148,11 +185,38 @@ export function StickerModal({ isOpen, onClose, sticker, onDownload }: StickerMo
                 />
               </div>
 
+              {/* Loading state */}
+              {!imageLoaded && !imageError && (
+                <div className="absolute inset-0 flex items-center justify-center">
+                  <div className="w-12 h-12 rounded-full bg-lovefacts-turquoise/10 animate-pulse flex items-center justify-center">
+                    <RefreshCw className="w-5 h-5 text-lovefacts-turquoise/40 animate-spin" />
+                  </div>
+                </div>
+              )}
+
+              {/* Error state */}
+              {imageError && (
+                <div className="absolute inset-0 flex flex-col items-center justify-center gap-3">
+                  <Sparkles className="w-10 h-10 text-lovefacts-turquoise/40" />
+                  <p className="text-sm text-lovefacts-teal/50 dark:text-lovefacts-turquoise/50">Image could not be loaded</p>
+                  <button
+                    onClick={handleManualRetry}
+                    className="flex items-center gap-1.5 px-3 py-1.5 text-xs bg-lovefacts-turquoise/20 hover:bg-lovefacts-turquoise/30 rounded-full text-lovefacts-teal/70 dark:text-lovefacts-turquoise/70 transition-colors"
+                  >
+                    <RefreshCw size={12} />
+                    Retry
+                  </button>
+                </div>
+              )}
+
               {/* eslint-disable-next-line @next/next/no-img-element */}
               <img
+                ref={imgRef}
                 src={sticker.imageUrl}
                 alt={sticker.title}
-                className="relative max-w-full max-h-full object-contain drop-shadow-2xl"
+                className={`relative max-w-full max-h-full object-contain drop-shadow-2xl transition-opacity duration-300 ${imageLoaded ? 'opacity-100' : 'opacity-0'}`}
+                onLoad={() => setImageLoaded(true)}
+                onError={handleImageError}
               />
             </div>
 

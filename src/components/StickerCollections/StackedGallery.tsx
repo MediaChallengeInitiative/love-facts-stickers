@@ -1,10 +1,13 @@
 'use client'
 
-import { useState, useCallback, useMemo } from 'react'
+import { useState, useCallback, useMemo, useRef } from 'react'
 import { motion } from 'framer-motion'
 import { Eye, Download, Sparkles, ArrowRight } from 'lucide-react'
 import { StickerModal } from './StickerModal'
 import { cn } from '@/lib/utils'
+
+const MAX_AUTO_RETRIES = 3
+const RETRY_DELAY = 2000
 
 export interface GallerySticker {
   id: string
@@ -40,9 +43,27 @@ function CollectionCard({
   onImageError,
 }: CollectionCardProps) {
   const [isHovered, setIsHovered] = useState(false)
+  const retryCounts = useRef<Map<string, number>>(new Map())
+  const imgRefs = useRef<Map<string, HTMLImageElement>>(new Map())
   const maxVisible = 4
   const visibleStickers = stickers.slice(0, maxVisible)
   const topSticker = visibleStickers[0]
+
+  const handleImageError = useCallback((stickerId: string, imageUrl: string) => {
+    const currentRetries = retryCounts.current.get(stickerId) || 0
+    if (currentRetries < MAX_AUTO_RETRIES) {
+      retryCounts.current.set(stickerId, currentRetries + 1)
+      setTimeout(() => {
+        const img = imgRefs.current.get(stickerId)
+        if (img) {
+          const separator = imageUrl.includes('?') ? '&' : '?'
+          img.src = `${imageUrl}${separator}_t=${Date.now()}`
+        }
+      }, RETRY_DELAY * (currentRetries + 1))
+    } else {
+      onImageError(stickerId)
+    }
+  }, [onImageError])
 
   const handleKeyDown = (e: React.KeyboardEvent) => {
     if (e.key === 'Enter' || e.key === ' ') {
@@ -115,11 +136,12 @@ function CollectionCard({
                     ) : (
                       /* eslint-disable-next-line @next/next/no-img-element */
                       <img
+                        ref={(el) => { if (el) imgRefs.current.set(sticker.id, el) }}
                         src={sticker.imageUrl}
                         alt={sticker.title}
                         className="w-full h-full object-contain"
                         loading={index === 0 ? 'eager' : 'lazy'}
-                        onError={() => onImageError(sticker.id)}
+                        onError={() => handleImageError(sticker.id, sticker.imageUrl)}
                       />
                     )}
                   </div>

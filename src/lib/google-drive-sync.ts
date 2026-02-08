@@ -171,32 +171,56 @@ export class DriveSyncEngine {
   }
 
   /**
-   * Sync a folder (collection)
+   * Sync a folder (collection) — handles both new folders and renames
    */
   private async syncFolder(folder: drive_v3.Schema$File): Promise<void> {
     if (!folder.id || !folder.name) return
 
-    const slug = folder.name.toLowerCase().replace(/\s+/g, '-').replace(/[^a-z0-9-]/g, '')
+    const newSlug = folder.name.toLowerCase().replace(/\s+/g, '-').replace(/[^a-z0-9-]/g, '')
 
-    await prisma.collection.upsert({
+    // Check for rename
+    const existing = await prisma.collection.findUnique({
       where: { driveFolderId: folder.id },
-      update: {
-        name: folder.name,
-        slug,
-      },
-      create: {
-        name: folder.name,
-        slug,
-        driveFolderId: folder.id,
-        description: `${folder.name} stickers`,
-      }
+      select: { name: true, slug: true }
     })
 
-    console.log(`Synced collection: ${folder.name}`)
+    const isRename = existing && existing.name !== folder.name
+
+    // If renaming, check if the new slug conflicts with another collection
+    if (isRename) {
+      const slugConflict = await prisma.collection.findUnique({ where: { slug: newSlug } })
+      const finalSlug = slugConflict && slugConflict.driveFolderId !== folder.id
+        ? `${newSlug}-${folder.id.substring(0, 6)}`
+        : newSlug
+
+      await prisma.collection.update({
+        where: { driveFolderId: folder.id },
+        data: {
+          name: folder.name,
+          slug: finalSlug,
+          description: `${folder.name} stickers`,
+        }
+      })
+      console.log(`Renamed collection: "${existing.name}" → "${folder.name}"`)
+    } else {
+      await prisma.collection.upsert({
+        where: { driveFolderId: folder.id },
+        update: {
+          name: folder.name,
+        },
+        create: {
+          name: folder.name,
+          slug: newSlug,
+          driveFolderId: folder.id,
+          description: `${folder.name} stickers`,
+        }
+      })
+      console.log(`Synced collection: ${folder.name}`)
+    }
   }
 
   /**
-   * Sync an image file (sticker)
+   * Sync an image file (sticker) — handles both new files and renames
    */
   private async syncImage(file: drive_v3.Schema$File): Promise<void> {
     if (!file.id || !file.name || !file.parents) return
@@ -212,6 +236,15 @@ export class DriveSyncEngine {
     }
 
     const title = file.name.replace(/\.(png|jpg|jpeg|gif|webp)$/i, '').replace(/[-_]/g, ' ')
+    const newTags = this.generateTags(title)
+
+    // Check if this is a rename (existing sticker with different filename)
+    const existing = await prisma.sticker.findUnique({
+      where: { driveId: file.id },
+      select: { filename: true, title: true }
+    })
+
+    const isRename = existing && existing.filename !== file.name
 
     await prisma.sticker.upsert({
       where: { driveId: file.id },
@@ -220,6 +253,10 @@ export class DriveSyncEngine {
         filename: file.name,
         sourceUrl: getDriveProxyUrl(file.id),
         thumbnailUrl: getDriveProxyThumbnailUrl(file.id),
+        collectionId: collection.id,
+        // Always update tags and caption on rename so they reflect the new name
+        tags: newTags,
+        caption: `${title} - Share to spread media literacy!`,
       },
       create: {
         title,
@@ -228,12 +265,16 @@ export class DriveSyncEngine {
         sourceUrl: getDriveProxyUrl(file.id),
         thumbnailUrl: getDriveProxyThumbnailUrl(file.id),
         collectionId: collection.id,
-        tags: this.generateTags(title),
+        tags: newTags,
         caption: `${title} - Share to spread media literacy!`,
       }
     })
 
-    console.log(`Synced sticker: ${title}`)
+    if (isRename) {
+      console.log(`Renamed sticker: "${existing.title}" → "${title}"`)
+    } else {
+      console.log(`Synced sticker: ${title}`)
+    }
   }
 
   /**

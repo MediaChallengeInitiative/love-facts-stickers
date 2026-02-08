@@ -1,8 +1,8 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useRef, useCallback, useEffect } from 'react'
 import { motion } from 'framer-motion'
-import { Download, Share2, Copy, MessageCircle, FolderDown, QrCode } from 'lucide-react'
+import { Download, Share2, Copy, MessageCircle, FolderDown, QrCode, RefreshCw, Sparkles } from 'lucide-react'
 import { QRCodeSVG } from 'qrcode.react'
 import { Modal } from '@/components/ui/Modal'
 import { Button } from '@/components/ui/Button'
@@ -45,6 +45,43 @@ export function StickerPreviewModal({
 }: StickerPreviewModalProps) {
   const [showShareMenu, setShowShareMenu] = useState(false)
   const [showQRCode, setShowQRCode] = useState(false)
+  const [imageLoaded, setImageLoaded] = useState(false)
+  const [imageError, setImageError] = useState(false)
+  const imgRef = useRef<HTMLImageElement>(null)
+  const retryCount = useRef(0)
+
+  // Reset state when sticker changes
+  useEffect(() => {
+    setImageLoaded(false)
+    setImageError(false)
+    retryCount.current = 0
+  }, [sticker?.id])
+
+  const handleImageError = useCallback(() => {
+    if (retryCount.current < 3 && sticker) {
+      retryCount.current++
+      setTimeout(() => {
+        if (imgRef.current) {
+          const url = sticker.sourceUrl
+          const separator = url.includes('?') ? '&' : '?'
+          imgRef.current.src = `${url}${separator}_t=${Date.now()}`
+        }
+      }, 1500 * retryCount.current)
+    } else {
+      setImageError(true)
+    }
+  }, [sticker])
+
+  const handleManualRetry = useCallback(() => {
+    if (!sticker) return
+    retryCount.current = 0
+    setImageError(false)
+    setImageLoaded(false)
+    if (imgRef.current) {
+      const separator = sticker.sourceUrl.includes('?') ? '&' : '?'
+      imgRef.current.src = `${sticker.sourceUrl}${separator}_t=${Date.now()}`
+    }
+  }, [sticker])
 
   if (!sticker) return null
 
@@ -111,11 +148,36 @@ export function StickerPreviewModal({
       <div className="flex flex-col md:flex-row gap-4 xs:gap-6">
         {/* Image Preview */}
         <div className="flex-shrink-0 md:flex-1 min-h-[200px] xs:min-h-[250px] md:min-h-[300px] relative bg-lovefacts-turquoise/5 dark:bg-lovefacts-teal-dark/50 rounded-lg xs:rounded-xl overflow-hidden flex items-center justify-center">
+          {/* Loading state */}
+          {!imageLoaded && !imageError && (
+            <div className="absolute inset-0 flex items-center justify-center">
+              <RefreshCw className="w-6 h-6 text-lovefacts-turquoise/40 animate-spin" />
+            </div>
+          )}
+
+          {/* Error state */}
+          {imageError && (
+            <div className="absolute inset-0 flex flex-col items-center justify-center gap-2">
+              <Sparkles className="w-8 h-8 text-lovefacts-turquoise/40" />
+              <p className="text-xs text-lovefacts-teal/50 dark:text-lovefacts-turquoise/50">Image unavailable</p>
+              <button
+                onClick={handleManualRetry}
+                className="flex items-center gap-1 px-2.5 py-1 text-[10px] xs:text-xs bg-lovefacts-turquoise/20 hover:bg-lovefacts-turquoise/30 rounded-full text-lovefacts-teal/60 dark:text-lovefacts-turquoise/60 transition-colors"
+              >
+                <RefreshCw size={10} />
+                Retry
+              </button>
+            </div>
+          )}
+
           {/* eslint-disable-next-line @next/next/no-img-element */}
           <img
+            ref={imgRef}
             src={sticker.sourceUrl}
             alt={sticker.title}
-            className="max-w-full max-h-[200px] xs:max-h-[250px] md:max-h-[400px] object-contain p-3 xs:p-4"
+            className={`max-w-full max-h-[200px] xs:max-h-[250px] md:max-h-[400px] object-contain p-3 xs:p-4 transition-opacity duration-300 ${imageLoaded ? 'opacity-100' : 'opacity-0'}`}
+            onLoad={() => setImageLoaded(true)}
+            onError={handleImageError}
           />
         </div>
 

@@ -1,9 +1,12 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useCallback, useRef } from 'react'
 import { motion } from 'framer-motion'
-import { Download, Eye, Sparkles } from 'lucide-react'
+import { Download, Eye, Sparkles, RefreshCw } from 'lucide-react'
 import { cn } from '@/lib/utils'
+
+const MAX_RETRIES = 3
+const RETRY_DELAYS = [1000, 3000, 6000] // Escalating delays
 
 interface StickerCardProps {
   id: string
@@ -24,6 +27,46 @@ export function StickerCard({
   const [isLoaded, setIsLoaded] = useState(false)
   const [isHovered, setIsHovered] = useState(false)
   const [hasError, setHasError] = useState(false)
+  const [isRetrying, setIsRetrying] = useState(false)
+  const retryCount = useRef(0)
+  const imgRef = useRef<HTMLImageElement>(null)
+
+  const retryLoad = useCallback(() => {
+    if (retryCount.current >= MAX_RETRIES) return
+    setIsRetrying(true)
+    const delay = RETRY_DELAYS[retryCount.current] || 6000
+    setTimeout(() => {
+      retryCount.current++
+      setHasError(false)
+      setIsLoaded(false)
+      setIsRetrying(false)
+      // Force reload by appending a cache-busting param
+      if (imgRef.current) {
+        const separator = thumbnailUrl.includes('?') ? '&' : '?'
+        imgRef.current.src = `${thumbnailUrl}${separator}_t=${Date.now()}`
+      }
+    }, delay)
+  }, [thumbnailUrl])
+
+  const handleError = useCallback(() => {
+    if (retryCount.current < MAX_RETRIES) {
+      retryLoad()
+    } else {
+      setHasError(true)
+      setIsRetrying(false)
+    }
+  }, [retryLoad])
+
+  const handleManualRetry = useCallback(() => {
+    retryCount.current = 0
+    setHasError(false)
+    setIsLoaded(false)
+    setIsRetrying(false)
+    if (imgRef.current) {
+      const separator = thumbnailUrl.includes('?') ? '&' : '?'
+      imgRef.current.src = `${thumbnailUrl}${separator}_t=${Date.now()}`
+    }
+  }, [thumbnailUrl])
 
   return (
     <motion.div
@@ -61,23 +104,38 @@ export function StickerCard({
         </div>
 
         {/* Loading skeleton */}
-        {!isLoaded && !hasError && (
-          <div className="absolute inset-4 bg-lovefacts-turquoise/10 dark:bg-lovefacts-turquoise/20 animate-pulse rounded-xl" />
+        {(!isLoaded && !hasError) && (
+          <div className="absolute inset-4 bg-lovefacts-turquoise/10 dark:bg-lovefacts-turquoise/20 animate-pulse rounded-xl flex items-center justify-center">
+            {isRetrying && (
+              <RefreshCw className="w-5 h-5 text-lovefacts-turquoise/40 animate-spin" />
+            )}
+          </div>
         )}
 
-        {/* Error placeholder */}
+        {/* Error placeholder with retry button */}
         {hasError && (
           <div className="absolute inset-4 bg-lovefacts-turquoise/10 dark:bg-lovefacts-turquoise/20 rounded-xl flex flex-col items-center justify-center gap-2">
             <Sparkles className="w-6 h-6 text-lovefacts-turquoise/50" />
             <span className="text-lovefacts-teal/50 dark:text-lovefacts-turquoise/50 text-xs text-center px-2">
               Image unavailable
             </span>
+            <button
+              onClick={(e) => {
+                e.stopPropagation()
+                handleManualRetry()
+              }}
+              className="mt-1 flex items-center gap-1 px-2 py-1 text-[10px] bg-lovefacts-turquoise/20 hover:bg-lovefacts-turquoise/30 rounded-full text-lovefacts-teal/60 dark:text-lovefacts-turquoise/60 transition-colors"
+            >
+              <RefreshCw size={10} />
+              Retry
+            </button>
           </div>
         )}
 
         {/* Sticker Image */}
         {/* eslint-disable-next-line @next/next/no-img-element */}
         <img
+          ref={imgRef}
           src={thumbnailUrl}
           alt={title}
           className={cn(
@@ -86,8 +144,8 @@ export function StickerCard({
             isLoaded ? 'opacity-100' : 'opacity-0',
             isHovered && 'scale-110'
           )}
-          onLoad={() => setIsLoaded(true)}
-          onError={() => setHasError(true)}
+          onLoad={() => { setIsLoaded(true); setIsRetrying(false) }}
+          onError={handleError}
           loading="lazy"
         />
 
