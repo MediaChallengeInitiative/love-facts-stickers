@@ -7,6 +7,7 @@ import {
   getDriveProxyThumbnailUrl,
   DRIVE_FOLDER_ID,
 } from '@/lib/google-drive'
+import { clearImageCache } from '@/lib/image-cache'
 
 /**
  * Sync stickers from Google Drive to the database
@@ -190,6 +191,11 @@ export async function POST() {
         completedAt: new Date(),
       },
     })
+
+    // Clear image cache so fresh images are fetched
+    if (itemsSynced > 0) {
+      clearImageCache()
+    }
 
     return NextResponse.json({
       success: true,

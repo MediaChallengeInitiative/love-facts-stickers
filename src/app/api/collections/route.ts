@@ -47,7 +47,11 @@ export async function GET() {
       stickers: undefined, // Remove full stickers array
     }))
 
-    return NextResponse.json(collectionsWithPreviews)
+    const response = NextResponse.json(collectionsWithPreviews)
+    response.headers.set('Cache-Control', 'no-store, no-cache, must-revalidate')
+    response.headers.set('CDN-Cache-Control', 'no-store')
+    response.headers.set('Vercel-CDN-Cache-Control', 'no-store')
+    return response
   } catch (error) {
     console.error('Error fetching collections:', error)
     return NextResponse.json(

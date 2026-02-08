@@ -10,10 +10,8 @@ import { NextRequest, NextResponse } from 'next/server'
  * Optional: /api/image/{driveFileId}?size=400 for thumbnails
  */
 
-// Cache for image responses (in-memory, resets on server restart)
-const imageCache = new Map<string, { data: Buffer; contentType: string; timestamp: number }>()
-const CACHE_DURATION = 1000 * 60 * 60 // 1 hour
-const MAX_CACHE_SIZE = 500
+import { imageCache, IMAGE_CACHE_DURATION, pruneImageCache } from '@/lib/image-cache'
+
 const FETCH_TIMEOUT = 30000 // 30s timeout per request
 const MAX_RETRIES = 2
 
@@ -178,11 +176,11 @@ export async function GET(
 
     // Check cache
     const cached = imageCache.get(cacheKey)
-    if (cached && Date.now() - cached.timestamp < CACHE_DURATION) {
+    if (cached && Date.now() - cached.timestamp < IMAGE_CACHE_DURATION) {
       return new NextResponse(new Uint8Array(cached.data), {
         headers: {
           'Content-Type': cached.contentType,
-          'Cache-Control': 'public, max-age=3600, immutable',
+          'Cache-Control': 'public, max-age=300, stale-while-revalidate=60',
           'X-Cache': 'HIT',
         },
       })
@@ -341,19 +339,12 @@ export async function GET(
     })
 
     // Clean old cache entries if cache is too large
-    if (imageCache.size > MAX_CACHE_SIZE) {
-      const now = Date.now()
-      Array.from(imageCache.entries()).forEach(([key, value]) => {
-        if (now - value.timestamp > CACHE_DURATION) {
-          imageCache.delete(key)
-        }
-      })
-    }
+    pruneImageCache()
 
     return new NextResponse(new Uint8Array(result.buffer), {
       headers: {
         'Content-Type': result.contentType,
-        'Cache-Control': 'public, max-age=3600, immutable',
+        'Cache-Control': 'public, max-age=300, stale-while-revalidate=60',
         'X-Cache': 'MISS',
       },
     })

@@ -25,19 +25,21 @@ export default function HomePage() {
   const [isDownloading, setIsDownloading] = useState(false)
 
   const galleryRef = useRef<HTMLDivElement>(null)
+  const hasSynced = useRef(false)
+  const pollIntervalRef = useRef<NodeJS.Timeout | null>(null)
 
-  // Fetch data from API
-  const fetchData = useCallback(async () => {
-    setIsLoading(true)
+  // Fetch data from API (with cache busting)
+  const fetchData = useCallback(async (showLoading = true) => {
+    if (showLoading) setIsLoading(true)
     try {
+      const cacheBuster = `_t=${Date.now()}`
       const [collectionsRes, stickersRes] = await Promise.all([
-        fetch('/api/collections'),
-        fetch('/api/stickers?limit=500'), // Fetch all stickers
+        fetch(`/api/collections?${cacheBuster}`),
+        fetch(`/api/stickers?limit=500&${cacheBuster}`),
       ])
 
       if (collectionsRes.ok) {
         const collectionsData = await collectionsRes.json()
-        // Handle both array and object responses
         const collectionsArray = Array.isArray(collectionsData)
           ? collectionsData
           : collectionsData.collections || []
@@ -46,7 +48,6 @@ export default function HomePage() {
 
       if (stickersRes.ok) {
         const stickersData = await stickersRes.json()
-        // Handle both array and object responses
         const stickersArray = Array.isArray(stickersData)
           ? stickersData
           : stickersData.stickers || []
@@ -54,14 +55,42 @@ export default function HomePage() {
       }
     } catch (error) {
       console.error('Failed to fetch data:', error)
-      toast.error('Failed to load stickers')
+      if (showLoading) toast.error('Failed to load stickers')
     } finally {
-      setIsLoading(false)
+      if (showLoading) setIsLoading(false)
     }
   }, [])
 
+  // Trigger auto-sync with Google Drive on first page load,
+  // then refresh data after sync completes
   useEffect(() => {
     fetchData()
+
+    // Trigger background auto-sync with Google Drive
+    if (!hasSynced.current) {
+      hasSynced.current = true
+      fetch('/api/sync/auto', { method: 'POST' })
+        .then(res => res.json())
+        .then(data => {
+          if (data.status === 'synced' && data.itemsSynced > 0) {
+            // Sync found changes — refresh data
+            console.log(`[Auto-sync] Synced ${data.itemsSynced} items, refreshing...`)
+            fetchData(false)
+          }
+        })
+        .catch(err => console.warn('Auto-sync failed:', err))
+    }
+  }, [fetchData])
+
+  // Poll for data changes every 30 seconds (silent background refresh)
+  useEffect(() => {
+    pollIntervalRef.current = setInterval(() => {
+      fetchData(false) // Silent refresh — no loading spinner
+    }, 30000)
+
+    return () => {
+      if (pollIntervalRef.current) clearInterval(pollIntervalRef.current)
+    }
   }, [fetchData])
 
   // Filter stickers based on collection and search

@@ -3,6 +3,7 @@ import { headers } from 'next/headers'
 import prisma from '@/lib/db'
 import { DriveSyncEngine } from '@/lib/google-drive-sync'
 import { setSyncState, getSyncState } from '@/lib/sync-utils'
+import { clearImageCache } from '@/lib/image-cache'
 
 /**
  * Google Drive Push Notifications Webhook
@@ -104,6 +105,11 @@ export async function POST(_request: NextRequest) {
         completedAt: new Date(),
       }
     })
+
+    // Clear image cache so fresh images are fetched
+    if (totalProcessed > 0) {
+      clearImageCache()
+    }
 
     return NextResponse.json({
       status: 'processed',

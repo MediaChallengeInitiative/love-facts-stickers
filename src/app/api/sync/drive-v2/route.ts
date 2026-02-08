@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from 'next/server'
 import prisma from '@/lib/db'
 import { DriveSyncEngine } from '@/lib/google-drive-sync'
 import { v4 as uuidv4 } from 'uuid'
+import { clearImageCache } from '@/lib/image-cache'
 
 /**
  * Enhanced Google Drive Sync API
@@ -69,6 +70,11 @@ export async function POST(request: NextRequest) {
           completedAt: new Date(),
         }
       })
+
+      // Clear image cache so fresh images are fetched
+      if (itemsSynced > 0) {
+        clearImageCache()
+      }
 
       return NextResponse.json({
         success: true,

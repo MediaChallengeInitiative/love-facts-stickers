@@ -1,6 +1,10 @@
 import { NextRequest, NextResponse } from 'next/server'
 import prisma from '@/lib/db'
 
+// Prevent Next.js/Vercel from caching this route
+export const dynamic = 'force-dynamic'
+export const revalidate = 0
+
 export async function GET(request: NextRequest) {
   try {
     const { searchParams } = new URL(request.url)
@@ -42,7 +46,7 @@ export async function GET(request: NextRequest) {
       prisma.sticker.count({ where }),
     ])
 
-    return NextResponse.json({
+    const response = NextResponse.json({
       stickers,
       pagination: {
         page,
@@ -51,6 +55,10 @@ export async function GET(request: NextRequest) {
         totalPages: Math.ceil(total / limit),
       },
     })
+    response.headers.set('Cache-Control', 'no-store, no-cache, must-revalidate')
+    response.headers.set('CDN-Cache-Control', 'no-store')
+    response.headers.set('Vercel-CDN-Cache-Control', 'no-store')
+    return response
   } catch (error) {
     console.error('Error fetching stickers:', error)
     return NextResponse.json(
