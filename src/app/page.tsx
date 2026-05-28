@@ -5,7 +5,9 @@ import { Hero } from '@/components/layout/Hero'
 import { StickerGrid } from '@/components/stickers/StickerGrid'
 import { FilterBar } from '@/components/stickers/FilterBar'
 import { HeroSpotlight } from '@/components/stickers/HeroSpotlight'
+import { DensityToggle } from '@/components/stickers/DensityToggle'
 import { StackedGallery } from '@/components/StickerCollections/StackedGallery'
+import type { StickerCardDensity } from '@/components/stickers/StickerCard'
 import { StickerPreviewModal } from '@/components/modals/StickerPreviewModal'
 import { ShareSheet } from '@/components/share/ShareSheet'
 import toast from 'react-hot-toast'
@@ -23,6 +25,27 @@ export default function HomePage() {
   const [selectedSticker, setSelectedSticker] = useState<Sticker | null>(null)
   const [showPreviewModal, setShowPreviewModal] = useState(false)
   const [shareSubject, setShareSubject] = useState<Sticker | null>(null)
+  const [density, setDensity] = useState<StickerCardDensity>('default')
+
+  useEffect(() => {
+    try {
+      const stored = localStorage.getItem('lf:density') as StickerCardDensity | null
+      if (stored === 'compact' || stored === 'default' || stored === 'feature') {
+        setDensity(stored)
+      }
+    } catch {
+      /* ignore */
+    }
+  }, [])
+
+  const handleDensityChange = useCallback((d: StickerCardDensity) => {
+    setDensity(d)
+    try {
+      localStorage.setItem('lf:density', d)
+    } catch {
+      /* ignore */
+    }
+  }, [])
 
   const galleryRef = useRef<HTMLDivElement>(null)
   const hasSynced = useRef(false)
@@ -248,7 +271,7 @@ export default function HomePage() {
             </p>
           </div>
 
-          <div className="mb-8">
+          <div className="mb-6 xs:mb-8">
             <FilterBar
               collections={collections}
               selectedCollection={selectedCollection}
@@ -257,6 +280,9 @@ export default function HomePage() {
               onSearchChange={setSearchQuery}
               resultCount={filteredStickers.length}
             />
+            <div className="hidden md:flex items-center justify-end mt-3">
+              <DensityToggle value={density} onChange={handleDensityChange} />
+            </div>
           </div>
 
           <StickerGrid
@@ -266,6 +292,7 @@ export default function HomePage() {
             onStickerShare={handleStickerShare}
             isLoading={isLoading}
             selectedCollection={selectedCollection}
+            density={density}
           />
         </div>
       </section>

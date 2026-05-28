@@ -1,6 +1,6 @@
 'use client'
 
-import { StickerCard } from './StickerCard'
+import { StickerCard, type StickerCardDensity } from './StickerCard'
 import { motion } from 'framer-motion'
 import type { Sticker } from '@/lib/types'
 
@@ -14,6 +14,16 @@ interface StickerGridProps {
 interface StickerGridExtendedProps extends StickerGridProps {
   isLoading?: boolean
   selectedCollection?: string | null
+  density?: StickerCardDensity
+}
+
+const GRID_BY_DENSITY: Record<StickerCardDensity, string> = {
+  compact:
+    'grid grid-cols-3 2xs:grid-cols-3 xs:grid-cols-4 sm:grid-cols-5 md:grid-cols-6 lg:grid-cols-7 xl:grid-cols-8 gap-2 xs:gap-2.5',
+  default:
+    'grid grid-cols-2 2xs:grid-cols-2 xs:grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-3 xs:gap-4',
+  feature:
+    'grid grid-cols-1 xs:grid-cols-2 md:grid-cols-3 gap-4 xs:gap-5 md:gap-6',
 }
 
 export function StickerGrid({
@@ -23,6 +33,7 @@ export function StickerGrid({
   onStickerShare,
   isLoading,
   selectedCollection,
+  density = 'default',
 }: StickerGridExtendedProps) {
   if (isLoading) {
     return (
@@ -72,23 +83,24 @@ export function StickerGrid({
   }
 
   return (
-    <motion.div
-      initial={{ opacity: 0 }}
-      animate={{ opacity: 1 }}
-      className="grid grid-cols-2 xs:grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-3 xs:gap-4"
-    >
+    <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className={GRID_BY_DENSITY[density]}>
       {stickers.map((sticker, index) => (
         <motion.div
           key={sticker.id}
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: index * 0.05, duration: 0.3 }}
+          transition={{ delay: Math.min(index * 0.04, 0.6), duration: 0.3 }}
         >
           <StickerCard
             id={sticker.id}
             title={sticker.title}
             thumbnailUrl={sticker.thumbnailUrl}
             collectionName={sticker.collection?.name || 'Uncategorized'}
+            caption={sticker.caption}
+            isHero={sticker.isHero}
+            shareCount={sticker.shareCount}
+            usefulCount={sticker.usefulCount}
+            density={density}
             onClick={() => onStickerClick(sticker)}
             onDownload={onStickerDownload ? () => onStickerDownload(sticker) : undefined}
             onShare={onStickerShare ? () => onStickerShare(sticker) : undefined}
