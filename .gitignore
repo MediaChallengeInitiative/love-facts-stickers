@@ -40,6 +40,11 @@ next-env.d.ts
 # Local env files
 .env
 .env.local
+.env.production
+.env.development
+.env.preview
+.env.*
+!.env.example
 *.local
 
 # Scripts output
