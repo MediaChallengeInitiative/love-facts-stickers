@@ -88,6 +88,7 @@ export const viewport: Viewport = {
   width: "device-width",
   initialScale: 1,
   maximumScale: 5,
+  viewportFit: "cover",
 };
 
 // JSON-LD Organization + WebSite — gives Google sitelinks searchbox and rich

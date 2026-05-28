@@ -192,41 +192,42 @@ export function StickerCard({
           {title}
         </h3>
 
-        {/* Action Buttons - Always visible, responsive sizing */}
-        <div className="flex items-center gap-1 xs:gap-2 w-full">
+        {/* Icon-only action buttons */}
+        <div className="flex items-center justify-center gap-1.5 xs:gap-2 w-full">
           <button
-            className="flex-1 min-w-0 inline-flex items-center justify-center gap-1 px-1.5 xs:px-2 sm:px-3 py-1.5 xs:py-2 bg-lovefacts-turquoise/10 dark:bg-lovefacts-turquoise/20 hover:bg-lovefacts-turquoise/20 dark:hover:bg-lovefacts-turquoise/30 rounded-lg xs:rounded-xl text-lovefacts-teal dark:text-lovefacts-turquoise-light text-[10px] xs:text-xs font-medium transition-colors"
+            className="flex-1 min-w-0 inline-flex items-center justify-center py-2 xs:py-2.5 bg-lovefacts-turquoise/10 dark:bg-lovefacts-turquoise/20 hover:bg-lovefacts-turquoise/20 dark:hover:bg-lovefacts-turquoise/30 rounded-lg xs:rounded-xl text-lovefacts-teal dark:text-lovefacts-turquoise-light transition-colors"
             onClick={(e) => {
               e.stopPropagation()
               onClick()
             }}
+            aria-label={`Preview ${title}`}
+            title="Preview"
           >
-            <Eye size={12} className="flex-shrink-0" />
-            <span className="truncate">Preview</span>
+            <Eye size={16} className="flex-shrink-0" />
           </button>
           <button
-            className="flex-1 min-w-0 inline-flex items-center justify-center gap-1 px-1.5 xs:px-2 sm:px-3 py-1.5 xs:py-2 bg-gradient-to-r from-lovefacts-coral to-lovefacts-coral-dark hover:from-lovefacts-coral-dark hover:to-lovefacts-coral rounded-lg xs:rounded-xl text-white text-[10px] xs:text-xs font-medium transition-all shadow-sm shadow-lovefacts-coral/20 hover:shadow-md hover:shadow-lovefacts-coral/30"
+            className="flex-1 min-w-0 inline-flex items-center justify-center py-2 xs:py-2.5 bg-gradient-to-r from-lovefacts-coral to-lovefacts-coral-dark hover:from-lovefacts-coral-dark hover:to-lovefacts-coral rounded-lg xs:rounded-xl text-white transition-all shadow-sm shadow-lovefacts-coral/20 hover:shadow-md hover:shadow-lovefacts-coral/30"
             onClick={(e) => {
               e.stopPropagation()
               if (onDownload) onDownload()
               else onClick()
             }}
             aria-label={`Save ${title}`}
+            title="Save"
           >
-            <Download size={12} className="flex-shrink-0" />
-            <span className="truncate">Save</span>
+            <Download size={16} className="flex-shrink-0" />
           </button>
           {onShare && (
             <button
-              className="shrink-0 inline-flex items-center justify-center px-2 py-1.5 xs:py-2 bg-lovefacts-green/10 hover:bg-lovefacts-green/20 dark:bg-lovefacts-green/20 dark:hover:bg-lovefacts-green/30 rounded-lg xs:rounded-xl text-lovefacts-green-dark dark:text-lovefacts-green-light transition-colors"
+              className="flex-1 min-w-0 inline-flex items-center justify-center py-2 xs:py-2.5 bg-lovefacts-green/10 hover:bg-lovefacts-green/20 dark:bg-lovefacts-green/20 dark:hover:bg-lovefacts-green/30 rounded-lg xs:rounded-xl text-lovefacts-green-dark dark:text-lovefacts-green-light transition-colors"
               onClick={(e) => {
                 e.stopPropagation()
                 onShare()
               }}
               aria-label={`Share ${title}`}
-              title="Share on WhatsApp"
+              title="Share"
             >
-              <MessageCircle size={12} className="flex-shrink-0" />
+              <MessageCircle size={16} className="flex-shrink-0" />
             </button>
           )}
         </div>

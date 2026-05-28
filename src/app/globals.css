@@ -112,6 +112,36 @@ body {
     text-wrap: balance;
   }
 
+  /* Sticker-skeleton shimmer — used while the next/image LQIP swaps to full quality */
+  .bg-shimmer {
+    background: linear-gradient(
+      90deg,
+      rgba(214, 83, 74, 0.06) 0%,
+      rgba(214, 83, 74, 0.18) 50%,
+      rgba(214, 83, 74, 0.06) 100%
+    );
+    background-size: 200% 100%;
+  }
+  .dark .bg-shimmer {
+    background: linear-gradient(
+      90deg,
+      rgba(79, 201, 160, 0.08) 0%,
+      rgba(79, 201, 160, 0.22) 50%,
+      rgba(79, 201, 160, 0.08) 100%
+    );
+    background-size: 200% 100%;
+  }
+
+  /* Horizontal scroll fade-masks — for the FilterBar chip strip and HeroSpotlight */
+  .scroll-fade-x {
+    mask-image: linear-gradient(to right, transparent 0, black 1.5rem, black calc(100% - 1.5rem), transparent 100%);
+    -webkit-mask-image: linear-gradient(to right, transparent 0, black 1.5rem, black calc(100% - 1.5rem), transparent 100%);
+  }
+
+  /* Respect safe-area on devices with notches/home indicators */
+  .pb-safe { padding-bottom: max(1rem, env(safe-area-inset-bottom)); }
+  .pt-safe { padding-top: max(0.5rem, env(safe-area-inset-top)); }
+
   .line-clamp-2 {
     display: -webkit-box;
     -webkit-line-clamp: 2;
@@ -139,6 +169,17 @@ body {
   /* Touch-friendly scrolling */
   .scroll-smooth-touch {
     -webkit-overflow-scrolling: touch;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
   }
 }
 
