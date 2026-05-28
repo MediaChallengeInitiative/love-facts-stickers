@@ -10,6 +10,7 @@ import { motion } from 'framer-motion'
 import { Download, MessageCircle, Share2, Flame } from 'lucide-react'
 import type { Sticker } from '@/lib/types'
 import { downloadSticker } from '@/lib/download'
+import { AddToWhatsAppButton } from '@/components/share/AddToWhatsAppButton'
 
 interface Props {
   onShare: (sticker: Sticker) => void
@@ -85,8 +86,8 @@ export function HeroSpotlight({ onShare, onPreview }: Props) {
       className="px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto pt-10 pb-6"
       aria-labelledby="spotlight-heading"
     >
-      <div className="flex items-end justify-between mb-4 sm:mb-6">
-        <div>
+      <div className="flex items-end justify-between mb-4 sm:mb-6 gap-3">
+        <div className="min-w-0">
           <div className="inline-flex items-center gap-1.5 px-2.5 py-1 mb-2 bg-lovefacts-coral text-white rounded-full text-[10px] font-bold uppercase tracking-wider">
             <Flame size={12} />
             {isFallback ? 'Most-shared right now' : "This week's truth bombs"}
@@ -95,9 +96,14 @@ export function HeroSpotlight({ onShare, onPreview }: Props) {
             Stickers worth firing first
           </h2>
         </div>
-        <p className="hidden sm:block text-xs text-lovefacts-teal/50 dark:text-lovefacts-turquoise/50">
-          Swipe →
-        </p>
+        {stickers.length >= 3 && (
+          <AddToWhatsAppButton
+            target={{ kind: 'heroes', packName: 'Love Facts — Top picks' }}
+            label="Add to WhatsApp"
+            size="sm"
+            className="shrink-0 hidden sm:inline-flex"
+          />
+        )}
       </div>
 
       <div

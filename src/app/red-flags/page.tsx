@@ -3,6 +3,7 @@ import Link from 'next/link'
 import { AlertTriangle, ArrowRight, Sparkles } from 'lucide-react'
 import prisma from '@/lib/db'
 import { RedFlagsClient } from './RedFlagsClient'
+import { AddToWhatsAppButton } from '@/components/share/AddToWhatsAppButton'
 
 export const dynamic = 'force-dynamic'
 export const revalidate = 0
@@ -40,8 +41,23 @@ async function getRedFlagStickers() {
   }
 }
 
+async function getRedFlagsCollectionId(): Promise<string | null> {
+  try {
+    const col = await prisma.collection.findFirst({
+      where: { category: 'RED_FLAGS' },
+      orderBy: { sortOrder: 'asc' },
+    })
+    return col?.id ?? null
+  } catch {
+    return null
+  }
+}
+
 export default async function RedFlagsPage() {
-  const stickers = await getRedFlagStickers()
+  const [stickers, redFlagsCollectionId] = await Promise.all([
+    getRedFlagStickers(),
+    getRedFlagsCollectionId(),
+  ])
 
   const collectionPageLd = {
     '@context': 'https://schema.org',
@@ -89,13 +105,25 @@ export default async function RedFlagsPage() {
             </p>
 
             <div className="flex flex-col xs:flex-row items-center justify-center gap-3">
-              <Link
-                href="#stickers"
-                className="inline-flex items-center justify-center gap-2 px-6 py-3 rounded-2xl bg-lovefacts-coral text-white font-semibold shadow-lg shadow-lovefacts-coral/30 hover:bg-lovefacts-coral-dark transition-colors"
-              >
-                <Sparkles size={18} />
-                See the pack
-              </Link>
+              {redFlagsCollectionId && stickers.length >= 3 ? (
+                <AddToWhatsAppButton
+                  target={{
+                    kind: 'collection',
+                    collectionId: redFlagsCollectionId,
+                    packName: 'Love Facts — Red Flags',
+                  }}
+                  label="Add Red Flags pack to WhatsApp →"
+                  size="lg"
+                />
+              ) : (
+                <Link
+                  href="#stickers"
+                  className="inline-flex items-center justify-center gap-2 px-6 py-3 rounded-2xl bg-lovefacts-coral text-white font-semibold shadow-lg shadow-lovefacts-coral/30 hover:bg-lovefacts-coral-dark transition-colors"
+                >
+                  <Sparkles size={18} />
+                  See the pack
+                </Link>
+              )}
               <Link
                 href="/"
                 className="inline-flex items-center justify-center gap-1 px-6 py-3 rounded-2xl border-2 border-lovefacts-teal/20 text-lovefacts-teal dark:text-white dark:border-lovefacts-turquoise/40 hover:border-lovefacts-teal font-semibold transition-colors"

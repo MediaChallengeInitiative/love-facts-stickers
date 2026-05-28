@@ -5,6 +5,7 @@ import { motion } from 'framer-motion'
 import { Download, Sparkles, MessageCircle, Send, Music2, Facebook as FacebookLogo, Instagram } from 'lucide-react'
 import { Button } from '@/components/ui/Button'
 import { ShareSheet } from '@/components/share/ShareSheet'
+import { AddToWhatsAppButton } from '@/components/share/AddToWhatsAppButton'
 import { getBaseUrl } from '@/lib/urls'
 
 interface HeroProps {
@@ -116,25 +117,34 @@ export function Hero({ onBrowseClick }: HeroProps) {
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.5 }}
-          className="flex flex-col xs:flex-row items-center justify-center gap-3 xs:gap-4 px-4"
+          className="flex flex-col items-center justify-center gap-3 px-4"
         >
-          <Button
+          <AddToWhatsAppButton
+            target={{ kind: 'heroes', packName: 'Love Facts — Top picks' }}
+            label="Get the WhatsApp Pack →"
             size="lg"
-            onClick={onBrowseClick}
-            className="w-full xs:w-auto bg-gradient-to-r from-lovefacts-coral to-lovefacts-coral-dark hover:shadow-2xl hover:shadow-lovefacts-coral/30"
-          >
-            <Download className="mr-2" size={18} />
-            Browse stickers →
-          </Button>
-          <Button
-            variant="outline"
-            size="lg"
-            className="w-full xs:w-auto border-lovefacts-green text-lovefacts-green-dark hover:bg-lovefacts-green/10"
-            onClick={() => setShareOpen(true)}
-          >
-            <MessageCircle className="mr-2" size={18} />
-            Send to a friend
-          </Button>
+            className="w-full xs:w-auto text-base px-7 py-3.5"
+          />
+          <div className="flex flex-col xs:flex-row items-center justify-center gap-3 w-full xs:w-auto">
+            <Button
+              variant="outline"
+              size="md"
+              onClick={onBrowseClick}
+              className="w-full xs:w-auto border-lovefacts-coral text-lovefacts-coral hover:bg-lovefacts-coral/10"
+            >
+              <Download className="mr-2" size={16} />
+              Browse all stickers
+            </Button>
+            <Button
+              variant="ghost"
+              size="md"
+              className="w-full xs:w-auto text-lovefacts-teal/70 dark:text-lovefacts-turquoise/70 hover:text-lovefacts-teal dark:hover:text-white"
+              onClick={() => setShareOpen(true)}
+            >
+              <MessageCircle className="mr-2" size={16} />
+              Send to a friend
+            </Button>
+          </div>
         </motion.div>
 
         <motion.div
