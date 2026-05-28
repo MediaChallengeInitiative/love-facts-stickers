@@ -18,7 +18,7 @@ export default function Error({
   }, [error])
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-lovefacts-turquoise-light dark:bg-lovefacts-teal-dark p-4">
+    <div className="min-h-[100svh] flex items-center justify-center bg-lovefacts-turquoise-light dark:bg-lovefacts-teal-dark p-4">
       <div className="max-w-md w-full bg-white dark:bg-lovefacts-teal rounded-2xl shadow-xl p-8 text-center">
         <div className="flex justify-center mb-6">
           <div className="w-16 h-16 bg-lovefacts-coral/10 rounded-full flex items-center justify-center">

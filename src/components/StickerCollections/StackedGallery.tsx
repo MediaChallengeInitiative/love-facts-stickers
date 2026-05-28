@@ -157,9 +157,9 @@ function CollectionCard({
           </div>
         )}
 
-        {/* Hover overlay with quick actions */}
+        {/* Hover overlay — icon-only quick actions */}
         <motion.div
-          className="absolute inset-0 bg-gradient-to-t from-lovefacts-teal/80 via-lovefacts-teal/30 to-transparent flex items-end justify-center pb-3 opacity-0 group-hover:opacity-100 transition-opacity duration-200"
+          className="absolute inset-0 bg-gradient-to-t from-lovefacts-teal/80 via-lovefacts-teal/30 to-transparent flex items-end justify-center pb-3 opacity-0 group-hover:opacity-100 motion-reduce:opacity-100 transition-opacity duration-200"
           initial={false}
         >
           <div className="flex items-center gap-2">
@@ -168,20 +168,22 @@ function CollectionCard({
                 e.stopPropagation()
                 if (topSticker) onView(topSticker)
               }}
-              className="flex items-center gap-1.5 px-3 py-1.5 bg-white/95 backdrop-blur-sm rounded-full text-lovefacts-teal text-xs font-medium hover:bg-white transition-colors shadow-lg"
+              className="inline-flex items-center justify-center w-9 h-9 bg-white/95 backdrop-blur-sm rounded-full text-lovefacts-teal hover:bg-white transition-colors shadow-lg"
+              aria-label={`View ${collection.name}`}
+              title="View"
             >
-              <Eye size={14} />
-              <span>View</span>
+              <Eye size={16} />
             </button>
             <button
               onClick={(e) => {
                 e.stopPropagation()
                 if (topSticker) onDownload(topSticker)
               }}
-              className="flex items-center gap-1.5 px-3 py-1.5 bg-lovefacts-coral rounded-full text-white text-xs font-medium hover:bg-lovefacts-coral-dark transition-colors shadow-lg"
+              className="inline-flex items-center justify-center w-9 h-9 bg-lovefacts-coral rounded-full text-white hover:bg-lovefacts-coral-dark transition-colors shadow-lg"
+              aria-label={`Download from ${collection.name}`}
+              title="Download"
             >
-              <Download size={14} />
-              <span>Download</span>
+              <Download size={16} />
             </button>
           </div>
         </motion.div>
@@ -201,34 +203,35 @@ function CollectionCard({
           </div>
         </div>
 
-        {/* Action buttons - always visible on mobile */}
-        <div className="flex items-center gap-2">
+        {/* Action buttons — icon-only, equal-width, 44px-tall touch targets */}
+        <div className="flex items-center gap-1.5 sm:gap-2">
           <button
             onClick={() => topSticker && onView(topSticker)}
-            className="flex-1 flex items-center justify-center gap-1.5 py-2 bg-lovefacts-turquoise/10 dark:bg-lovefacts-turquoise/20 hover:bg-lovefacts-turquoise/20 dark:hover:bg-lovefacts-turquoise/30 rounded-lg text-lovefacts-teal dark:text-lovefacts-turquoise-light text-xs font-medium transition-colors"
+            className="flex-1 inline-flex items-center justify-center min-h-[40px] py-2 bg-lovefacts-turquoise/10 dark:bg-lovefacts-turquoise/20 hover:bg-lovefacts-turquoise/20 dark:hover:bg-lovefacts-turquoise/30 rounded-lg text-lovefacts-teal dark:text-lovefacts-turquoise-light transition-colors"
+            aria-label={`Preview ${collection.name}`}
+            title="Preview"
           >
-            <Eye size={14} />
-            <span>Preview</span>
+            <Eye size={16} />
           </button>
           <button
             onClick={() => topSticker && onDownload(topSticker)}
-            className="flex-1 flex items-center justify-center gap-1.5 py-2 bg-gradient-to-r from-lovefacts-coral to-lovefacts-coral-dark hover:from-lovefacts-coral-dark hover:to-lovefacts-coral rounded-lg text-white text-xs font-medium transition-colors shadow-sm"
+            className="flex-1 inline-flex items-center justify-center min-h-[40px] py-2 bg-gradient-to-r from-lovefacts-coral to-lovefacts-coral-dark hover:from-lovefacts-coral-dark hover:to-lovefacts-coral rounded-lg text-white transition-colors shadow-sm"
+            aria-label={`Download from ${collection.name}`}
+            title="Download"
           >
-            <Download size={14} />
-            <span>Get</span>
+            <Download size={16} />
           </button>
+          {onCollectionClick && (
+            <button
+              onClick={() => onCollectionClick(collection.id)}
+              className="flex-1 inline-flex items-center justify-center min-h-[40px] py-2 bg-lovefacts-green/10 hover:bg-lovefacts-green/20 dark:bg-lovefacts-green/20 dark:hover:bg-lovefacts-green/30 rounded-lg text-lovefacts-green-dark dark:text-lovefacts-green-light transition-colors"
+              aria-label={`Browse all ${collection.name}`}
+              title="Browse all"
+            >
+              <ArrowRight size={16} />
+            </button>
+          )}
         </div>
-
-        {/* Browse all link */}
-        {onCollectionClick && (
-          <button
-            onClick={() => onCollectionClick(collection.id)}
-            className="w-full mt-2 flex items-center justify-center gap-1 py-1.5 text-xs text-lovefacts-coral hover:text-lovefacts-coral-dark dark:text-lovefacts-coral dark:hover:text-lovefacts-coral-light font-medium transition-colors group/link"
-          >
-            <span>Browse all</span>
-            <ArrowRight size={12} className="group-hover/link:translate-x-0.5 transition-transform" />
-          </button>
-        )}
       </div>
     </motion.div>
   )

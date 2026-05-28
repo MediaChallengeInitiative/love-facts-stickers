@@ -141,7 +141,7 @@ export default function RootLayout({
           dangerouslySetInnerHTML={{ __html: JSON.stringify(websiteLd) }}
         />
       </head>
-      <body className="min-h-screen bg-white dark:bg-slate-900 text-slate-900 dark:text-white antialiased transition-colors duration-300">
+      <body className="min-h-[100svh] bg-white dark:bg-slate-900 text-slate-900 dark:text-white antialiased transition-colors duration-300">
         <ThemeProvider>
           <Header />
           <main className="pt-16">{children}</main>

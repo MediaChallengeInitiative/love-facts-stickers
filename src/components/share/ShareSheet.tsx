@@ -67,7 +67,8 @@ export function ShareSheet({ subject, open, onClose }: ShareSheetProps) {
             animate={{ y: 0 }}
             exit={{ y: '100%' }}
             transition={{ type: 'spring', damping: 28, stiffness: 280 }}
-            className="fixed inset-x-0 bottom-0 z-50 bg-white dark:bg-lovefacts-teal rounded-t-3xl shadow-2xl max-h-[85vh] overflow-y-auto"
+            className="fixed inset-x-0 bottom-0 z-50 bg-white dark:bg-lovefacts-teal rounded-t-3xl shadow-2xl max-h-[85svh] landscape:max-h-[92svh] overflow-y-auto pb-safe"
+            style={{ paddingBottom: 'max(2rem, env(safe-area-inset-bottom))' }}
           >
             <div className="sticky top-0 bg-white dark:bg-lovefacts-teal pt-3 pb-2 px-4 border-b border-lovefacts-turquoise/10 dark:border-lovefacts-turquoise/20 flex items-center justify-between">
               <div className="w-12 h-1.5 bg-lovefacts-turquoise/30 rounded-full mx-auto absolute left-1/2 -translate-x-1/2 -top-0.5" />
@@ -98,7 +99,7 @@ export function ShareSheet({ subject, open, onClose }: ShareSheetProps) {
                 Or pick another app
               </p>
 
-              <div className="mt-3 grid grid-cols-4 gap-2.5">
+              <div className="mt-3 grid grid-cols-4 sm:grid-cols-5 gap-2.5">
                 {channels
                   .filter((c) => c.id !== primary.id)
                   .map((channel) => (

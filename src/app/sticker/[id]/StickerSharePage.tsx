@@ -27,25 +27,30 @@ export default function StickerSharePage({ sticker }: StickerSharePageProps) {
   }
 
   return (
-    <div className="min-h-screen bg-lovefacts-turquoise-light dark:bg-lovefacts-teal-dark">
+    <div className="min-h-[100svh] bg-lovefacts-turquoise-light dark:bg-lovefacts-teal-dark">
       <header className="bg-white dark:bg-lovefacts-teal shadow-sm">
-        <div className="container mx-auto px-4 py-4">
-          <nav className="flex items-center justify-between">
+        <div className="container mx-auto px-4 py-3 sm:py-4">
+          <nav className="flex items-center justify-between gap-3">
             <Link
               href="/"
-              className="flex items-center gap-2 text-lovefacts-teal dark:text-white hover:text-lovefacts-coral dark:hover:text-lovefacts-coral transition-colors"
+              className="flex items-center gap-2 text-lovefacts-teal dark:text-white hover:text-lovefacts-coral dark:hover:text-lovefacts-coral transition-colors shrink-0"
             >
               <Home size={20} />
-              <span className="font-semibold">Love Facts Stickers</span>
+              <span className="font-semibold hidden xs:inline">Love Facts</span>
             </Link>
-            <div className="flex items-center gap-2 text-sm text-lovefacts-teal/60 dark:text-lovefacts-turquoise/60">
-              <Link href="/" className="hover:text-lovefacts-coral dark:hover:text-lovefacts-coral transition-colors">
+            <div className="flex items-center gap-1.5 text-xs sm:text-sm text-lovefacts-teal/60 dark:text-lovefacts-turquoise/60 min-w-0">
+              <Link
+                href="/"
+                className="hover:text-lovefacts-coral dark:hover:text-lovefacts-coral transition-colors hidden sm:inline"
+              >
                 Home
               </Link>
-              <ChevronRight size={16} />
-              <span>{sticker.collection.name}</span>
-              <ChevronRight size={16} />
-              <span className="text-lovefacts-teal dark:text-white">{sticker.title}</span>
+              <ChevronRight size={14} className="hidden sm:inline shrink-0" />
+              <span className="truncate max-w-[120px] sm:max-w-none">{sticker.collection.name}</span>
+              <ChevronRight size={14} className="shrink-0" />
+              <span className="text-lovefacts-teal dark:text-white truncate max-w-[140px] sm:max-w-[280px]">
+                {sticker.title}
+              </span>
             </div>
           </nav>
         </div>
@@ -59,12 +64,12 @@ export default function StickerSharePage({ sticker }: StickerSharePageProps) {
             className="bg-white dark:bg-lovefacts-teal rounded-2xl shadow-xl overflow-hidden"
           >
             <div className="md:flex">
-              <div className="md:w-1/2 bg-gradient-to-br from-lovefacts-turquoise/5 to-lovefacts-turquoise/10 dark:from-lovefacts-teal-dark/50 dark:to-lovefacts-teal-dark p-8 md:p-12 flex items-center justify-center">
+              <div className="md:w-1/2 bg-gradient-to-br from-lovefacts-turquoise/5 to-lovefacts-turquoise/10 dark:from-lovefacts-teal-dark/50 dark:to-lovefacts-teal-dark p-6 sm:p-8 md:p-12 flex items-center justify-center">
                 {/* eslint-disable-next-line @next/next/no-img-element */}
                 <img
                   src={sticker.sourceUrl}
                   alt={sticker.title}
-                  className="max-w-full max-h-[400px] object-contain drop-shadow-xl"
+                  className="max-w-full max-h-[40svh] sm:max-h-[50svh] md:max-h-[400px] object-contain drop-shadow-xl"
                 />
               </div>
 

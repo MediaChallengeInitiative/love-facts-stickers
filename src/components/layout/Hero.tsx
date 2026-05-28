@@ -72,7 +72,7 @@ export function Hero({ onBrowseClick }: HeroProps) {
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.2 }}
-          className="text-4xl xs:text-5xl sm:text-6xl md:text-7xl font-extrabold tracking-tight text-lovefacts-teal dark:text-white mb-3 xs:mb-4 leading-[1.05]"
+          className="text-fluid-h1 font-extrabold tracking-tight text-lovefacts-teal dark:text-white mb-3 xs:mb-4 text-balance"
         >
           Clap back at lies.
           <span className="block bg-gradient-to-r from-lovefacts-coral via-lovefacts-turquoise to-lovefacts-green bg-clip-text text-transparent">

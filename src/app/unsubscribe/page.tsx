@@ -65,7 +65,7 @@ export default function UnsubscribePage() {
 
   if (isSuccess) {
     return (
-      <div className="min-h-screen bg-slate-900 pt-24 pb-16 flex items-center justify-center">
+      <div className="min-h-[100svh] bg-slate-900 pt-24 pb-16 flex items-center justify-center">
         <div className="max-w-md mx-auto px-4 text-center">
           <div className="inline-flex items-center justify-center w-20 h-20 bg-green-500/20 rounded-full mb-6">
             <CheckCircle className="w-10 h-10 text-green-400" />
@@ -85,7 +85,7 @@ export default function UnsubscribePage() {
   }
 
   return (
-    <div className="min-h-screen bg-slate-900 pt-24 pb-16">
+    <div className="min-h-[100svh] bg-slate-900 pt-24 pb-16">
       <div className="max-w-lg mx-auto px-4">
         {/* Header */}
         <div className="text-center mb-8">

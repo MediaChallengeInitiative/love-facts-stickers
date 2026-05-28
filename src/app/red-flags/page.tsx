@@ -86,7 +86,7 @@ export default async function RedFlagsPage() {
         dangerouslySetInnerHTML={{ __html: JSON.stringify(collectionPageLd) }}
       />
 
-      <div className="min-h-screen bg-gradient-to-b from-lovefacts-coral/5 via-white to-white dark:from-lovefacts-teal-dark dark:via-lovefacts-teal dark:to-lovefacts-teal-dark">
+      <div className="min-h-[100svh] bg-gradient-to-b from-lovefacts-coral/5 via-white to-white dark:from-lovefacts-teal-dark dark:via-lovefacts-teal dark:to-lovefacts-teal-dark">
         <section className="relative overflow-hidden pt-20 pb-12 px-4 sm:px-6 lg:px-8">
           <div className="max-w-4xl mx-auto text-center">
             <div className="inline-flex items-center gap-2 px-3 py-1.5 mb-5 bg-lovefacts-coral text-white rounded-full text-xs font-bold uppercase tracking-wider shadow-lg shadow-lovefacts-coral/30">
@@ -94,7 +94,7 @@ export default async function RedFlagsPage() {
               Disinformation alert pack
             </div>
 
-            <h1 className="text-4xl xs:text-5xl sm:text-6xl font-extrabold tracking-tight text-lovefacts-teal dark:text-white mb-4 leading-[1.05]">
+            <h1 className="text-fluid-h1 font-extrabold tracking-tight text-lovefacts-teal dark:text-white mb-4 text-balance">
               Red flags.
               <span className="block text-lovefacts-coral">Spot them before you share.</span>
             </h1>

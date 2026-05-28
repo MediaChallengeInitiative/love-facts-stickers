@@ -103,7 +103,10 @@ export function Header() {
 
   return (
     <>
-      <header className="fixed top-0 left-0 right-0 z-40 bg-white/80 dark:bg-lovefacts-teal-dark/80 backdrop-blur-lg border-b border-lovefacts-turquoise/20 dark:border-lovefacts-turquoise/30 transition-colors duration-300">
+      <header
+        className="fixed top-0 left-0 right-0 z-40 bg-white/80 dark:bg-lovefacts-teal-dark/80 backdrop-blur-lg border-b border-lovefacts-turquoise/20 dark:border-lovefacts-turquoise/30 transition-colors duration-300"
+        style={{ paddingTop: 'env(safe-area-inset-top)' }}
+      >
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex items-center justify-between h-16">
             {/* Logo */}
@@ -248,10 +251,27 @@ export function Header() {
                       <Link
                         href={link.href}
                         onClick={closeMenu}
-                        className="flex items-center gap-4 px-4 py-4 rounded-2xl text-lovefacts-teal dark:text-lovefacts-turquoise-light hover:text-lovefacts-coral dark:hover:text-lovefacts-coral hover:bg-lovefacts-coral/10 dark:hover:bg-lovefacts-coral/20 transition-all duration-200 group"
+                        className={
+                          link.accent
+                            ? 'flex items-center gap-4 px-4 py-4 rounded-2xl bg-gradient-to-r from-lovefacts-coral to-lovefacts-coral-dark text-white hover:shadow-lg hover:shadow-lovefacts-coral/30 transition-all duration-200 group'
+                            : 'flex items-center gap-4 px-4 py-4 rounded-2xl text-lovefacts-teal dark:text-lovefacts-turquoise-light hover:text-lovefacts-coral dark:hover:text-lovefacts-coral hover:bg-lovefacts-coral/10 dark:hover:bg-lovefacts-coral/20 transition-all duration-200 group'
+                        }
                       >
-                        <span className="flex items-center justify-center w-12 h-12 rounded-xl bg-lovefacts-turquoise/10 dark:bg-lovefacts-turquoise/20 group-hover:bg-lovefacts-coral/20 dark:group-hover:bg-lovefacts-coral/30 transition-colors">
-                          <link.icon size={22} className="text-lovefacts-teal dark:text-lovefacts-turquoise group-hover:text-lovefacts-coral dark:group-hover:text-lovefacts-coral transition-colors" />
+                        <span
+                          className={
+                            link.accent
+                              ? 'flex items-center justify-center w-12 h-12 rounded-xl bg-white/20 backdrop-blur-sm'
+                              : 'flex items-center justify-center w-12 h-12 rounded-xl bg-lovefacts-turquoise/10 dark:bg-lovefacts-turquoise/20 group-hover:bg-lovefacts-coral/20 dark:group-hover:bg-lovefacts-coral/30 transition-colors'
+                          }
+                        >
+                          <link.icon
+                            size={22}
+                            className={
+                              link.accent
+                                ? 'text-white'
+                                : 'text-lovefacts-teal dark:text-lovefacts-turquoise group-hover:text-lovefacts-coral dark:group-hover:text-lovefacts-coral transition-colors'
+                            }
+                          />
                         </span>
                         <span className="text-lg font-medium">{link.label}</span>
                       </Link>

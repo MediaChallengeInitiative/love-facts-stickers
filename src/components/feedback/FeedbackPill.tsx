@@ -109,7 +109,8 @@ export function FeedbackPill() {
           initial={{ opacity: 0, y: 20, scale: 0.95 }}
           animate={{ opacity: 1, y: 0, scale: 1 }}
           exit={{ opacity: 0, y: 20, scale: 0.95 }}
-          className="fixed bottom-5 right-4 z-40 w-[min(360px,calc(100vw-2rem))] bg-white dark:bg-lovefacts-teal rounded-2xl shadow-2xl border border-lovefacts-turquoise/20 dark:border-lovefacts-turquoise/30 p-4"
+          className="fixed right-4 z-40 w-[min(360px,calc(100vw-2rem))] bg-white dark:bg-lovefacts-teal rounded-2xl shadow-2xl border border-lovefacts-turquoise/20 dark:border-lovefacts-turquoise/30 p-4"
+          style={{ bottom: 'max(1.25rem, env(safe-area-inset-bottom))' }}
           role="dialog"
           aria-label="Quick feedback"
         >
@@ -176,7 +177,8 @@ export function FeedbackPill() {
           animate={{ opacity: 1, y: 0 }}
           exit={{ opacity: 0, y: 20 }}
           onClick={() => setOpen(true)}
-          className="fixed bottom-5 right-4 z-40 flex items-center gap-1.5 px-3.5 py-2.5 bg-lovefacts-teal dark:bg-lovefacts-coral text-white rounded-full shadow-xl text-xs font-semibold hover:scale-105 active:scale-95 transition-transform"
+          className="fixed right-4 z-40 flex items-center gap-1.5 px-3.5 py-2.5 bg-lovefacts-teal dark:bg-lovefacts-coral text-white rounded-full shadow-xl text-xs font-semibold hover:scale-105 active:scale-95 transition-transform"
+          style={{ bottom: 'max(1.25rem, env(safe-area-inset-bottom))' }}
           aria-label="Send quick feedback"
         >
           <MessageSquarePlus size={14} />
