@@ -2,7 +2,7 @@
 
 import { useState, useCallback, useRef } from 'react'
 import { motion } from 'framer-motion'
-import { Download, Eye, Sparkles, RefreshCw } from 'lucide-react'
+import { Download, Eye, Sparkles, RefreshCw, MessageCircle } from 'lucide-react'
 import { cn } from '@/lib/utils'
 
 const MAX_RETRIES = 3
@@ -14,6 +14,8 @@ interface StickerCardProps {
   thumbnailUrl: string
   collectionName: string
   onClick: () => void
+  onDownload?: () => void
+  onShare?: () => void
   className?: string
 }
 
@@ -22,6 +24,8 @@ export function StickerCard({
   thumbnailUrl,
   collectionName,
   onClick,
+  onDownload,
+  onShare,
   className,
 }: StickerCardProps) {
   const [isLoaded, setIsLoaded] = useState(false)
@@ -204,12 +208,27 @@ export function StickerCard({
             className="flex-1 min-w-0 inline-flex items-center justify-center gap-1 px-1.5 xs:px-2 sm:px-3 py-1.5 xs:py-2 bg-gradient-to-r from-lovefacts-coral to-lovefacts-coral-dark hover:from-lovefacts-coral-dark hover:to-lovefacts-coral rounded-lg xs:rounded-xl text-white text-[10px] xs:text-xs font-medium transition-all shadow-sm shadow-lovefacts-coral/20 hover:shadow-md hover:shadow-lovefacts-coral/30"
             onClick={(e) => {
               e.stopPropagation()
-              onClick()
+              if (onDownload) onDownload()
+              else onClick()
             }}
+            aria-label={`Save ${title}`}
           >
             <Download size={12} className="flex-shrink-0" />
-            <span className="truncate">Download</span>
+            <span className="truncate">Save</span>
           </button>
+          {onShare && (
+            <button
+              className="shrink-0 inline-flex items-center justify-center px-2 py-1.5 xs:py-2 bg-lovefacts-green/10 hover:bg-lovefacts-green/20 dark:bg-lovefacts-green/20 dark:hover:bg-lovefacts-green/30 rounded-lg xs:rounded-xl text-lovefacts-green-dark dark:text-lovefacts-green-light transition-colors"
+              onClick={(e) => {
+                e.stopPropagation()
+                onShare()
+              }}
+              aria-label={`Share ${title}`}
+              title="Share on WhatsApp"
+            >
+              <MessageCircle size={12} className="flex-shrink-0" />
+            </button>
+          )}
         </div>
       </div>
     </motion.div>

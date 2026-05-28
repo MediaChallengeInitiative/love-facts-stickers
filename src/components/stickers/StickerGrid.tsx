@@ -7,6 +7,8 @@ import type { Sticker } from '@/lib/types'
 interface StickerGridProps {
   stickers: Sticker[]
   onStickerClick: (sticker: Sticker) => void
+  onStickerDownload?: (sticker: Sticker) => void
+  onStickerShare?: (sticker: Sticker) => void
 }
 
 interface StickerGridExtendedProps extends StickerGridProps {
@@ -14,7 +16,14 @@ interface StickerGridExtendedProps extends StickerGridProps {
   selectedCollection?: string | null
 }
 
-export function StickerGrid({ stickers, onStickerClick, isLoading, selectedCollection }: StickerGridExtendedProps) {
+export function StickerGrid({
+  stickers,
+  onStickerClick,
+  onStickerDownload,
+  onStickerShare,
+  isLoading,
+  selectedCollection,
+}: StickerGridExtendedProps) {
   if (isLoading) {
     return (
       <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4 md:gap-6">
@@ -81,6 +90,8 @@ export function StickerGrid({ stickers, onStickerClick, isLoading, selectedColle
             thumbnailUrl={sticker.thumbnailUrl}
             collectionName={sticker.collection?.name || 'Uncategorized'}
             onClick={() => onStickerClick(sticker)}
+            onDownload={onStickerDownload ? () => onStickerDownload(sticker) : undefined}
+            onShare={onStickerShare ? () => onStickerShare(sticker) : undefined}
           />
         </motion.div>
       ))}

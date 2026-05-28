@@ -34,7 +34,7 @@ interface StickerPreviewModalProps {
   sticker: Sticker | null
   isOpen: boolean
   onClose: () => void
-  onDownload: (sticker: Sticker, type: 'single' | 'collection') => void
+  onDownload: (sticker: Sticker, type: 'single' | 'collection') => void | Promise<void>
 }
 
 export function StickerPreviewModal({

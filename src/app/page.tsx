@@ -6,10 +6,11 @@ import { StickerGrid } from '@/components/stickers/StickerGrid'
 import { FilterBar } from '@/components/stickers/FilterBar'
 import { StackedGallery } from '@/components/StickerCollections/StackedGallery'
 import { StickerPreviewModal } from '@/components/modals/StickerPreviewModal'
-import { DownloadGatingModal } from '@/components/modals/DownloadGatingModal'
-import { DownloadSuccessModal } from '@/components/modals/DownloadSuccessModal'
 import toast from 'react-hot-toast'
+import { MessageCircle } from 'lucide-react'
 import type { Sticker, Collection } from '@/lib/types'
+import { downloadSticker } from '@/lib/download'
+import { getStickerShareUrl } from '@/lib/urls'
 
 export default function HomePage() {
   const [collections, setCollections] = useState<Collection[]>([])
@@ -19,16 +20,11 @@ export default function HomePage() {
   const [searchQuery, setSearchQuery] = useState('')
   const [selectedSticker, setSelectedSticker] = useState<Sticker | null>(null)
   const [showPreviewModal, setShowPreviewModal] = useState(false)
-  const [showDownloadModal, setShowDownloadModal] = useState(false)
-  const [showSuccessModal, setShowSuccessModal] = useState(false)
-  const [downloadType, setDownloadType] = useState<'single' | 'collection'>('single')
-  const [isDownloading, setIsDownloading] = useState(false)
 
   const galleryRef = useRef<HTMLDivElement>(null)
   const hasSynced = useRef(false)
   const pollIntervalRef = useRef<NodeJS.Timeout | null>(null)
 
-  // Fetch data from API (with cache busting)
   const fetchData = useCallback(async (showLoading = true) => {
     if (showLoading) setIsLoading(true)
     try {
@@ -61,31 +57,25 @@ export default function HomePage() {
     }
   }, [])
 
-  // Trigger auto-sync with Google Drive on first page load,
-  // then refresh data after sync completes
   useEffect(() => {
     fetchData()
 
-    // Trigger background auto-sync with Google Drive
     if (!hasSynced.current) {
       hasSynced.current = true
       fetch('/api/sync/auto', { method: 'POST' })
-        .then(res => res.json())
-        .then(data => {
+        .then((res) => res.json())
+        .then((data) => {
           if (data.status === 'synced' && data.itemsSynced > 0) {
-            // Sync found changes — refresh data
-            console.log(`[Auto-sync] Synced ${data.itemsSynced} items, refreshing...`)
             fetchData(false)
           }
         })
-        .catch(err => console.warn('Auto-sync failed:', err))
+        .catch((err) => console.warn('Auto-sync failed:', err))
     }
   }, [fetchData])
 
-  // Poll for data changes every 30 seconds (silent background refresh)
   useEffect(() => {
     pollIntervalRef.current = setInterval(() => {
-      fetchData(false) // Silent refresh — no loading spinner
+      fetchData(false)
     }, 30000)
 
     return () => {
@@ -93,10 +83,8 @@ export default function HomePage() {
     }
   }, [fetchData])
 
-  // Filter stickers based on collection and search
   const filteredStickers = useMemo(() => {
     return stickers.filter((sticker) => {
-      // Check both collectionId and collection.id for compatibility
       const stickerCollectionId = sticker.collectionId || sticker.collection?.id
       const matchesCollection = !selectedCollection || stickerCollectionId === selectedCollection
       const matchesSearch =
@@ -116,87 +104,98 @@ export default function HomePage() {
     setShowPreviewModal(true)
   }
 
-  const handleDownloadRequest = (sticker: Sticker, type: 'single' | 'collection') => {
-    setSelectedSticker(sticker)
-    setDownloadType(type)
-    setShowPreviewModal(false)
-    setShowDownloadModal(true)
-  }
+  // One-tap save: download lands, toast surfaces a WhatsApp button so the
+  // next move (share onward) is obvious and one tap away.
+  const handleStickerDownload = useCallback(
+    async (sticker: Sticker, type: 'single' | 'collection' = 'single') => {
+      await downloadSticker(sticker, { downloadType: type })
 
-  const handleDownloadSubmit = async (data: {
-    email?: string
-    phone?: string
-    name?: string
-    isAnonymous: boolean
-  }) => {
-    if (!selectedSticker) return
+      const shareUrl = getStickerShareUrl(sticker.id)
+      const text = sticker.caption || `Check out: ${sticker.title} — from Love Facts`
+      const waUrl = `https://wa.me/?text=${encodeURIComponent(`${text}\n${shareUrl}`)}`
 
-    setIsDownloading(true)
+      toast.custom(
+        (t) => (
+          <div
+            className={`max-w-sm w-full bg-white dark:bg-lovefacts-teal shadow-2xl rounded-2xl pointer-events-auto flex ring-1 ring-lovefacts-turquoise/30 ${
+              t.visible ? 'animate-enter' : 'animate-leave'
+            }`}
+          >
+            <div className="flex-1 p-4 flex items-center gap-3">
+              <div className="text-2xl">✅</div>
+              <div className="flex-1 min-w-0">
+                <p className="text-sm font-semibold text-lovefacts-teal dark:text-white">Saved</p>
+                <p className="text-xs text-lovefacts-teal/60 dark:text-lovefacts-turquoise/70 truncate">
+                  {sticker.title}
+                </p>
+              </div>
+              <a
+                href={waUrl}
+                target="_blank"
+                rel="noopener noreferrer"
+                onClick={() => toast.dismiss(t.id)}
+                className="inline-flex items-center gap-1.5 px-3 py-2 bg-lovefacts-green text-white text-xs font-semibold rounded-xl shadow-sm hover:bg-lovefacts-green-dark transition-colors"
+              >
+                <MessageCircle size={14} />
+                Send
+              </a>
+            </div>
+          </div>
+        ),
+        { duration: 4500 }
+      )
+    },
+    []
+  )
 
+  // Quick share — opens WhatsApp directly with the sticker URL + caption.
+  const handleStickerShare = useCallback((sticker: Sticker) => {
+    const shareUrl = getStickerShareUrl(sticker.id)
+    const text = sticker.caption || `Check out: ${sticker.title} — from Love Facts`
+    const waUrl = `https://wa.me/?text=${encodeURIComponent(`${text}\n${shareUrl}`)}`
+    window.open(waUrl, '_blank', 'noopener,noreferrer')
+
+    // Mark engaged so the optional feedback pill can appear later.
     try {
-      // In production, this would call the API
-      await fetch('/api/download-request', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          stickerId: selectedSticker.id,
-          email: data.email,
-          phone: data.phone,
-          name: data.name,
-          isAnonymous: data.isAnonymous,
-          downloadType,
-        }),
-      })
-
-      // Fetch the image as a blob for reliable download
-      try {
-        const imageRes = await fetch(selectedSticker.sourceUrl)
-        const blob = await imageRes.blob()
-        const blobUrl = URL.createObjectURL(blob)
-        const link = document.createElement('a')
-        link.href = blobUrl
-        link.download = `${selectedSticker.title.replace(/\s+/g, '-').toLowerCase()}.png`
-        document.body.appendChild(link)
-        link.click()
-        document.body.removeChild(link)
-        URL.revokeObjectURL(blobUrl)
-      } catch {
-        // Fallback: open the image URL directly
-        window.open(selectedSticker.sourceUrl, '_blank')
-      }
-
-      setShowDownloadModal(false)
-      setShowSuccessModal(true)
-
-      toast.success('Download started!')
-    } catch (error) {
-      console.error('Download error:', error)
-      toast.error('Download failed. Please try again.')
-    } finally {
-      setIsDownloading(false)
+      sessionStorage.setItem('lf:engaged', '1')
+      window.dispatchEvent(new CustomEvent('lf:engaged'))
+    } catch {
+      /* ignore */
     }
-  }
+
+    fetch(`/api/sticker/${sticker.id}/share-track`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ channel: 'whatsapp' }),
+    }).catch(() => undefined)
+  }, [])
 
   return (
     <div className="min-h-screen">
-      {/* Hero Section */}
       <Hero onBrowseClick={handleBrowseClick} />
 
-      {/* Collections Section - 3D Stacked Gallery */}
-      <section id="collections" className="py-10 xs:py-12 sm:py-16 px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto" aria-labelledby="stickers-heading">
+      <section
+        id="collections"
+        className="py-10 xs:py-12 sm:py-16 px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto"
+        aria-labelledby="stickers-heading"
+      >
         <div className="text-center mb-8 xs:mb-10 sm:mb-12">
-          <h2 id="stickers-heading" className="text-2xl xs:text-3xl font-bold text-slate-900 dark:text-white mb-3 xs:mb-4">Sticker Collections</h2>
+          <h2 id="stickers-heading" className="text-2xl xs:text-3xl font-bold text-slate-900 dark:text-white mb-3 xs:mb-4">
+            Sticker Collections
+          </h2>
           <p className="text-sm xs:text-base text-slate-500 dark:text-slate-400 max-w-2xl mx-auto px-2">
-            Browse our curated collections of media literacy stickers. Each collection has a unique theme
-            to help you fight misinformation in different ways.
+            Browse our curated collections of media literacy stickers. Each collection has a unique theme to help you
+            fight misinformation in different ways.
           </p>
         </div>
 
         {isLoading ? (
-          // Loading skeleton for collections grid
           <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-3 sm:gap-4 lg:gap-5">
             {Array.from({ length: 5 }).map((_, i) => (
-              <div key={i} className="bg-white dark:bg-slate-800 rounded-2xl border border-slate-200 dark:border-slate-700 overflow-hidden">
+              <div
+                key={i}
+                className="bg-white dark:bg-slate-800 rounded-2xl border border-slate-200 dark:border-slate-700 overflow-hidden"
+              >
                 <div className="w-full aspect-[4/3] bg-slate-100 dark:bg-slate-700/50 animate-pulse" />
                 <div className="p-3 sm:p-4">
                   <div className="h-4 w-3/4 bg-slate-200 dark:bg-slate-700 rounded mb-1 animate-pulse" />
@@ -231,11 +230,8 @@ export default function HomePage() {
               }
             }}
             onDownload={(id) => {
-              fetch('/api/download-request', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ stickerId: id, isAnonymous: true, downloadType: 'single' }),
-              }).catch(console.error)
+              const sticker = stickers.find((s) => s.id === id)
+              if (sticker) handleStickerDownload(sticker, 'single')
             }}
             onCollectionClick={(collectionId) => {
               setSelectedCollection(collectionId)
@@ -245,7 +241,6 @@ export default function HomePage() {
         )}
       </section>
 
-      {/* Gallery Section */}
       <section
         ref={galleryRef}
         id="gallery"
@@ -255,11 +250,10 @@ export default function HomePage() {
           <div className="text-center mb-6 xs:mb-8">
             <h2 className="text-2xl xs:text-3xl font-bold text-slate-900 dark:text-white mb-3 xs:mb-4">All Stickers</h2>
             <p className="text-sm xs:text-base text-slate-500 dark:text-slate-400">
-              Click on any sticker to preview and download
+              Tap any sticker to preview. Tap Save to download instantly. No signup required.
             </p>
           </div>
 
-          {/* Filter Bar */}
           <div className="mb-8">
             <FilterBar
               collections={collections}
@@ -271,42 +265,22 @@ export default function HomePage() {
             />
           </div>
 
-          {/* Sticker Grid */}
           <StickerGrid
             stickers={filteredStickers}
             onStickerClick={handleStickerClick}
+            onStickerDownload={(s) => handleStickerDownload(s, 'single')}
+            onStickerShare={handleStickerShare}
             isLoading={isLoading}
             selectedCollection={selectedCollection}
           />
         </div>
       </section>
 
-      {/* Modals */}
       <StickerPreviewModal
         sticker={selectedSticker}
         isOpen={showPreviewModal}
         onClose={() => setShowPreviewModal(false)}
-        onDownload={handleDownloadRequest}
-      />
-
-      <DownloadGatingModal
-        isOpen={showDownloadModal}
-        onClose={() => setShowDownloadModal(false)}
-        onSubmit={handleDownloadSubmit}
-        isLoading={isDownloading}
-        downloadType={downloadType}
-        itemName={
-          downloadType === 'single'
-            ? selectedSticker?.title || ''
-            : selectedSticker?.collection?.name || ''
-        }
-      />
-
-      <DownloadSuccessModal
-        isOpen={showSuccessModal}
-        onClose={() => setShowSuccessModal(false)}
-        stickerName={selectedSticker?.title || ''}
-        shareUrl={`${typeof window !== 'undefined' ? window.location.origin : ''}/sticker/${selectedSticker?.id}`}
+        onDownload={(sticker, type) => handleStickerDownload(sticker, type)}
       />
     </div>
   )

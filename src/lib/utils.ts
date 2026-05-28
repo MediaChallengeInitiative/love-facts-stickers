@@ -1,5 +1,6 @@
 import { clsx, type ClassValue } from 'clsx'
 import { twMerge } from 'tailwind-merge'
+import { createHash } from 'crypto'
 
 export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs))
@@ -67,6 +68,15 @@ export function getClientIp(request: Request): string | null {
     return forwarded.split(',')[0].trim()
   }
   return request.headers.get('x-real-ip') || null
+}
+
+// Anonymizes an IP via SHA-256 so we can de-dupe and rate-limit without
+// retaining identifiable network data. Salted with an env-configurable secret
+// so even rainbow tables against /24 ranges are useless.
+export function hashIp(ip: string | null): string | null {
+  if (!ip) return null
+  const salt = process.env.IP_HASH_SALT || 'love-facts-default-salt'
+  return createHash('sha256').update(`${salt}:${ip}`).digest('hex').slice(0, 32)
 }
 
 export function truncate(str: string, length: number): string {

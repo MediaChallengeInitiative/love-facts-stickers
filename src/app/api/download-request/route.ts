@@ -1,14 +1,14 @@
 import { NextRequest, NextResponse } from 'next/server'
 import prisma from '@/lib/db'
 import { downloadRequestSchema } from '@/lib/validation'
-import { generatePresignedDownloadUrl } from '@/lib/s3'
-import { getClientIp } from '@/lib/utils'
+import { getClientIp, hashIp } from '@/lib/utils'
 
+// v2: Anonymous-by-default. No gating. Fires fire-and-forget from the client.
+// We accept the request, log it, return 200. Never blocks the download UX.
 export async function POST(request: NextRequest) {
   try {
     const body = await request.json()
 
-    // Validate input
     const validationResult = downloadRequestSchema.safeParse(body)
     if (!validationResult.success) {
       return NextResponse.json(
@@ -17,30 +17,22 @@ export async function POST(request: NextRequest) {
       )
     }
 
-    const { stickerId, email, phone, name, downloadType, isAnonymous } = validationResult.data
+    const { stickerId, email, phone, name, downloadType, isAnonymous, channel } = validationResult.data
 
-    // Get sticker details
     const sticker = await prisma.sticker.findUnique({
       where: { id: stickerId },
-      include: {
-        collection: true,
-      },
+      select: { id: true },
     })
 
     if (!sticker) {
-      return NextResponse.json(
-        { error: 'Sticker not found' },
-        { status: 404 }
-      )
+      return NextResponse.json({ error: 'Sticker not found' }, { status: 404 })
     }
 
-    // Get client info
-    const ipAddress = getClientIp(request)
+    const ipAddress = hashIp(getClientIp(request))
     const userAgent = request.headers.get('user-agent')
     const referrer = request.headers.get('referer')
 
-    // Create download record
-    const download = await prisma.download.create({
+    await prisma.download.create({
       data: {
         stickerId,
         userEmail: email || null,
@@ -48,40 +40,16 @@ export async function POST(request: NextRequest) {
         userName: name || null,
         ipAddress,
         userAgent,
-        referrer,
-        isAnonymous,
+        referrer: channel ? `${referrer ?? ''}#channel=${channel}` : referrer,
+        isAnonymous: isAnonymous ?? true,
         downloadType,
         status: 'completed',
       },
     })
 
-    // Generate download URL
-    let downloadUrl: string
-
-    if (process.env.AWS_ACCESS_KEY_ID) {
-      // Use presigned URL for S3
-      const s3Key = sticker.sourceUrl.replace(`${process.env.S3_BUCKET_URL}/`, '')
-      downloadUrl = await generatePresignedDownloadUrl(s3Key, 3600)
-    } else {
-      // Use public URL for local development
-      downloadUrl = sticker.sourceUrl
-    }
-
-    return NextResponse.json({
-      success: true,
-      downloadId: download.id,
-      downloadUrl,
-      sticker: {
-        id: sticker.id,
-        title: sticker.title,
-        filename: sticker.filename,
-      },
-    })
+    return NextResponse.json({ success: true })
   } catch (error) {
     console.error('Download request error:', error)
-    return NextResponse.json(
-      { error: 'Failed to process download request' },
-      { status: 500 }
-    )
+    return NextResponse.json({ error: 'Failed to log download' }, { status: 500 })
   }
 }
