@@ -3,12 +3,13 @@
 import Link from 'next/link'
 import Image from 'next/image'
 import { motion, AnimatePresence } from 'framer-motion'
-import { Menu, X, Home, FolderOpen, Shield, ExternalLink } from 'lucide-react'
+import { Menu, X, Home, FolderOpen, Shield, ExternalLink, AlertTriangle } from 'lucide-react'
 import { useState, useEffect } from 'react'
 import { ThemeToggle } from '@/components/ui/ThemeToggle'
 
 const navLinks = [
   { href: '/', label: 'Gallery', icon: Home },
+  { href: '/red-flags', label: 'Red Flags', icon: AlertTriangle, accent: true as const },
   { href: '/#collections', label: 'Collections', icon: FolderOpen },
   { href: '/privacy', label: 'Privacy', icon: Shield },
 ]
@@ -124,15 +125,23 @@ export function Header() {
 
             {/* Desktop Navigation */}
             <nav className="hidden md:flex items-center gap-6">
-              {navLinks.map((link) => (
-                <Link
-                  key={link.href}
-                  href={link.href}
-                  className="text-lovefacts-teal dark:text-lovefacts-turquoise-light hover:text-lovefacts-coral dark:hover:text-lovefacts-coral transition-colors text-sm font-medium"
-                >
-                  {link.label}
-                </Link>
-              ))}
+              {navLinks.map((link) => {
+                const Icon = link.icon
+                return (
+                  <Link
+                    key={link.href}
+                    href={link.href}
+                    className={
+                      link.accent
+                        ? 'inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-lovefacts-coral text-white hover:bg-lovefacts-coral-dark transition-colors text-sm font-semibold shadow-sm shadow-lovefacts-coral/30'
+                        : 'inline-flex items-center gap-1.5 text-lovefacts-teal dark:text-lovefacts-turquoise-light hover:text-lovefacts-coral dark:hover:text-lovefacts-coral transition-colors text-sm font-medium'
+                    }
+                  >
+                    {link.accent && <Icon size={14} />}
+                    {link.label}
+                  </Link>
+                )
+              })}
               <ThemeToggle />
             </nav>
 

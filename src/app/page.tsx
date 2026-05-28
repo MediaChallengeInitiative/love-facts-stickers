@@ -4,6 +4,7 @@ import { useState, useEffect, useRef, useMemo, useCallback } from 'react'
 import { Hero } from '@/components/layout/Hero'
 import { StickerGrid } from '@/components/stickers/StickerGrid'
 import { FilterBar } from '@/components/stickers/FilterBar'
+import { HeroSpotlight } from '@/components/stickers/HeroSpotlight'
 import { StackedGallery } from '@/components/StickerCollections/StackedGallery'
 import { StickerPreviewModal } from '@/components/modals/StickerPreviewModal'
 import { ShareSheet } from '@/components/share/ShareSheet'
@@ -158,6 +159,14 @@ export default function HomePage() {
   return (
     <div className="min-h-screen">
       <Hero onBrowseClick={handleBrowseClick} />
+
+      <HeroSpotlight
+        onPreview={(s) => {
+          setSelectedSticker(s)
+          setShowPreviewModal(true)
+        }}
+        onShare={(s) => setShareSubject(s)}
+      />
 
       <section
         id="collections"

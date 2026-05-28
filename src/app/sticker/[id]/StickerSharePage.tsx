@@ -3,7 +3,7 @@
 import { useState } from 'react'
 import Link from 'next/link'
 import { motion } from 'framer-motion'
-import { Download, Home, FolderDown, MessageCircle, ChevronRight, Share2 } from 'lucide-react'
+import { Download, Home, FolderDown, ChevronRight, Share2 } from 'lucide-react'
 import { Button } from '@/components/ui/Button'
 import { Badge } from '@/components/ui/Badge'
 import { ShareSheet } from '@/components/share/ShareSheet'

@@ -30,6 +30,17 @@ export interface Sticker {
     name: string
     slug?: string
   }
+  // v2 engagement + curation
+  isHero?: boolean
+  heroRank?: number | null
+  heroCaption?: string | null
+  shareCount?: number
+  viewCount?: number
+  usefulCount?: number
+  shortCode?: string | null
+  mimeType?: string | null
+  width?: number | null
+  height?: number | null
 }
 
 export interface Download {
