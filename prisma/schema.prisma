@@ -8,7 +8,9 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
-// Collections represent sticker folders/categories
+// Sticker collection categories. Stored as String (not Prisma enum) so the
+// Drive sync can set arbitrary values without schema changes per campaign.
+// Conventional values: LOVE_FACTS, RED_FLAGS, MYTHS, FACT_CHECKS, OTHER.
 model Collection {
   id            String    @id @default(cuid())
   name          String
@@ -18,32 +20,90 @@ model Collection {
   driveFolderId String?   @unique
   sortOrder     Int       @default(0)
   featured      Boolean   @default(false)
+  category      String    @default("LOVE_FACTS")
   createdAt     DateTime  @default(now())
   updatedAt     DateTime  @updatedAt
   stickers      Sticker[]
+
+  @@index([category])
 }
 
 // Individual sticker assets
 model Sticker {
-  id            String     @id @default(cuid())
-  title         String
-  filename      String
-  sourceUrl     String     // S3 or GCS URL
-  thumbnailUrl  String     // Optimized thumbnail URL
-  driveId       String?    @unique
-  tags          String[]   // For search functionality
-  caption       String?    // Suggested caption for sharing
-  width         Int?
-  height        Int?
-  fileSize      Int?
-  collection    Collection @relation(fields: [collectionId], references: [id], onDelete: Cascade)
-  collectionId  String
-  createdAt     DateTime   @default(now())
-  updatedAt     DateTime   @updatedAt
-  downloads     Download[]
+  id              String     @id @default(cuid())
+  title           String
+  filename        String
+  sourceUrl       String
+  thumbnailUrl    String
+  driveId         String?    @unique
+  shortCode       String?    @unique
+  mimeType        String?
+  tags            String[]
+  caption         String?
+  seoDescription  String?
+  width           Int?
+  height          Int?
+  fileSize        Int?
+
+  // Curation: the 10 (or N) hero stickers Silas wants to actively push.
+  isHero          Boolean    @default(false)
+  heroRank        Int?
+  heroCaption     String?
+
+  // Aggregate engagement counters. Increment-only, no PII.
+  shareCount      Int        @default(0)
+  viewCount       Int        @default(0)
+  usefulCount     Int        @default(0)
+
+  collection      Collection @relation(fields: [collectionId], references: [id], onDelete: Cascade)
+  collectionId    String
+  createdAt       DateTime   @default(now())
+  updatedAt       DateTime   @updatedAt
+  downloads       Download[]
+  shares          ShareEvent[]
 
   @@index([collectionId])
   @@index([tags])
+  @@index([isHero, heroRank])
+  @@index([shareCount])
+}
+
+// Per-share event for granular analytics by channel.
+model ShareEvent {
+  id        String   @id @default(cuid())
+  sticker   Sticker  @relation(fields: [stickerId], references: [id], onDelete: Cascade)
+  stickerId String
+  channel   String
+  ipHash    String?
+  createdAt DateTime @default(now())
+
+  @@index([stickerId])
+  @@index([channel])
+  @@index([createdAt])
+}
+
+// Optional, post-action user feedback. Never blocking, never required.
+model Feedback {
+  id        String   @id @default(cuid())
+  sentiment String?  // positive | neutral | negative
+  missing   String?  // free-text up to 500 chars
+  channel   String?  // channel they last shared to
+  stickerId String?
+  ipHash    String?
+  createdAt DateTime @default(now())
+
+  @@index([sentiment])
+  @@index([createdAt])
+}
+
+// User-submitted sticker idea when search returns empty.
+model StickerSuggestion {
+  id        String   @id @default(cuid())
+  idea      String
+  ipHash    String?
+  createdAt DateTime @default(now())
+
+  @@index([createdAt])
 }
 
 // Download tracking records

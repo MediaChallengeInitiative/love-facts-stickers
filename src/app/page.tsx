@@ -6,6 +6,7 @@ import { StickerGrid } from '@/components/stickers/StickerGrid'
 import { FilterBar } from '@/components/stickers/FilterBar'
 import { StackedGallery } from '@/components/StickerCollections/StackedGallery'
 import { StickerPreviewModal } from '@/components/modals/StickerPreviewModal'
+import { ShareSheet } from '@/components/share/ShareSheet'
 import toast from 'react-hot-toast'
 import { MessageCircle } from 'lucide-react'
 import type { Sticker, Collection } from '@/lib/types'
@@ -20,6 +21,7 @@ export default function HomePage() {
   const [searchQuery, setSearchQuery] = useState('')
   const [selectedSticker, setSelectedSticker] = useState<Sticker | null>(null)
   const [showPreviewModal, setShowPreviewModal] = useState(false)
+  const [shareSubject, setShareSubject] = useState<Sticker | null>(null)
 
   const galleryRef = useRef<HTMLDivElement>(null)
   const hasSynced = useRef(false)
@@ -148,26 +150,9 @@ export default function HomePage() {
     []
   )
 
-  // Quick share — opens WhatsApp directly with the sticker URL + caption.
+  // Quick share — opens the multi-channel share sheet.
   const handleStickerShare = useCallback((sticker: Sticker) => {
-    const shareUrl = getStickerShareUrl(sticker.id)
-    const text = sticker.caption || `Check out: ${sticker.title} — from Love Facts`
-    const waUrl = `https://wa.me/?text=${encodeURIComponent(`${text}\n${shareUrl}`)}`
-    window.open(waUrl, '_blank', 'noopener,noreferrer')
-
-    // Mark engaged so the optional feedback pill can appear later.
-    try {
-      sessionStorage.setItem('lf:engaged', '1')
-      window.dispatchEvent(new CustomEvent('lf:engaged'))
-    } catch {
-      /* ignore */
-    }
-
-    fetch(`/api/sticker/${sticker.id}/share-track`, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ channel: 'whatsapp' }),
-    }).catch(() => undefined)
+    setShareSubject(sticker)
   }, [])
 
   return (
@@ -281,6 +266,22 @@ export default function HomePage() {
         isOpen={showPreviewModal}
         onClose={() => setShowPreviewModal(false)}
         onDownload={(sticker, type) => handleStickerDownload(sticker, type)}
+      />
+
+      <ShareSheet
+        open={!!shareSubject}
+        onClose={() => setShareSubject(null)}
+        subject={
+          shareSubject
+            ? {
+                id: shareSubject.id,
+                title: shareSubject.title,
+                url: getStickerShareUrl(shareSubject.id),
+                caption: shareSubject.caption,
+                imageUrl: shareSubject.sourceUrl,
+              }
+            : { id: '', title: '', url: '' }
+        }
       />
     </div>
   )
