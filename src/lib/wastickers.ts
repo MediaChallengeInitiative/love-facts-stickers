@@ -81,28 +81,50 @@ export async function buildStickerPack(
   const stickerEntries: { image_file: string; emojis: string[] }[] = []
 
   // Process stickers in parallel — sharp releases GIL, fetch is async.
-  const processed = await Promise.all(
-    stickers.map(async (s, i) => {
-      const input = await fetchBuffer(s.sourceUrl)
-      const webp = await encodeSticker(input)
-      return { index: i, sticker: s, webp }
-    })
-  )
+  // A single bad source image must NOT fail the whole pack: encode failures
+  // resolve to null and are dropped, so the user still gets a working pack.
+  const processed = (
+    await Promise.all(
+      stickers.map(async (s) => {
+        try {
+          const input = await fetchBuffer(s.sourceUrl)
+          const webp = await encodeSticker(input)
+          return { sticker: s, webp }
+        } catch (err) {
+          console.warn(`[wastickers] skipping "${s.title}":`, err instanceof Error ? err.message : err)
+          return null
+        }
+      })
+    )
+  ).filter((x): x is { sticker: StickerSource; webp: Buffer } => x !== null)
 
-  for (const { index, sticker, webp } of processed) {
+  if (processed.length < 3) {
+    throw new Error(
+      `Only ${processed.length} of ${stickers.length} sticker images could be loaded — need at least 3 for a WhatsApp pack`
+    )
+  }
+
+  processed.forEach(({ sticker, webp }, index) => {
     const filename = `${String(index + 1).padStart(2, '0')}.webp`
     zip.file(filename, webp)
     stickerEntries.push({
       image_file: filename,
       emojis: (sticker.emojis && sticker.emojis.length > 0 ? sticker.emojis : ['💬']).slice(0, 3),
     })
-  }
+  })
 
-  // Tray icon: prefer caller-supplied, else use the first sticker.
-  const trayInput = opts.trayIconUrl
-    ? await fetchBuffer(opts.trayIconUrl)
-    : await fetchBuffer(stickers[0].sourceUrl)
-  const trayBuf = await encodeTrayIcon(trayInput)
+  // Tray icon: prefer caller-supplied, else reuse the first sticker that
+  // successfully encoded.
+  let trayBuf: Buffer
+  try {
+    const trayInput = opts.trayIconUrl
+      ? await fetchBuffer(opts.trayIconUrl)
+      : await fetchBuffer(processed[0].sticker.sourceUrl)
+    trayBuf = await encodeTrayIcon(trayInput)
+  } catch {
+    // Last resort: derive the tray from the already-encoded first sticker.
+    trayBuf = await encodeTrayIcon(processed[0].webp)
+  }
   zip.file('tray.png', trayBuf)
 
   const packInfo = {

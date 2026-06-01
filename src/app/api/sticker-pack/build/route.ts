@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from 'next/server'
 import { z } from 'zod'
 import prisma from '@/lib/db'
 import { buildStickerPack } from '@/lib/wastickers'
+import { toAbsoluteProxyBytesUrl } from '@/lib/image-url'
 
 // Sharp + JSZip both need Node runtime. The default edge runtime would refuse.
 export const runtime = 'nodejs'
@@ -13,6 +14,9 @@ const buildSchema = z.object({
   collectionId: z.string().min(1).optional(),
   heroOnly: z.boolean().optional(),
   packName: z.string().max(80).optional(),
+  // 'pack' (default) streams a .wastickers ZIP; 'images' returns a JSON list of
+  // the resolved sticker image URLs for the mobile "share images" flow.
+  format: z.enum(['pack', 'images']).optional(),
 })
 
 const SITE_URL = process.env.NEXT_PUBLIC_APP_URL || 'https://stickers.lovefacts.africa'
@@ -29,7 +33,7 @@ export async function POST(request: NextRequest) {
       )
     }
 
-    const { stickerIds, collectionId, heroOnly, packName } = parsed.data
+    const { stickerIds, collectionId, heroOnly, packName, format } = parsed.data
 
     const whereClauses: Array<Record<string, unknown>> = []
     if (stickerIds && stickerIds.length > 0) whereClauses.push({ id: { in: stickerIds } })
@@ -43,6 +47,22 @@ export async function POST(request: NextRequest) {
       orderBy: heroOnly ? [{ heroRank: 'asc' }] : [{ createdAt: 'desc' }],
       take: 30,
     })
+
+    // The 'images' mode powers the mobile share flow: return the resolved
+    // sticker list with same-origin byte URLs the client can fetch into Files.
+    if (format === 'images') {
+      if (stickerRows.length === 0) {
+        return NextResponse.json({ error: 'No stickers found', images: [] }, { status: 404 })
+      }
+      return NextResponse.json({
+        images: stickerRows.map((s) => ({
+          id: s.id,
+          title: s.title,
+          // Relative on purpose — the browser resolves it against the site origin.
+          sourceUrl: s.sourceUrl,
+        })),
+      })
+    }
 
     if (stickerRows.length < 3) {
       return NextResponse.json(
@@ -74,7 +94,10 @@ export async function POST(request: NextRequest) {
       stickerRows.map((s) => ({
         id: s.id,
         title: s.title,
-        sourceUrl: s.sourceUrl,
+        // Fetch through our own byte proxy at sticker resolution. The raw
+        // sourceUrl is a 302 to Google's CDN that sharp can't reliably read;
+        // the proxy returns clean image bytes server-side.
+        sourceUrl: toAbsoluteProxyBytesUrl(s.sourceUrl, SITE_URL, 512),
       })),
       {
         identifier,
