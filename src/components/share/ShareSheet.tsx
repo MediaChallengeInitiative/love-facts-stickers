@@ -47,7 +47,7 @@ interface ShareSheetProps {
 }
 
 export function ShareSheet({ subject, open, onClose }: ShareSheetProps) {
-  const { channels, primary, share } = useShareEngine(subject)
+  const { channels, primary, share, canShareImage, shareImage } = useShareEngine(subject)
 
   return (
     <AnimatePresence>
@@ -83,6 +83,24 @@ export function ShareSheet({ subject, open, onClose }: ShareSheetProps) {
             </div>
 
             <div className="p-4 pb-8">
+              {canShareImage && (
+                <>
+                  <button
+                    onClick={async () => {
+                      await shareImage()
+                      onClose()
+                    }}
+                    className="w-full flex items-center justify-center gap-2 py-3.5 rounded-2xl text-white font-semibold text-sm shadow-lg active:scale-[0.98] transition-transform bg-lovefacts-green hover:bg-lovefacts-green-dark"
+                  >
+                    <ImageIcon size={18} />
+                    Share image — no link
+                  </button>
+                  <p className="text-[11px] text-lovefacts-teal/50 dark:text-lovefacts-turquoise/50 text-center mt-2 mb-3">
+                    Sends just the sticker, straight to any app
+                  </p>
+                </>
+              )}
+
               <button
                 onClick={async () => {
                   await primary.run()
@@ -92,7 +110,7 @@ export function ShareSheet({ subject, open, onClose }: ShareSheetProps) {
                 className="w-full flex items-center justify-center gap-2 py-3.5 rounded-2xl text-white font-semibold text-sm shadow-lg active:scale-[0.98] transition-transform"
               >
                 {CHANNEL_ICONS[primary.id]}
-                Send via {primary.label}
+                Send link via {primary.label}
               </button>
 
               <p className="text-[11px] text-lovefacts-teal/50 dark:text-lovefacts-turquoise/50 text-center mt-2">

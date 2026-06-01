@@ -11,6 +11,8 @@
 
 import { useCallback, useEffect, useMemo, useState } from 'react'
 import toast from 'react-hot-toast'
+import { toProxyBytesUrl } from './image-url'
+import { shareStickerImages } from './share-images'
 
 export type ShareChannelId =
   | 'whatsapp'
@@ -45,7 +47,7 @@ export interface ShareChannel {
 
 const LAST_CHANNEL_KEY = 'lf:share:last'
 
-function track(channel: ShareChannelId, stickerId: string) {
+function track(channel: ShareChannelId | 'image', stickerId: string) {
   fetch(`/api/sticker/${stickerId}/share-track`, {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
@@ -70,7 +72,9 @@ function rememberChannel(channel: ShareChannelId) {
 
 async function fetchImageBlob(url: string): Promise<Blob | null> {
   try {
-    const res = await fetch(url)
+    // Always go through the same-origin byte proxy — the raw sticker URL is a
+    // cross-origin redirect and would throw on CORS.
+    const res = await fetch(toProxyBytesUrl(url), { cache: 'force-cache' })
     if (!res.ok) return null
     return await res.blob()
   } catch {
@@ -331,5 +335,19 @@ export function useShareEngine(subject: ShareSubject) {
     [channels]
   )
 
-  return { channels, primary, share }
+  // Direct image share (no link): hands the sticker image file to the native
+  // share sheet so it can go to WhatsApp, X, Messages, etc. with no URL.
+  const canShareImage = canNativeShareFiles && !!subject.imageUrl
+  const shareImage = useCallback(async () => {
+    if (!subject.imageUrl) return
+    await shareStickerImages(
+      [{ id: subject.id, title: subject.title, sourceUrl: subject.imageUrl }],
+      {
+        title: subject.title,
+        onTrack: () => track('image', subject.id),
+      }
+    )
+  }, [subject.id, subject.title, subject.imageUrl])
+
+  return { channels, primary, share, canShareImage, shareImage }
 }
