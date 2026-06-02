@@ -3,6 +3,7 @@ import prisma from '@/lib/db'
 import { DriveSyncEngine } from '@/lib/google-drive-sync'
 import { v4 as uuidv4 } from 'uuid'
 import { clearImageCache } from '@/lib/image-cache'
+import { revalidateStickerPages } from '@/lib/revalidate'
 
 /**
  * Enhanced Google Drive Sync API
@@ -71,9 +72,10 @@ export async function POST(request: NextRequest) {
         }
       })
 
-      // Clear image cache so fresh images are fetched
+      // Clear image cache and rebuild cached pages so changes show instantly
       if (itemsSynced > 0) {
         clearImageCache()
+        revalidateStickerPages()
       }
 
       return NextResponse.json({

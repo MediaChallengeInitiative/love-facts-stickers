@@ -1,9 +1,9 @@
 'use client'
 
 import { useState, useCallback, useMemo, useRef } from 'react'
+import Link from 'next/link'
 import { motion } from 'framer-motion'
-import { Eye, Download, Sparkles, ArrowRight } from 'lucide-react'
-import { StickerModal } from './StickerModal'
+import { Download, Sparkles, ArrowRight } from 'lucide-react'
 import { cn } from '@/lib/utils'
 
 const MAX_AUTO_RETRIES = 3
@@ -20,15 +20,14 @@ export interface GallerySticker {
 export interface CollectionInfo {
   id: string
   name: string
+  slug: string
   count: number
 }
 
 interface CollectionCardProps {
   collection: CollectionInfo
   stickers: GallerySticker[]
-  onView: (sticker: GallerySticker) => void
   onDownload: (sticker: GallerySticker) => void
-  onCollectionClick?: (collectionId: string) => void
   imageErrors: Set<string>
   onImageError: (id: string) => void
 }
@@ -36,9 +35,7 @@ interface CollectionCardProps {
 function CollectionCard({
   collection,
   stickers,
-  onView,
   onDownload,
-  onCollectionClick,
   imageErrors,
   onImageError,
 }: CollectionCardProps) {
@@ -48,6 +45,7 @@ function CollectionCard({
   const maxVisible = 4
   const visibleStickers = stickers.slice(0, maxVisible)
   const topSticker = visibleStickers[0]
+  const href = `/collection/${collection.slug}`
 
   const handleImageError = useCallback((stickerId: string, imageUrl: string) => {
     const currentRetries = retryCounts.current.get(stickerId) || 0
@@ -65,13 +63,6 @@ function CollectionCard({
     }
   }, [onImageError])
 
-  const handleKeyDown = (e: React.KeyboardEvent) => {
-    if (e.key === 'Enter' || e.key === ' ') {
-      e.preventDefault()
-      if (topSticker) onView(topSticker)
-    }
-  }
-
   return (
     <motion.div
       className="group relative bg-white dark:bg-lovefacts-teal rounded-2xl border border-lovefacts-turquoise/20 dark:border-lovefacts-turquoise/30 overflow-hidden hover:border-lovefacts-coral/50 dark:hover:border-lovefacts-coral/50 transition-all duration-300"
@@ -80,14 +71,12 @@ function CollectionCard({
       onMouseLeave={() => setIsHovered(false)}
       style={{ boxShadow: isHovered ? '0 20px 40px -12px rgba(0,0,0,0.15)' : '0 4px 12px -2px rgba(0,0,0,0.08)' }}
     >
-      {/* Card Image Area - Stacked cards effect */}
-      <div
-        className="relative w-full aspect-[4/3] bg-gradient-to-br from-white via-lovefacts-turquoise/5 to-lovefacts-coral/5 dark:from-lovefacts-teal-dark dark:via-lovefacts-teal dark:to-lovefacts-coral/10 overflow-hidden cursor-pointer"
-        onClick={() => topSticker && onView(topSticker)}
-        onKeyDown={handleKeyDown}
-        tabIndex={0}
-        role="button"
-        aria-label={`View ${collection.name} collection`}
+      {/* Card Image Area - Stacked cards effect. The whole area is a real link
+          to the category page so it opens in a new tab / is keyboard-navigable. */}
+      <Link
+        href={href}
+        aria-label={`Browse all ${collection.count} stickers in ${collection.name}`}
+        className="relative block w-full aspect-[4/3] bg-gradient-to-br from-white via-lovefacts-turquoise/5 to-lovefacts-coral/5 dark:from-lovefacts-teal-dark dark:via-lovefacts-teal dark:to-lovefacts-coral/10 overflow-hidden cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-lovefacts-coral"
       >
         {/* Decorative background pattern */}
         <div className="absolute inset-0 opacity-[0.03] dark:opacity-[0.05]">
@@ -157,80 +146,46 @@ function CollectionCard({
           </div>
         )}
 
-        {/* Hover overlay — icon-only quick actions */}
-        <motion.div
-          className="absolute inset-0 bg-gradient-to-t from-lovefacts-teal/80 via-lovefacts-teal/30 to-transparent flex items-end justify-center pb-3 opacity-0 group-hover:opacity-100 motion-reduce:opacity-100 transition-opacity duration-200"
-          initial={false}
-        >
-          <div className="flex items-center gap-2">
-            <button
-              onClick={(e) => {
-                e.stopPropagation()
-                if (topSticker) onView(topSticker)
-              }}
-              className="inline-flex items-center justify-center w-9 h-9 bg-white/95 backdrop-blur-sm rounded-full text-lovefacts-teal hover:bg-white transition-colors shadow-lg"
-              aria-label={`View ${collection.name}`}
-              title="View"
-            >
-              <Eye size={16} />
-            </button>
-            <button
-              onClick={(e) => {
-                e.stopPropagation()
-                if (topSticker) onDownload(topSticker)
-              }}
-              className="inline-flex items-center justify-center w-9 h-9 bg-lovefacts-coral rounded-full text-white hover:bg-lovefacts-coral-dark transition-colors shadow-lg"
-              aria-label={`Download from ${collection.name}`}
-              title="Download"
-            >
-              <Download size={16} />
-            </button>
-          </div>
-        </motion.div>
-      </div>
+        {/* Hover overlay — non-interactive "open" hint (the whole area is a link) */}
+        <div className="absolute inset-0 bg-gradient-to-t from-lovefacts-teal/80 via-lovefacts-teal/20 to-transparent flex items-end justify-center pb-3 opacity-0 group-hover:opacity-100 motion-reduce:opacity-100 transition-opacity duration-200 pointer-events-none">
+          <span className="inline-flex items-center gap-1.5 px-3 py-1.5 bg-white/95 backdrop-blur-sm rounded-full text-xs font-semibold text-lovefacts-teal shadow-lg">
+            Browse all
+            <ArrowRight size={14} />
+          </span>
+        </div>
+      </Link>
 
       {/* Card Content */}
       <div className="p-3 sm:p-4">
-        {/* Collection info */}
-        <div className="flex items-start justify-between gap-2 mb-2">
-          <div className="min-w-0 flex-1">
-            <h3 className="text-sm sm:text-base font-semibold text-lovefacts-teal dark:text-white truncate">
-              {collection.name}
-            </h3>
-            <p className="text-xs text-lovefacts-teal/60 dark:text-lovefacts-turquoise/60">
-              {collection.count} sticker{collection.count !== 1 ? 's' : ''}
-            </p>
-          </div>
-        </div>
+        {/* Collection info — links to the category page */}
+        <Link href={href} className="block group/title focus-visible:outline-none">
+          <h3 className="text-sm sm:text-base font-semibold text-lovefacts-teal dark:text-white truncate group-hover/title:text-lovefacts-coral transition-colors">
+            {collection.name}
+          </h3>
+          <p className="text-xs text-lovefacts-teal/60 dark:text-lovefacts-turquoise/60 mb-2.5">
+            {collection.count} sticker{collection.count !== 1 ? 's' : ''}
+          </p>
+        </Link>
 
-        {/* Action buttons — icon-only, equal-width, 44px-tall touch targets */}
+        {/* Actions — primary "Browse all" navigates; Save grabs the featured sticker */}
         <div className="flex items-center gap-1.5 sm:gap-2">
-          <button
-            onClick={() => topSticker && onView(topSticker)}
-            className="flex-1 inline-flex items-center justify-center min-h-[40px] py-2 bg-lovefacts-turquoise/10 dark:bg-lovefacts-turquoise/20 hover:bg-lovefacts-turquoise/20 dark:hover:bg-lovefacts-turquoise/30 rounded-lg text-lovefacts-teal dark:text-lovefacts-turquoise-light transition-colors"
-            aria-label={`Preview ${collection.name}`}
-            title="Preview"
+          <Link
+            href={href}
+            className="flex-1 inline-flex items-center justify-center gap-1.5 min-h-[40px] py-2 px-3 bg-gradient-to-r from-lovefacts-coral to-lovefacts-coral-dark hover:from-lovefacts-coral-dark hover:to-lovefacts-coral rounded-lg text-white text-xs font-semibold transition-colors shadow-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-lovefacts-coral focus-visible:ring-offset-2 dark:focus-visible:ring-offset-lovefacts-teal"
+            aria-label={`Browse all ${collection.count} stickers in ${collection.name}`}
           >
-            <Eye size={16} />
-          </button>
+            Browse all
+            <ArrowRight size={15} />
+          </Link>
           <button
             onClick={() => topSticker && onDownload(topSticker)}
-            className="flex-1 inline-flex items-center justify-center min-h-[40px] py-2 bg-gradient-to-r from-lovefacts-coral to-lovefacts-coral-dark hover:from-lovefacts-coral-dark hover:to-lovefacts-coral rounded-lg text-white transition-colors shadow-sm"
-            aria-label={`Download from ${collection.name}`}
-            title="Download"
+            disabled={!topSticker}
+            className="shrink-0 inline-flex items-center justify-center w-10 min-h-[40px] py-2 bg-lovefacts-turquoise/10 dark:bg-lovefacts-turquoise/20 hover:bg-lovefacts-turquoise/20 dark:hover:bg-lovefacts-turquoise/30 rounded-lg text-lovefacts-teal dark:text-lovefacts-turquoise-light transition-colors disabled:opacity-40 disabled:cursor-not-allowed"
+            aria-label={`Save a sticker from ${collection.name}`}
+            title="Quick save"
           >
             <Download size={16} />
           </button>
-          {onCollectionClick && (
-            <button
-              onClick={() => onCollectionClick(collection.id)}
-              className="flex-1 inline-flex items-center justify-center min-h-[40px] py-2 bg-lovefacts-green/10 hover:bg-lovefacts-green/20 dark:bg-lovefacts-green/20 dark:hover:bg-lovefacts-green/30 rounded-lg text-lovefacts-green-dark dark:text-lovefacts-green-light transition-colors"
-              aria-label={`Browse all ${collection.name}`}
-              title="Browse all"
-            >
-              <ArrowRight size={16} />
-            </button>
-          )}
         </div>
       </div>
     </motion.div>
@@ -240,22 +195,16 @@ function CollectionCard({
 interface StackedGalleryProps {
   stickers: GallerySticker[]
   collections?: CollectionInfo[]
-  onView?: (id: string) => void
   onDownload?: (id: string) => void
-  onCollectionClick?: (collectionId: string) => void
   className?: string
 }
 
 export function StackedGallery({
   stickers,
   collections = [],
-  onView,
   onDownload,
-  onCollectionClick,
   className,
 }: StackedGalleryProps) {
-  const [modalOpen, setModalOpen] = useState(false)
-  const [selectedSticker, setSelectedSticker] = useState<GallerySticker | null>(null)
   const [imageErrors, setImageErrors] = useState<Set<string>>(new Set())
 
   // Group stickers by collection
@@ -272,28 +221,6 @@ export function StackedGallery({
 
     return grouped
   }, [stickers])
-
-  const handleView = useCallback(
-    async (sticker: GallerySticker) => {
-      setSelectedSticker(sticker)
-      setModalOpen(true)
-
-      if (onView) {
-        onView(sticker.id)
-      } else {
-        try {
-          await fetch('/api/stickers/view', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ id: sticker.id }),
-          })
-        } catch (error) {
-          console.error('Failed to track view:', error)
-        }
-      }
-    },
-    [onView]
-  )
 
   const handleDownload = useCallback(
     async (sticker: GallerySticker) => {
@@ -354,22 +281,12 @@ export function StackedGallery({
             key={collection.id}
             collection={collection}
             stickers={stickersByCollection.get(collection.id) || []}
-            onView={handleView}
             onDownload={handleDownload}
-            onCollectionClick={onCollectionClick}
             imageErrors={imageErrors}
             onImageError={handleImageError}
           />
         ))}
       </div>
-
-      {/* Preview Modal */}
-      <StickerModal
-        isOpen={modalOpen}
-        onClose={() => setModalOpen(false)}
-        sticker={selectedSticker ? { ...selectedSticker, imageUrl: selectedSticker.imageUrl } : null}
-        onDownload={onDownload}
-      />
     </div>
   )
 }

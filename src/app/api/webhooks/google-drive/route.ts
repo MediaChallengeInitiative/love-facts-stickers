@@ -4,6 +4,7 @@ import prisma from '@/lib/db'
 import { DriveSyncEngine } from '@/lib/google-drive-sync'
 import { setSyncState, getSyncState } from '@/lib/sync-utils'
 import { clearImageCache } from '@/lib/image-cache'
+import { revalidateStickerPages } from '@/lib/revalidate'
 
 /**
  * Google Drive Push Notifications Webhook
@@ -106,9 +107,10 @@ export async function POST(_request: NextRequest) {
       }
     })
 
-    // Clear image cache so fresh images are fetched
+    // Clear image cache and rebuild cached pages so adds/deletes show instantly
     if (totalProcessed > 0) {
       clearImageCache()
+      revalidateStickerPages()
     }
 
     return NextResponse.json({

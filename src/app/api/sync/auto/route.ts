@@ -1,13 +1,7 @@
 import { NextResponse } from 'next/server'
-import prisma from '@/lib/db'
-import {
-  fetchDriveFiles,
-  fetchDriveFolders,
-  getDriveProxyUrl,
-  getDriveProxyThumbnailUrl,
-  DRIVE_FOLDER_ID,
-} from '@/lib/google-drive'
+import { syncDriveToDatabase } from '@/lib/drive-sync-core'
 import { clearImageCache } from '@/lib/image-cache'
+import { revalidateStickerPages } from '@/lib/revalidate'
 
 export const dynamic = 'force-dynamic'
 export const revalidate = 0
@@ -51,171 +45,20 @@ export async function POST() {
     }
 
     isSyncing = true
-    let itemsSynced = 0
-    const errors: string[] = []
-
     try {
-      // Fetch folders (collections) from Drive
-      const folders = await fetchDriveFolders(DRIVE_FOLDER_ID, apiKey)
-
-      if (folders.length === 0) {
-        // Single flat folder
-        const files = await fetchDriveFiles(DRIVE_FOLDER_ID, apiKey)
-
-        const defaultCollection = await prisma.collection.upsert({
-          where: { slug: 'all-stickers' },
-          update: { driveFolderId: DRIVE_FOLDER_ID },
-          create: {
-            name: 'All Stickers',
-            slug: 'all-stickers',
-            description: 'Love Facts media literacy stickers',
-            driveFolderId: DRIVE_FOLDER_ID,
-            sortOrder: 1,
-          },
-        })
-
-        for (const file of files) {
-          try {
-            const title = file.name.replace(/\.(png|jpg|jpeg|gif|webp)$/i, '').replace(/[-_]/g, ' ')
-            const tags = generateTags(title)
-
-            await prisma.sticker.upsert({
-              where: { driveId: file.id },
-              update: {
-                title,
-                filename: file.name,
-                sourceUrl: getDriveProxyUrl(file.id),
-                thumbnailUrl: getDriveProxyThumbnailUrl(file.id),
-                tags,
-                caption: `${title} - Share to spread media literacy!`,
-              },
-              create: {
-                title,
-                filename: file.name,
-                driveId: file.id,
-                sourceUrl: getDriveProxyUrl(file.id),
-                thumbnailUrl: getDriveProxyThumbnailUrl(file.id),
-                collectionId: defaultCollection.id,
-                tags,
-                caption: `${title} - Share to spread media literacy!`,
-              },
-            })
-            itemsSynced++
-          } catch (err) {
-            errors.push(`${file.name}: ${err}`)
-          }
-        }
-      } else {
-        // Process subfolders as collections
-        for (let i = 0; i < folders.length; i++) {
-          const folder = folders[i]
-          const slug = folder.name.toLowerCase().replace(/\s+/g, '-').replace(/[^a-z0-9-]/g, '')
-
-          // Find existing collection by driveFolderId (handles renames)
-          let collection = await prisma.collection.findUnique({
-            where: { driveFolderId: folder.id },
-          })
-
-          if (collection) {
-            // Update existing (handles renames)
-            const newSlug = collection.name !== folder.name ? slug : collection.slug
-            const slugConflict = newSlug !== collection.slug
-              ? await prisma.collection.findUnique({ where: { slug: newSlug } })
-              : null
-            const finalSlug = slugConflict ? `${newSlug}-${folder.id.substring(0, 6)}` : newSlug
-
-            collection = await prisma.collection.update({
-              where: { id: collection.id },
-              data: {
-                name: folder.name,
-                slug: finalSlug,
-                description: `${folder.name} stickers`,
-                sortOrder: i + 1,
-              },
-            })
-          } else {
-            const slugConflict = await prisma.collection.findUnique({ where: { slug } })
-            const finalSlug = slugConflict ? `${slug}-${folder.id.substring(0, 6)}` : slug
-
-            collection = await prisma.collection.create({
-              data: {
-                name: folder.name,
-                slug: finalSlug,
-                description: `${folder.name} stickers`,
-                driveFolderId: folder.id,
-                sortOrder: i + 1,
-              },
-            })
-          }
-
-          // Fetch and sync files in this folder
-          const files = await fetchDriveFiles(folder.id, apiKey)
-
-          // Track which driveIds exist in this folder for cleanup
-          const activeDriveIds = new Set<string>()
-
-          for (const file of files) {
-            try {
-              activeDriveIds.add(file.id)
-              const title = file.name.replace(/\.(png|jpg|jpeg|gif|webp)$/i, '').replace(/[-_]/g, ' ')
-              const tags = generateTags(title)
-
-              await prisma.sticker.upsert({
-                where: { driveId: file.id },
-                update: {
-                  title,
-                  filename: file.name,
-                  sourceUrl: getDriveProxyUrl(file.id),
-                  thumbnailUrl: getDriveProxyThumbnailUrl(file.id),
-                  collectionId: collection.id,
-                  tags,
-                  caption: `${title} - Share to spread media literacy!`,
-                },
-                create: {
-                  title,
-                  filename: file.name,
-                  driveId: file.id,
-                  sourceUrl: getDriveProxyUrl(file.id),
-                  thumbnailUrl: getDriveProxyThumbnailUrl(file.id),
-                  collectionId: collection.id,
-                  tags,
-                  caption: `${title} - Share to spread media literacy!`,
-                },
-              })
-              itemsSynced++
-            } catch (err) {
-              errors.push(`${file.name}: ${err}`)
-            }
-          }
-
-          // Remove stickers that are no longer in the Drive folder
-          const staleStickers = await prisma.sticker.findMany({
-            where: {
-              collectionId: collection.id,
-              driveId: { notIn: Array.from(activeDriveIds) },
-            },
-            select: { id: true, driveId: true },
-          })
-
-          if (staleStickers.length > 0) {
-            await prisma.sticker.deleteMany({
-              where: { id: { in: staleStickers.map(s => s.id) } },
-            })
-            console.log(`[Auto-sync] Removed ${staleStickers.length} stale stickers from ${folder.name}`)
-          }
-        }
-      }
+      const { itemsSynced, errors, affectedSlugs } = await syncDriveToDatabase(apiKey)
 
       lastSyncTime = Date.now()
 
-      // Clear the image cache so fresh images are fetched
-      if (itemsSynced > 0) {
-        clearImageCache()
-      }
+      // Refresh proxied images and rebuild cached pages so the UI reflects
+      // Drive additions/deletions immediately.
+      clearImageCache()
+      revalidateStickerPages(affectedSlugs)
 
       return NextResponse.json({
         status: 'synced',
         itemsSynced,
+        affectedSlugs,
         errors: errors.length > 0 ? errors : undefined,
         timestamp: new Date().toISOString(),
       })
@@ -225,10 +68,7 @@ export async function POST() {
   } catch (error) {
     isSyncing = false
     console.error('[Auto-sync] Error:', error)
-    return NextResponse.json(
-      { status: 'error', error: String(error) },
-      { status: 500 }
-    )
+    return NextResponse.json({ status: 'error', error: String(error) }, { status: 500 })
   }
 }
 
@@ -240,12 +80,4 @@ export async function GET() {
   })
   response.headers.set('Cache-Control', 'no-store')
   return response
-}
-
-function generateTags(title: string): string[] {
-  const words = title.toLowerCase().split(/\s+/)
-  const commonWords = ['the', 'a', 'an', 'and', 'or', 'but', 'in', 'on', 'at', 'to', 'for', 'of', 'with', 'by']
-  return words
-    .filter(word => word.length > 2 && !commonWords.includes(word))
-    .slice(0, 5)
 }

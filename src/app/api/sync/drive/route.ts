@@ -8,6 +8,7 @@ import {
   DRIVE_FOLDER_ID,
 } from '@/lib/google-drive'
 import { clearImageCache } from '@/lib/image-cache'
+import { revalidateStickerPages } from '@/lib/revalidate'
 
 /**
  * Sync stickers from Google Drive to the database
@@ -192,9 +193,10 @@ export async function POST() {
       },
     })
 
-    // Clear image cache so fresh images are fetched
+    // Clear image cache and rebuild cached pages so changes show instantly
     if (itemsSynced > 0) {
       clearImageCache()
+      revalidateStickerPages()
     }
 
     return NextResponse.json({

@@ -237,22 +237,12 @@ export default function HomePage() {
             collections={collections.map((c) => ({
               id: c.id,
               name: c.name,
+              slug: c.slug,
               count: c._count?.stickers || 0,
             }))}
-            onView={(id) => {
-              const sticker = stickers.find((s) => s.id === id)
-              if (sticker) {
-                setSelectedSticker(sticker)
-                setShowPreviewModal(true)
-              }
-            }}
             onDownload={(id) => {
               const sticker = stickers.find((s) => s.id === id)
               if (sticker) handleStickerDownload(sticker, 'single')
-            }}
-            onCollectionClick={(collectionId) => {
-              setSelectedCollection(collectionId)
-              galleryRef.current?.scrollIntoView({ behavior: 'smooth' })
             }}
           />
         )}
