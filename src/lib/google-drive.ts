@@ -76,18 +76,40 @@ export async function fetchDriveFiles(
   }
 
   const query = `'${folderId}' in parents and trashed = false and mimeType contains 'image/'`
-  const url = `https://www.googleapis.com/drive/v3/files?q=${encodeURIComponent(query)}&key=${key}&fields=files(id,name,mimeType,thumbnailLink,webContentLink,parents)`
+
+  // Drive returns at most `pageSize` (max 1000) files per request. WITHOUT
+  // paging we only ever saw the first 100 — which both hid files in large
+  // folders AND broke deletion detection (the prune compared the DB against a
+  // truncated, arbitrarily-ordered subset). Page through to the end so the
+  // returned list is the COMPLETE, authoritative set of live files.
+  const files: DriveFile[] = []
+  let pageToken: string | undefined
 
   try {
-    const response = await fetch(url)
-    if (!response.ok) {
-      throw new Error(`Drive API error: ${response.status}`)
-    }
-    const data = await response.json()
-    return data.files || []
+    do {
+      const params = new URLSearchParams({
+        q: query,
+        key,
+        fields: 'nextPageToken,files(id,name,mimeType,thumbnailLink,webContentLink,parents)',
+        pageSize: '1000',
+      })
+      if (pageToken) params.set('pageToken', pageToken)
+
+      const response = await fetch(`https://www.googleapis.com/drive/v3/files?${params.toString()}`)
+      if (!response.ok) {
+        throw new Error(`Drive API error: ${response.status}`)
+      }
+      const data = await response.json()
+      if (Array.isArray(data.files)) files.push(...data.files)
+      pageToken = data.nextPageToken || undefined
+    } while (pageToken)
+
+    return files
   } catch (error) {
     console.error('Error fetching Drive files:', error)
-    return []
+    // Re-throw so the sync core can tell "empty folder" apart from "API failed"
+    // and skip pruning on failure (never delete stickers on a transient error).
+    throw error
   }
 }
 
@@ -105,18 +127,36 @@ export async function fetchDriveFolders(
   }
 
   const query = `'${parentFolderId}' in parents and trashed = false and mimeType = 'application/vnd.google-apps.folder'`
-  const url = `https://www.googleapis.com/drive/v3/files?q=${encodeURIComponent(query)}&key=${key}&fields=files(id,name)`
+
+  // Paginate fully (see fetchDriveFiles) so we never mistake "page 1 of N" for
+  // "all folders" — important since the sync treats zero folders as a signal to
+  // fall back to a flat single-collection structure.
+  const folders: DriveFolder[] = []
+  let pageToken: string | undefined
 
   try {
-    const response = await fetch(url)
-    if (!response.ok) {
-      throw new Error(`Drive API error: ${response.status}`)
-    }
-    const data = await response.json()
-    return data.files || []
+    do {
+      const params = new URLSearchParams({
+        q: query,
+        key,
+        fields: 'nextPageToken,files(id,name)',
+        pageSize: '1000',
+      })
+      if (pageToken) params.set('pageToken', pageToken)
+
+      const response = await fetch(`https://www.googleapis.com/drive/v3/files?${params.toString()}`)
+      if (!response.ok) {
+        throw new Error(`Drive API error: ${response.status}`)
+      }
+      const data = await response.json()
+      if (Array.isArray(data.files)) folders.push(...data.files)
+      pageToken = data.nextPageToken || undefined
+    } while (pageToken)
+
+    return folders
   } catch (error) {
     console.error('Error fetching Drive folders:', error)
-    return []
+    throw error
   }
 }
 

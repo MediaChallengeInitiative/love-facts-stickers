@@ -48,7 +48,8 @@ function generateTags(title: string): string[] {
 async function syncFilesIntoCollection(
   collectionId: string,
   files: DriveFile[],
-  errors: string[]
+  errors: string[],
+  globalActiveIds: Set<string>
 ): Promise<number> {
   let synced = 0
   const activeDriveIds = new Set<string>()
@@ -56,6 +57,7 @@ async function syncFilesIntoCollection(
   for (const file of files) {
     try {
       activeDriveIds.add(file.id)
+      globalActiveIds.add(file.id)
       const title = titleFromFilename(file.name)
       await prisma.sticker.upsert({
         where: { driveId: file.id },
@@ -120,6 +122,41 @@ async function ensureCoverImage(collectionId: string): Promise<void> {
 }
 
 /**
+ * Final safety net: delete every sticker whose Drive file is no longer present
+ * ANYWHERE in the freshly-fetched set, then drop collections left empty. This
+ * catches deletions the per-folder prune can miss — e.g. a sticker stranded in
+ * an orphaned/duplicate collection whose Drive folder was removed or renamed.
+ *
+ * Guarded by a non-empty active set so a transient empty result can never wipe
+ * the catalogue. (Fetch failures now throw upstream, so we never even reach
+ * here on an API error.) Returns the number of stickers removed.
+ */
+async function reconcileDeletions(globalActiveIds: Set<string>): Promise<number> {
+  if (globalActiveIds.size === 0) return 0
+
+  const stale = await prisma.sticker.findMany({
+    where: { driveId: { notIn: Array.from(globalActiveIds) } },
+    select: { id: true },
+  })
+  if (stale.length > 0) {
+    await prisma.sticker.deleteMany({ where: { id: { in: stale.map((s) => s.id) } } })
+    console.log(`[Drive sync] Global prune removed ${stale.length} sticker(s) no longer in Drive`)
+  }
+
+  // Drop now-empty collections so dead categories don't linger in the UI.
+  const empty = await prisma.collection.findMany({
+    where: { stickers: { none: {} } },
+    select: { id: true },
+  })
+  if (empty.length > 0) {
+    await prisma.collection.deleteMany({ where: { id: { in: empty.map((c) => c.id) } } })
+    console.log(`[Drive sync] Removed ${empty.length} empty collection(s)`)
+  }
+
+  return stale.length
+}
+
+/**
  * Run a full Drive → DB sync. `apiKey` is the Google API key (public-folder
  * read access). Returns counts plus the slugs of every collection touched so
  * callers can revalidate the matching pages.
@@ -127,6 +164,9 @@ async function ensureCoverImage(collectionId: string): Promise<void> {
 export async function syncDriveToDatabase(apiKey: string): Promise<DriveSyncResult> {
   const errors: string[] = []
   const affectedSlugs = new Set<string>()
+  // Every live Drive file id seen this run, across all folders + root. Used for
+  // the final global deletion reconciliation.
+  const globalActiveIds = new Set<string>()
   let itemsSynced = 0
 
   const folders = await fetchDriveFolders(DRIVE_FOLDER_ID, apiKey)
@@ -145,9 +185,10 @@ export async function syncDriveToDatabase(apiKey: string): Promise<DriveSyncResu
         sortOrder: 1,
       },
     })
-    itemsSynced += await syncFilesIntoCollection(collection.id, files, errors)
+    itemsSynced += await syncFilesIntoCollection(collection.id, files, errors, globalActiveIds)
     await ensureCoverImage(collection.id)
     affectedSlugs.add(collection.slug)
+    await reconcileDeletions(globalActiveIds)
     return { itemsSynced, errors, affectedSlugs: Array.from(affectedSlugs) }
   }
 
@@ -190,7 +231,7 @@ export async function syncDriveToDatabase(apiKey: string): Promise<DriveSyncResu
     }
 
     const files = await fetchDriveFiles(folder.id, apiKey)
-    itemsSynced += await syncFilesIntoCollection(collection.id, files, errors)
+    itemsSynced += await syncFilesIntoCollection(collection.id, files, errors, globalActiveIds)
     await ensureCoverImage(collection.id)
     affectedSlugs.add(collection.slug)
   }
@@ -209,10 +250,13 @@ export async function syncDriveToDatabase(apiKey: string): Promise<DriveSyncResu
         sortOrder: 999,
       },
     })
-    itemsSynced += await syncFilesIntoCollection(uncategorized.id, rootFiles, errors)
+    itemsSynced += await syncFilesIntoCollection(uncategorized.id, rootFiles, errors, globalActiveIds)
     await ensureCoverImage(uncategorized.id)
     affectedSlugs.add(uncategorized.slug)
   }
+
+  // Catch deletions stranded in orphaned/duplicate collections + clear empties.
+  await reconcileDeletions(globalActiveIds)
 
   return { itemsSynced, errors, affectedSlugs: Array.from(affectedSlugs) }
 }

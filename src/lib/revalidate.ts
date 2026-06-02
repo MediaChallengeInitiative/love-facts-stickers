@@ -28,6 +28,9 @@ export function revalidateStickerPages(affectedSlugs: string[] = []) {
     revalidatePath('/')
     // Every dynamic category page (route-level)
     revalidatePath('/collection/[slug]', 'page')
+    // Every individual sticker detail page, so a deleted sticker's page 404s
+    // and an edited sticker's metadata refreshes without waiting for ISR.
+    revalidatePath('/sticker/[id]', 'page')
     // And each specific category page we touched
     for (const slug of affectedSlugs) {
       if (slug) revalidatePath(`/collection/${slug}`)
