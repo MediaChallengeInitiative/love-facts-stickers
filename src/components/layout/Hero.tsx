@@ -1,6 +1,7 @@
 'use client'
 
 import { useState } from 'react'
+import Image from 'next/image'
 import { motion } from 'framer-motion'
 import { Download, Sparkles, MessageCircle, Send, Music2, Facebook as FacebookLogo, Instagram } from 'lucide-react'
 import { Button } from '@/components/ui/Button'
@@ -35,7 +36,7 @@ export function Hero({ onBrowseClick }: HeroProps) {
 
   return (
     <section
-      className="relative min-h-[100svh] sm:min-h-[80vh] flex items-center justify-center overflow-hidden pt-16 pb-8 sm:pt-0 sm:pb-0"
+      className="relative min-h-[100svh] sm:min-h-[80vh] flex items-center justify-center overflow-hidden pt-16 pb-8 sm:pt-24 sm:pb-28"
       aria-label="Love Facts Stickers introduction"
     >
       <div className="absolute inset-0 bg-gradient-to-br from-white via-lovefacts-turquoise/5 to-lovefacts-coral/5 dark:from-lovefacts-teal-dark dark:via-lovefacts-teal dark:to-lovefacts-teal-dark transition-colors duration-300" />
@@ -80,15 +81,33 @@ export function Hero({ onBrowseClick }: HeroProps) {
           </span>
         </motion.h1>
 
-        <motion.p
+        {/* About copy from the MCI CEO (Nov 2026), kept verbatim */}
+        <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.3 }}
-          className="text-base xs:text-lg sm:text-xl text-lovefacts-teal-light dark:text-lovefacts-turquoise-light mb-5 xs:mb-7 max-w-2xl mx-auto leading-relaxed px-2"
+          className="max-w-2xl mx-auto mb-5 xs:mb-7 px-2 space-y-2 xs:space-y-3 text-sm xs:text-base sm:text-lg leading-relaxed text-lovefacts-teal-light dark:text-lovefacts-turquoise-light"
         >
-          Free media literacy stickers for every Ugandan group chat. Save, send, and call out misinformation — wherever
-          the conversation is happening.
-        </motion.p>
+          <p className="text-base xs:text-lg sm:text-xl font-semibold italic text-lovefacts-teal dark:text-white">
+            Disinformation is not a news problem. It&apos;s a group chat problem.
+          </p>
+          <p>Aunty forwards it. Your cousin believes it. Your crush shares it.</p>
+          <p>
+            You know it&apos;s not true, but you stay quiet. You don&apos;t want to start a family war — and you
+            don&apos;t have the right language to call it out.
+          </p>
+          <p className="font-semibold text-lovefacts-teal dark:text-white">So we made you the language.</p>
+          <p>
+            LoveFacts stickers let you call out disinformation wherever it spreads — not with an argument, but with a
+            perfectly timed, humorous sticker.
+          </p>
+          <p className="font-semibold text-lovefacts-teal dark:text-white">Stop the lie. Keep the peace. Keep the family.</p>
+          <p className="italic font-semibold text-lovefacts-coral">
+            Check before you share.
+            <br />
+            Make Facts Famous
+          </p>
+        </motion.div>
 
         {/* Platform strip — names the actual apps this works on */}
         <motion.div
@@ -167,6 +186,33 @@ export function Hero({ onBrowseClick }: HeroProps) {
             <p className="text-2xl xs:text-3xl font-bold text-lovefacts-teal dark:text-white">0</p>
             <p className="text-xs xs:text-sm text-lovefacts-teal/70 dark:text-lovefacts-turquoise/70">Forms to fill</p>
           </div>
+        </motion.div>
+
+        {/* Funder credit */}
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.7 }}
+          className="mt-8 xs:mt-10 flex flex-col items-center gap-3 px-2"
+        >
+          <p className="text-xs xs:text-sm text-lovefacts-teal/80 dark:text-lovefacts-turquoise/80 max-w-xl text-balance">
+            <em>With gratitude:</em> Curated with the support of the Konrad-Adenauer-Stiftung.
+          </p>
+          <a
+            href="https://www.kas.de/en/web/uganda"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="inline-flex rounded-xl bg-white px-4 py-2.5 shadow-sm ring-1 ring-lovefacts-teal/10 transition hover:ring-lovefacts-turquoise/50 focus:outline-none focus-visible:ring-2 focus-visible:ring-lovefacts-turquoise"
+          >
+            <Image
+              src="/images/partners/kas-logo.png"
+              alt="Konrad Adenauer Stiftung logo"
+              width={1647}
+              height={503}
+              className="h-9 xs:h-10 w-auto"
+            />
+            <span className="sr-only">(opens in a new tab)</span>
+          </a>
         </motion.div>
       </div>
 
